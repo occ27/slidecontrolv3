@@ -208,8 +208,21 @@ async def system_shutdown():
     print("[Shutdown] Recebido pedido de encerramento do Electron.")
     def _kill():
         import time
-        time.sleep(0.3)
-        os.kill(os.getpid(), signal.SIGTERM)
+        time.sleep(0.15)
+        try:
+            parent_pid = os.getppid()
+            if parent_pid and parent_pid > 1:
+                os.kill(parent_pid, signal.SIGTERM)
+        except Exception:
+            pass
+        try:
+            os.kill(os.getpid(), signal.SIGTERM)
+        except Exception:
+            pass
+        try:
+            os._exit(0)
+        except Exception:
+            pass
     import threading
     threading.Thread(target=_kill, daemon=True).start()
     return {"status": "shutting_down"}

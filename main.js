@@ -14,6 +14,7 @@ let savedRetornoMonitorId = null;
 let telaoWasOpen = false;
 let retornoWasOpen = false;
 let startupWarningShown = false;
+const PORT = 8767;
 
 const isDev = process.env.DEV_MODE === "true";
 
@@ -516,21 +517,32 @@ ipcMain.on('fechar-app', () => {
 });
 
 // ── INICIALIZAÇÃO DA APLICAÇÃO ELECTRON ──
+function waitForBackendAndCreateWindow() {
+  console.log(`[Electron] Aguardando FastAPI na porta ${PORT}...`);
+  const checkServer = () => {
+    http.get(`http://127.0.0.1:${PORT}/api/health`, (res) => {
+      if (res.statusCode === 200) {
+        console.log("[Electron] Backend FastAPI online!");
+        createMainWindow();
+        setTimeout(() => {
+          if (telaoWasOpen) openTelao(null, true);
+          if (savedRetornoMonitorId && retornoWasOpen) openRetorno(null, true);
+        }, 1000);
+      } else {
+        setTimeout(checkServer, 300);
+      }
+    }).on("error", () => {
+      setTimeout(checkServer, 300);
+    });
+  };
+  checkServer();
+}
+
 app.whenReady().then(() => {
   startPythonBackend();
-  createMainWindow();
+  waitForBackendAndCreateWindow();
 
-  // Checagem pós-inicialização para restaurar telas salvas
-  setTimeout(() => {
-    if (telaoWasOpen) {
-      openTelao(null, true);
-    }
-    if (savedRetornoMonitorId && retornoWasOpen) {
-      openRetorno(null, true);
-    }
-  }, 1000);
-
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createMainWindow();
     }
