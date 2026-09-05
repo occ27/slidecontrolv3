@@ -26,7 +26,8 @@ Thumbs.db
 Desktop.ini
 
 # Editores & IDEs (VS Code, JetBrains, Vim)
-.vscode/
+.vscode/*
+!.vscode/launch.json
 .idea/
 *.swp
 *.swo

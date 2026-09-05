@@ -15,6 +15,31 @@ let telaoWasOpen = false;
 let retornoWasOpen = false;
 let startupWarningShown = false;
 
+const isDev = process.env.DEV_MODE === "true";
+
+if (isDev) {
+  const electronBin = process.platform === "win32"
+    ? path.join(__dirname, "node_modules", "electron", "dist", "electron.exe")
+    : path.join(__dirname, "node_modules", ".bin", "electron");
+
+  if (fs.existsSync(electronBin)) {
+    try {
+      require("electron-reload")([
+        path.join(__dirname, "main.js"),
+        path.join(__dirname, "preload.js"),
+        path.join(__dirname, "frontend")
+      ], {
+        electron: electronBin,
+        hardResetMethod: "exit",
+        ignored: /node_modules|[\/\\]\.|venv|dist|build|build_secure|__pycache__|\.db|\.sqlite|\.data|api|presets|uploads|media|transcriptions|\.git|\.vscode/
+      });
+    } catch (e) {
+      console.warn("electron-reload warning:", e);
+    }
+  }
+}
+
+
 // ── PERSISTÊNCIA DE PREFERÊNCIAS (.data/preferences.json) ──
 const prefsDir = path.join(__dirname, '.data');
 const prefsFile = path.join(prefsDir, 'preferences.json');
@@ -513,7 +538,10 @@ app.whenReady().then(() => {
 });
 
 function startPythonBackend() {
-  if (process.env.DEV_MODE === 'true') return;
+  if (process.env.DEV_MODE === 'true') {
+    console.log("Modo de desenvolvimento (F5): Backend Python gerenciado pelo VS Code.");
+    return;
+  }
 
   const backendScript = path.join(__dirname, 'run_backend.py');
   if (!fs.existsSync(backendScript)) return;
