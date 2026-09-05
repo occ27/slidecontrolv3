@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telão de Projeção — SlideControl V3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/display.css">
+</head>
+<body>
+  <!-- Background Viewport -->
+  <div class="bg-viewport">
+    <div class="bg-solid" id="bg-solid"></div>
+    <div class="bg-gradient" id="bg-gradient"></div>
+    <div class="bg-image" id="bg-image"></div>
+  </div>
+
+  <!-- Content Presentation Layer -->
+  <main class="content-layer" id="content-layer">
+    <div class="header-badge" id="slide-header" style="display: none;">JOÃO 3:16</div>
+    <h1 class="slide-text" id="slide-text">SlideControl V3 Orbital</h1>
+    <div class="slide-subtitle" id="slide-subtitle">Aguardando comando da cabine de projeção...</div>
+  </main>
+
+  <!-- Emergency Blackout Layer -->
+  <div class="blackout-layer" id="blackout-layer"></div>
+
+  <!-- Logo Projection Layer -->
+  <div class="logo-layer" id="logo-layer">
+    <div class="logo-text">SLIDECONTROL V3</div>
+  </div>
+
+  <!-- Alert Overlay Banner -->
+  <aside class="alert-overlay" id="alert-overlay">
+    <span class="alert-badge">AVISO</span>
+    <span class="alert-msg" id="alert-msg">Mensagem de aviso</span>
+  </aside>
+
+  <script>
+    // Communication with Main Console via BroadcastChannel
+    const channel = new BroadcastChannel('slidecontrol_orbital_v3');
+
+    const contentLayer = document.getElementById('content-layer');
+    const headerEl = document.getElementById('slide-header');
+    const textEl = document.getElementById('slide-text');
+    const subtitleEl = document.getElementById('slide-subtitle');
+    const blackoutEl = document.getElementById('blackout-layer');
+    const logoEl = document.getElementById('logo-layer');
+    const alertOverlay = document.getElementById('alert-overlay');
+    const alertMsg = document.getElementById('alert-msg');
+    const bgGradient = document.getElementById('bg-gradient');
+    const bgImage = document.getElementById('bg-image');
+
+    let alertTimeout = null;
+
+    channel.onmessage = (event) => {
+      const msg = event.data;
+      if (!msg) return;
+
+      switch (msg.action) {
+        case 'PROJECT_SLIDE':
+          blackoutEl.classList.remove('active');
+          logoEl.classList.remove('active');
+          contentLayer.classList.remove('text-hidden');
+
+          if (msg.header) {
+            headerEl.textContent = msg.header;
+            headerEl.style.display = 'inline-block';
+          } else {
+            headerEl.style.display = 'none';
+          }
+
+          textEl.textContent = msg.text || '';
+          subtitleEl.textContent = msg.subtitle || '';
+
+          if (msg.theme === 'bible') {
+            bgGradient.style.background = 'radial-gradient(circle at center, #1e1b4b 0%, #030712 100%)';
+            headerEl.style.color = '#a855f7';
+            headerEl.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+          } else if (msg.theme === 'song') {
+            bgGradient.style.background = 'radial-gradient(circle at center, #0f2c42 0%, #020617 100%)';
+            headerEl.style.color = '#00f0ff';
+            headerEl.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+          } else {
+            bgGradient.style.background = 'radial-gradient(circle at center, #111827 0%, #030712 100%)';
+            headerEl.style.color = '#10b981';
+            headerEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          }
+          break;
+
+        case 'TOGGLE_BLACKOUT':
+          blackoutEl.classList.toggle('active', msg.active);
+          break;
+
+        case 'TOGGLE_CLEAR_TEXT':
+          contentLayer.classList.toggle('text-hidden', msg.active);
+          break;
+
+        case 'TOGGLE_LOGO':
+          logoEl.classList.toggle('active', msg.active);
+          break;
+
+        case 'SHOW_ALERT':
+          alertMsg.textContent = msg.text;
+          alertOverlay.classList.add('visible');
+
+          if (alertTimeout) clearTimeout(alertTimeout);
+          alertTimeout = setTimeout(() => {
+            alertOverlay.classList.remove('visible');
+          }, (msg.duration || 10) * 1000);
+          break;
+
+        case 'CLEAR_ALERT':
+          alertOverlay.classList.remove('visible');
+          break;
+      }
+    };
+
+    // Notify console that display window is connected
+    channel.postMessage({ action: 'DISPLAY_CONNECTED', timestamp: Date.now() });
+  </script>
+</body>
+</html>

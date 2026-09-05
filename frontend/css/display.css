@@ -1,0 +1,197 @@
+/* ==========================================================================
+   SLIDECONTROL V3 — TELÃO DE PROJEÇÃO (DISPLAY OUTPUT)
+   Estilos otimizados para projetores e painéis de LED (1080p / 4K)
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+/* Background Layers */
+.bg-viewport {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.bg-solid {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  transition: opacity 0.4s ease;
+}
+
+.bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.bg-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* Content Presentation Layer */
+.content-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8vh 10vw;
+  text-align: center;
+  opacity: 1;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.content-layer.text-hidden {
+  opacity: 0 !important;
+  transform: scale(0.98);
+}
+
+/* Scripture Reference / Song Title Badge */
+.header-badge {
+  font-size: clamp(1.2rem, 2.2vw, 2.5rem);
+  font-weight: 700;
+  color: #00f0ff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2.5vh;
+  text-shadow: 0 2px 14px rgba(0, 240, 255, 0.4);
+  background: rgba(0, 240, 255, 0.1);
+  padding: 6px 24px;
+  border-radius: 50px;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  backdrop-filter: blur(8px);
+}
+
+/* Main Projected Text */
+.slide-text {
+  font-size: clamp(2rem, 4.5vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.28;
+  color: #ffffff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.8);
+  max-width: 90vw;
+  word-wrap: break-word;
+}
+
+/* Verse or Strophe Subtitle */
+.slide-subtitle {
+  margin-top: 3vh;
+  font-size: clamp(1.1rem, 1.8vw, 2rem);
+  color: #cbd5e1;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Blackout Layer */
+.blackout-layer {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.blackout-layer.active {
+  opacity: 1;
+}
+
+/* Logo Layer */
+.logo-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #05070c;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.logo-layer.active {
+  opacity: 1;
+}
+
+.logo-layer img, .logo-graphic {
+  max-width: 25vw;
+  max-height: 25vh;
+  filter: drop-shadow(0 0 35px rgba(0, 240, 255, 0.6));
+}
+
+.logo-text {
+  font-size: clamp(2.5rem, 5vw, 6rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 30%, #00f0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.15em;
+}
+
+/* Alert Overlay Banner */
+.alert-overlay {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  z-index: 90;
+  background: rgba(15, 23, 42, 0.92);
+  border: 2px solid #00f0ff;
+  border-radius: 16px;
+  padding: 16px 36px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.4);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 85vw;
+}
+
+.alert-overlay.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.alert-badge {
+  background: #f59e0b;
+  color: #000;
+  font-weight: 800;
+  font-size: 1.2rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+  letter-spacing: 0.08em;
+}
+
+.alert-msg {
+  font-size: clamp(1.4rem, 2.2vw, 2.6rem);
+  font-weight: 700;
+  color: #ffffff;
+}

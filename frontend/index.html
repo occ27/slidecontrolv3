@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlideControl V3 — A Tela-Globo Tridimensional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/console.css">
+</head>
+<body>
+  <!-- Dual 3D Viewports: WebGL Behind, CSS3D in Front -->
+  <div id="webgl-container"></div>
+  <div id="css3d-container"></div>
+
+  <!-- Minimal Floating HUD Bezel -->
+  <div class="globe-hud">
+
+    <!-- Top Bezel -->
+    <header class="top-bezel hud-interactive">
+      <div class="brand-section">
+        <span class="brand-pulse"></span>
+        <span class="brand-text">SLIDECONTROL_V3</span>
+        <span class="brand-tag">TELA-GLOBO</span>
+      </div>
+
+      <!-- Current Projected Slide Pill -->
+      <div class="on-air-pill" id="on-air-pill">
+        <span class="pill-dot"></span>
+        <span class="pill-title" id="on-air-pill-text">ESTROFE 1 — Porque Ele Vive</span>
+      </div>
+
+      <div class="top-actions">
+        <button id="btn-open-display" class="hud-btn" title="Abrir Janela do Telão no Monitor Secundário">
+          <span>🖥️ ABRIR TELÃO</span>
+          <kbd style="font-size:0.65rem; padding:1px 4px; border:1px solid rgba(255,255,255,0.2); border-radius:3px; margin-left:4px;">F11</kbd>
+        </button>
+      </div>
+    </header>
+
+    <!-- Center Interaction Guidance -->
+    <div class="center-hint" id="center-hint">
+      <span>🖱️ Arraste para girar o globo • Clique em qualquer cartão para projetar no telão</span>
+    </div>
+
+    <!-- Bottom Controls & Zone Bar -->
+    <footer style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
+      
+      <!-- Compass / Directional Navigation (Bottom-Left) -->
+      <div class="compass-dock hud-interactive">
+        <span class="compass-header">NAVEGAÇÃO DO GLOBO</span>
+        <div class="compass-grid">
+          <button class="nav-arrow-btn" id="nav-up" style="grid-column:2; grid-row:1;" title="Subir para Bíblia (Norte)">▲</button>
+          <button class="nav-arrow-btn" id="nav-left" style="grid-column:1; grid-row:2;" title="Girar para Slide Anterior">◀</button>
+          <button class="nav-arrow-btn center" id="nav-center" title="Recentralizar">●</button>
+          <button class="nav-arrow-btn" id="nav-right" style="grid-column:3; grid-row:2;" title="Girar para Próximo Slide">▶</button>
+          <button class="nav-arrow-btn" id="nav-down" style="grid-column:2; grid-row:3;" title="Descer para Controles (Sul)">▼</button>
+        </div>
+      </div>
+
+      <!-- Zone Switcher (Bottom-Center) -->
+      <div class="zone-switcher hud-interactive">
+        <button class="zone-btn active" id="btn-zone-equator">
+          <span>🌐</span>
+          <span>Equador: Louvor</span>
+        </button>
+        <button class="zone-btn" id="btn-zone-north">
+          <span>📖</span>
+          <span>Norte: Bíblia</span>
+        </button>
+        <button class="zone-btn" id="btn-zone-south">
+          <span>🎛️</span>
+          <span>Sul: Controles</span>
+        </button>
+      </div>
+
+      <!-- Empty spacer for balance -->
+      <div style="width:160px;"></div>
+    </footer>
+
+  </div>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+  <script src="js/CSS3DRenderer.js"></script>
+
+  <!-- App Logic -->
+  <script src="js/projection-sync.js"></script>
+  <script src="js/orbital-engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

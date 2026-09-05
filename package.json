@@ -1,0 +1,17 @@
+{
+  "name": "slidecontrol-v3",
+  "productName": "SlideControl V3 Orbital",
+  "version": "3.0.0",
+  "description": "SlideControl V3 — Console de Produção e Projeção com Interface Esférica Orbital",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "DEV_MODE=true electron .",
+    "serve": "python3 -m http.server 8769 --directory frontend"
+  },
+  "author": "SlideControl",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}
