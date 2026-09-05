@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- Homepage - Portuguese (Default) -->
+  <url>
+    <loc>https://slidecontrol.com.br/</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/" />
+  </url>
+
+  <!-- Homepage - English -->
+  <url>
+    <loc>https://slidecontrol.com.br/en/</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/" />
+  </url>
+
+  <!-- Homepage - Spanish -->
+  <url>
+    <loc>https://slidecontrol.com.br/es/</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/" />
+  </url>
+
+  <!-- Documentation - Portuguese (NEW) -->
+  <url>
+    <loc>https://slidecontrol.com.br/documentation</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/documentation" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/documentation" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/documentation" />
+  </url>
+
+  <!-- Documentation - English (NEW) -->
+  <url>
+    <loc>https://slidecontrol.com.br/en/documentation</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/documentation" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/documentation" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/documentation" />
+  </url>
+
+  <!-- Documentation - Spanish (NEW) -->
+  <url>
+    <loc>https://slidecontrol.com.br/es/documentation</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/documentation" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/documentation" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/documentation" />
+  </url>
+
+  <!-- Bíblia Sagrada - Portuguese -->
+  <url>
+    <loc>https://slidecontrol.com.br/bible</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/bible" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/bible" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/bible" />
+  </url>
+
+  <!-- Bíblia Sagrada - English -->
+  <url>
+    <loc>https://slidecontrol.com.br/en/bible</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/bible" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/bible" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/bible" />
+  </url>
+
+  <!-- Bíblia Sagrada - Spanish -->
+  <url>
+    <loc>https://slidecontrol.com.br/es/bible</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/bible" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/bible" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/bible" />
+  </url>
+
+  <!-- Login - Portuguese -->
+  <url>
+    <loc>https://slidecontrol.com.br/login</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/login" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/login" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/login" />
+  </url>
+
+  <!-- Login - English -->
+  <url>
+    <loc>https://slidecontrol.com.br/en/login</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/login" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/login" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/login" />
+  </url>
+
+  <!-- Login - Spanish -->
+  <url>
+    <loc>https://slidecontrol.com.br/es/login</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/login" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/login" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/login" />
+  </url>
+
+  <!-- Register - Portuguese -->
+  <url>
+    <loc>https://slidecontrol.com.br/register</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/register" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/register" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/register" />
+  </url>
+
+  <!-- Register - English -->
+  <url>
+    <loc>https://slidecontrol.com.br/en/register</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/register" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/register" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/register" />
+  </url>
+
+  <!-- Register - Spanish -->
+  <url>
+    <loc>https://slidecontrol.com.br/es/register</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://slidecontrol.com.br/register" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://slidecontrol.com.br/en/register" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://slidecontrol.com.br/es/register" />
+  </url>
+
+</urlset>
