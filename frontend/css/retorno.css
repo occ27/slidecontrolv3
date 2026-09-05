@@ -1,0 +1,157 @@
+/* ── SLIDECONTROL V3: RETORNO DE PALCO (STAGE DISPLAY) ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+.stage-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 3vh 4vw;
+  justify-content: space-between;
+}
+
+/* ── Top Bar: Header & Digital Clock ── */
+.stage-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 2vh;
+}
+
+.stage-badge {
+  font-size: clamp(1rem, 1.8vw, 2.2rem);
+  font-weight: 700;
+  color: #00f0ff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(0, 240, 255, 0.1);
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.stage-clock {
+  font-size: clamp(1.8rem, 3.2vw, 4rem);
+  font-weight: 800;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+/* ── Center: Current Slide ── */
+.stage-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2vh 0;
+}
+
+.stage-current-label {
+  font-size: clamp(0.8rem, 1.2vw, 1.4rem);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.5vh;
+}
+
+.stage-current-text {
+  font-size: clamp(2rem, 5vw, 6.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff;
+  max-width: 90vw;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Bottom: Next Slide Preview ── */
+.stage-footer {
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  padding-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vh;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 2vh 3vw;
+}
+
+.stage-next-label {
+  font-size: clamp(0.75rem, 1vw, 1.2rem);
+  font-weight: 700;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-next-text {
+  font-size: clamp(1.1rem, 2.2vw, 2.6rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Blackout Layer ── */
+.stage-blackout {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.stage-blackout.active {
+  opacity: 1;
+}
+
+/* ── Avisos no Retorno ── */
+.stage-alert-toast {
+  position: fixed;
+  top: 5vh;
+  right: 5vw;
+  background: rgba(239, 68, 68, 0.95);
+  border: 2px solid #ffffff;
+  border-radius: 14px;
+  padding: 16px 28px;
+  color: #ffffff;
+  font-size: clamp(1.2rem, 2vw, 2.5rem);
+  font-weight: 800;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  max-width: 80vw;
+}
+
+.stage-alert-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

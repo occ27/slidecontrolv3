@@ -7,16 +7,122 @@ let telaoWindow = null;
 let retornoWindow = null;
 let savedTelaoMonitorId = null;
 let savedRetornoMonitorId = null;
+let telaoWasOpen = false;
+let retornoWasOpen = false;
+let startupWarningShown = false;
 
+// ── PERSISTÊNCIA DE PREFERÊNCIAS (.data/preferences.json) ──
+const prefsDir = path.join(__dirname, '.data');
+const prefsFile = path.join(prefsDir, 'preferences.json');
+
+function loadPrefs() {
+  try {
+    if (fs.existsSync(prefsFile)) {
+      return JSON.parse(fs.readFileSync(prefsFile, 'utf8'));
+    }
+  } catch (e) {
+    console.error('[Prefs] Falha ao carregar preferences.json:', e);
+  }
+  return {};
+}
+
+function savePrefs(prefsToSave) {
+  try {
+    if (!fs.existsSync(prefsDir)) {
+      fs.mkdirSync(prefsDir, { recursive: true });
+    }
+    fs.writeFileSync(prefsFile, JSON.stringify(prefsToSave, null, 4));
+  } catch (e) {
+    console.error('[Prefs] Falha ao salvar preferences.json:', e);
+  }
+}
+
+ipcMain.on('get-pref', (event, key) => {
+  const val = loadPrefs()[key];
+  event.returnValue = val !== undefined ? val : null;
+});
+
+ipcMain.on('set-pref', (event, key, value) => {
+  const currentPrefs = loadPrefs();
+  currentPrefs[key] = value;
+  savePrefs(currentPrefs);
+});
+
+ipcMain.on('remove-pref', (event, key) => {
+  const currentPrefs = loadPrefs();
+  delete currentPrefs[key];
+  savePrefs(currentPrefs);
+});
+
+// ── PERSISTÊNCIA DO ESTADO DAS JANELAS (window-state.json) ──
+function getStateFilePath() {
+  return path.join(app.getPath('userData'), 'window-state.json');
+}
+
+function saveState() {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  try {
+    const isMax = mainWindow.isMaximized();
+    const b = isMax ? mainWindow.getNormalBounds() : mainWindow.getBounds();
+    let state = {};
+    const stateFile = getStateFilePath();
+    try {
+      if (fs.existsSync(stateFile)) {
+        state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+      }
+    } catch (e) {}
+
+    state.bounds = b;
+    state.isMaximized = isMax;
+    state.telaoMonitorId = savedTelaoMonitorId;
+    state.retornoMonitorId = savedRetornoMonitorId;
+    state.telaoIsOpen = !!(telaoWindow && !telaoWindow.isDestroyed());
+    state.retornoIsOpen = !!(retornoWindow && !retornoWindow.isDestroyed());
+
+    fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+  } catch (e) {
+    console.error('[WindowState] Falha ao salvar estado das janelas:', e);
+  }
+}
+
+// ── CRIAÇÃO DA JANELA PRINCIPAL (OPERADOR) ──
 function createMainWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
+  let bounds = {
+    x: Math.round((width - Math.min(1500, width)) / 2),
+    y: Math.round((height - Math.min(920, height)) / 2),
+    width: Math.min(1500, width),
+    height: Math.min(920, height)
+  };
+  let isMaximized = false;
+
+  // Restaurar preferências salvas em window-state.json
+  const stateFile = getStateFilePath();
+  try {
+    if (fs.existsSync(stateFile)) {
+      const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+      if (state.bounds && state.bounds.width && state.bounds.height) {
+        bounds = state.bounds;
+      }
+      if (state.isMaximized !== undefined) isMaximized = state.isMaximized;
+      if (state.telaoMonitorId !== undefined) savedTelaoMonitorId = state.telaoMonitorId;
+      if (state.retornoMonitorId !== undefined) savedRetornoMonitorId = state.retornoMonitorId;
+      if (state.telaoIsOpen !== undefined) telaoWasOpen = state.telaoIsOpen;
+      if (state.retornoIsOpen !== undefined) retornoWasOpen = state.retornoIsOpen;
+    }
+  } catch (e) {
+    console.error('[WindowState] Falha ao ler window-state.json:', e);
+  }
+
   mainWindow = new BrowserWindow({
-    width: Math.min(1600, width),
-    height: Math.min(960, height),
-    minWidth: 1100,
-    minHeight: 700,
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: bounds.height,
+    minWidth: 1024,
+    minHeight: 650,
     title: 'SlideControl V3 — Console Orbital de Produção',
     backgroundColor: '#030508',
     autoHideMenuBar: true,
@@ -27,16 +133,28 @@ function createMainWindow() {
     }
   });
 
+  if (isMaximized) {
+    mainWindow.maximize();
+  }
+
   mainWindow.loadFile(path.join(__dirname, 'frontend', 'index.html'));
+
+  // Salva dimensões sempre que a janela for movida, redimensionada ou maximizada
+  mainWindow.on('resized', saveState);
+  mainWindow.on('moved', saveState);
+  mainWindow.on('maximize', saveState);
+  mainWindow.on('unmaximize', saveState);
+  mainWindow.on('close', saveState);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
-    if (telaoWindow) telaoWindow.close();
-    if (retornoWindow) retornoWindow.close();
+    if (telaoWindow && !telaoWindow.isDestroyed()) telaoWindow.close();
+    if (retornoWindow && !retornoWindow.isDestroyed()) retornoWindow.close();
   });
 }
 
-function openTelao(targetDisplay = null) {
+// ── ABERTURA E CONTROLE DO TELÃO ──
+function openTelao(targetDisplay = null, isStartup = false) {
   if (telaoWindow && !telaoWindow.isDestroyed()) {
     telaoWindow.focus();
     return;
@@ -49,36 +167,37 @@ function openTelao(targetDisplay = null) {
     finalDisplay = displays.find(d => String(d.id) === String(savedTelaoMonitorId));
   }
   if (!finalDisplay) {
-    // Busca monitor secundário (HDMI ou externo), senão usa o primário
     finalDisplay = displays.find(d => d.bounds.x !== 0 || d.bounds.y !== 0) || displays[0];
   }
 
-  // Se houver mais de um monitor e finalDisplay for o mesmo do operador, alerta o operador
-  if (displays.length > 1 && mainWindow && !mainWindow.isDestroyed()) {
+  // Previne cobrir o operador na inicialização
+  if (isStartup && finalDisplay && mainWindow && !mainWindow.isDestroyed()) {
     const opDisplay = screen.getDisplayMatching(mainWindow.getBounds());
     if (opDisplay && String(finalDisplay.id) === String(opDisplay.id)) {
-      // Abre em janela menor para não cobrir totalmente os controles
-      telaoWindow = new BrowserWindow({
-        x: finalDisplay.bounds.x + 80,
-        y: finalDisplay.bounds.y + 80,
-        width: 1280,
-        height: 720,
-        title: 'SlideControl V3 — Telão de Projeção',
-        backgroundColor: '#000000',
-        autoHideMenuBar: true,
-        webPreferences: {
-          preload: path.join(__dirname, 'preload.js'),
-          nodeIntegration: false,
-          contextIsolation: true
-        }
-      });
-      telaoWindow.loadFile(path.join(__dirname, 'frontend', 'display.html'));
-      telaoWindow.on('closed', () => { telaoWindow = null; });
+      console.log('[Telão] Cancelando abertura automática para não cobrir a tela do Operador.');
+      if (!startupWarningShown) {
+        startupWarningShown = true;
+        dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Dica: Gerenciador de Telas',
+          message: 'O sistema detectou que o Telão ou Retorno abriria por cima dos controles do Operador. Para evitar que a tela fique preta e bloqueie o uso, a abertura automática foi cancelada.\n\nComo resolver:\nPara abri-los em outro monitor (ou nesta tela manualmente), utilize o Gerenciador de Telas clicando no botão "🖥️ TELAS" na barra superior.',
+          buttons: ['Entendi']
+        });
+      }
       return;
+    }
+  } else if (!isStartup && finalDisplay && mainWindow && !mainWindow.isDestroyed()) {
+    // Abertura manual na mesma tela do operador: redimensiona e centraliza a janela do operador
+    const opDisplay = screen.getDisplayMatching(mainWindow.getBounds());
+    if (opDisplay && String(finalDisplay.id) === String(opDisplay.id)) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      }
+      mainWindow.setSize(1024, 650);
+      mainWindow.center();
     }
   }
 
-  // Projeção em tela cheia sem bordas no monitor dedicado
   telaoWindow = new BrowserWindow({
     x: finalDisplay.bounds.x,
     y: finalDisplay.bounds.y,
@@ -100,17 +219,22 @@ function openTelao(targetDisplay = null) {
 
   telaoWindow.on('closed', () => {
     telaoWindow = null;
+    saveState();
   });
 
-  // Retorna foco para a janela do operador
+  // Devolve o foco imediatamente para a janela principal para não prender inputs do operador
   setTimeout(() => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.focus();
+      mainWindow.webContents.focus();
     }
-  }, 200);
+  }, 300);
+
+  saveState();
 }
 
-function openRetorno(targetDisplay = null) {
+// ── ABERTURA E CONTROLE DO RETORNO DE PALCO ──
+function openRetorno(targetDisplay = null, isStartup = false) {
   if (retornoWindow && !retornoWindow.isDestroyed()) {
     retornoWindow.focus();
     return;
@@ -123,6 +247,33 @@ function openRetorno(targetDisplay = null) {
     finalDisplay = displays.find(d => String(d.id) === String(savedRetornoMonitorId));
   }
   if (!finalDisplay) return;
+
+  // Previne cobrir o operador na inicialização
+  if (isStartup && finalDisplay && mainWindow && !mainWindow.isDestroyed()) {
+    const opDisplay = screen.getDisplayMatching(mainWindow.getBounds());
+    if (opDisplay && String(finalDisplay.id) === String(opDisplay.id)) {
+      console.log('[Retorno] Cancelando abertura automática para não cobrir a tela do Operador.');
+      if (!startupWarningShown) {
+        startupWarningShown = true;
+        dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Dica: Gerenciador de Telas',
+          message: 'O sistema detectou que o Retorno abriria por cima dos controles do Operador. Para evitar que a tela fique preta e bloqueie o uso, a abertura automática foi cancelada.\n\nUtilize o Gerenciador de Telas para posicionar o Retorno no monitor desejado.',
+          buttons: ['Entendi']
+        });
+      }
+      return;
+    }
+  } else if (!isStartup && finalDisplay && mainWindow && !mainWindow.isDestroyed()) {
+    const opDisplay = screen.getDisplayMatching(mainWindow.getBounds());
+    if (opDisplay && String(finalDisplay.id) === String(opDisplay.id)) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      }
+      mainWindow.setSize(1024, 650);
+      mainWindow.center();
+    }
+  }
 
   retornoWindow = new BrowserWindow({
     x: finalDisplay.bounds.x,
@@ -141,11 +292,21 @@ function openRetorno(targetDisplay = null) {
     }
   });
 
-  retornoWindow.loadFile(path.join(__dirname, 'frontend', 'display.html'));
+  retornoWindow.loadFile(path.join(__dirname, 'frontend', 'retorno.html'));
 
   retornoWindow.on('closed', () => {
     retornoWindow = null;
+    saveState();
   });
+
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.focus();
+      mainWindow.webContents.focus();
+    }
+  }, 300);
+
+  saveState();
 }
 
 // ── IPC HANDLERS PARA GERENCIAMENTO NATIVO DE TELAS ──
@@ -199,7 +360,7 @@ ipcMain.handle('identify-screens', () => {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(3, 5, 8, 0.75);
+            background: rgba(3, 5, 8, 0.78);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             border: 8px solid #00f0ff;
             box-sizing: border-box;
@@ -209,7 +370,7 @@ ipcMain.handle('identify-screens', () => {
             font-size: 22vw;
             font-weight: 800;
             color: #00f0ff;
-            text-shadow: 0 0 50px rgba(0, 240, 255, 0.8);
+            text-shadow: 0 0 50px rgba(0, 240, 255, 0.85);
             line-height: 1;
           }
           .desc {
@@ -237,47 +398,59 @@ ipcMain.handle('identify-screens', () => {
 
 ipcMain.handle('assign-screen', async (event, windowType, monitorId) => {
   const displays = screen.getAllDisplays();
-  const targetDisplay = displays.find(d => String(d.id) === String(monitorId)) || displays[0];
+  const d = displays.find(disp => String(disp.id) === String(monitorId));
+  if (!d) return false;
 
   if (windowType === 'telao') {
     savedTelaoMonitorId = monitorId;
-    if (telaoWindow && !telaoWindow.isDestroyed()) {
-      telaoWindow.setBounds({
-        x: targetDisplay.bounds.x,
-        y: targetDisplay.bounds.y,
-        width: targetDisplay.bounds.width,
-        height: targetDisplay.bounds.height
-      });
-      telaoWindow.setFullScreen(true);
+    saveState();
+
+    if (!telaoWindow || telaoWindow.isDestroyed()) {
+      openTelao(d);
+      return true;
     } else {
-      openTelao(targetDisplay);
+      telaoWindow.close();
+      return new Promise(resolve => {
+        setTimeout(() => {
+          openTelao(d);
+          resolve(true);
+        }, 150);
+      });
     }
-    return true;
   } else if (windowType === 'retorno') {
     savedRetornoMonitorId = monitorId;
-    if (retornoWindow && !retornoWindow.isDestroyed()) {
-      retornoWindow.setBounds({
-        x: targetDisplay.bounds.x,
-        y: targetDisplay.bounds.y,
-        width: targetDisplay.bounds.width,
-        height: targetDisplay.bounds.height
-      });
-      retornoWindow.setFullScreen(true);
+    saveState();
+
+    if (!retornoWindow || retornoWindow.isDestroyed()) {
+      openRetorno(d);
+      return true;
     } else {
-      openRetorno(targetDisplay);
+      retornoWindow.close();
+      return new Promise(resolve => {
+        setTimeout(() => {
+          openRetorno(d);
+          resolve(true);
+        }, 150);
+      });
     }
-    return true;
   }
+  return false;
 });
 
 ipcMain.handle('close-screen', (event, windowType) => {
-  if (windowType === 'telao' && telaoWindow && !telaoWindow.isDestroyed()) {
-    telaoWindow.close();
-    telaoWindow = null;
-  } else if (windowType === 'retorno' && retornoWindow && !retornoWindow.isDestroyed()) {
-    retornoWindow.close();
-    retornoWindow = null;
+  if (windowType === 'telao') {
+    if (telaoWindow && !telaoWindow.isDestroyed()) {
+      telaoWindow.close();
+      telaoWindow = null;
+    }
+  } else if (windowType === 'retorno') {
+    if (retornoWindow && !retornoWindow.isDestroyed()) {
+      retornoWindow.close();
+      retornoWindow = null;
+    }
   }
+  saveState();
+  return true;
 });
 
 ipcMain.handle('get-open-screens', () => {
@@ -290,6 +463,7 @@ ipcMain.handle('get-open-screens', () => {
 ipcMain.on('refocus-main-window', () => {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.focus();
+    mainWindow.webContents.focus();
   }
 });
 
@@ -297,9 +471,19 @@ ipcMain.on('fechar-app', () => {
   app.quit();
 });
 
-// Inicialização da Aplicação Electron
+// ── INICIALIZAÇÃO DA APLICAÇÃO ELECTRON ──
 app.whenReady().then(() => {
   createMainWindow();
+
+  // Checagem pós-inicialização para restaurar telas salvas
+  setTimeout(() => {
+    if (telaoWasOpen) {
+      openTelao(null, true);
+    }
+    if (savedRetornoMonitorId && retornoWasOpen) {
+      openRetorno(null, true);
+    }
+  }, 1000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

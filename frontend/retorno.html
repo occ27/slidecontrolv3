@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retorno de Palco — SlideControl V3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/retorno.css">
+</head>
+<body>
+  <div class="stage-wrapper">
+    <!-- Topbar -->
+    <header class="stage-topbar">
+      <span class="stage-badge" id="stage-header">SLIDECONTROL V3</span>
+      <time class="stage-clock" id="stage-clock">00:00:00</time>
+    </header>
+
+    <!-- Center: Slide Atual -->
+    <main class="stage-center">
+      <span class="stage-current-label">SLIDE ATUAL</span>
+      <h1 class="stage-current-text" id="stage-current-text">Aguardando início...</h1>
+    </main>
+
+    <!-- Footer: Próximo Slide -->
+    <footer class="stage-footer">
+      <span class="stage-next-label">▶ PRÓXIMO:</span>
+      <p class="stage-next-text" id="stage-next-text">—</p>
+    </footer>
+  </div>
+
+  <!-- Camada de Blackout -->
+  <div class="stage-blackout" id="stage-blackout"></div>
+
+  <!-- Aviso de Palco -->
+  <aside class="stage-alert-toast" id="stage-alert">
+    <span id="stage-alert-text">Mensagem de Palco</span>
+  </aside>
+
+  <script>
+    // Relógio em tempo real
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('stage-clock').textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // BroadcastChannel para sincronização instantânea
+    const channel = new BroadcastChannel('slidecontrol_orbital_v3');
+    const headerEl = document.getElementById('stage-header');
+    const currentEl = document.getElementById('stage-current-text');
+    const nextEl = document.getElementById('stage-next-text');
+    const blackoutEl = document.getElementById('stage-blackout');
+    const alertEl = document.getElementById('stage-alert');
+    const alertTextEl = document.getElementById('stage-alert-text');
+
+    let alertTimer = null;
+
+    channel.onmessage = (event) => {
+      const msg = event.data;
+      if (!msg) return;
+
+      switch (msg.action) {
+        case 'PROJECT_SLIDE':
+          blackoutEl.classList.remove('active');
+          if (msg.header) {
+            headerEl.textContent = msg.header;
+          }
+          currentEl.textContent = msg.text || '';
+          if (msg.nextText) {
+            nextEl.textContent = msg.nextText;
+          } else {
+            nextEl.textContent = '—';
+          }
+          break;
+
+        case 'TOGGLE_BLACKOUT':
+          blackoutEl.classList.toggle('active', msg.active);
+          break;
+
+        case 'TOGGLE_CLEAR_TEXT':
+          currentEl.style.opacity = msg.active ? '0' : '1';
+          break;
+
+        case 'SHOW_ALERT':
+          alertTextEl.textContent = msg.text;
+          alertEl.classList.add('visible');
+          if (alertTimer) clearTimeout(alertTimer);
+          alertTimer = setTimeout(() => {
+            alertEl.classList.remove('visible');
+          }, (msg.duration || 10) * 1000);
+          break;
+
+        case 'CLEAR_ALERT':
+          alertEl.classList.remove('visible');
+          break;
+      }
+    };
+
+    channel.postMessage({ action: 'RETORNO_CONNECTED', timestamp: Date.now() });
+  </script>
+</body>
+</html>
