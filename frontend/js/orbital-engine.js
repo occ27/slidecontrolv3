@@ -449,7 +449,7 @@ class SphericalSurfaceEngine {
         activeRowObj.scrollIndex = Math.max(-0.4, Math.min(activeRowObj.cards.length - 0.6, activeRowObj.scrollIndex));
         this.updateCardPositions();
       } else if (this.dragAxis === 'vertical') {
-        const verticalDelta = (totalDeltaY / 280);
+        const verticalDelta = -(totalDeltaY / 280);
         this.verticalOffset = Math.max(-0.2, Math.min(2.2, this.dragStartVertical + verticalDelta));
         this.updateCardPositions();
       }
