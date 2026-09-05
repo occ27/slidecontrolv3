@@ -53,6 +53,9 @@
           <span>🖥️ TELAS</span>
           <kbd style="font-size:0.65rem; padding:1px 4px; border:1px solid rgba(255,255,255,0.2); border-radius:3px; margin-left:4px;">F10</kbd>
         </button>
+        <button id="btn-quit-app" class="hud-btn danger-btn" title="Sair e Encerrar SlideControl" onclick="document.getElementById('modal-quit-confirm')?.classList.remove('hidden')">
+          <span>✕ SAIR</span>
+        </button>
 
       </div>
     </header>
@@ -405,6 +408,31 @@
             </button>
           </div>
         </details>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: ENCERRAR SISTEMA -->
+  <div id="modal-quit-confirm" class="modal-overlay hidden" style="z-index: 10005;">
+    <div class="modal-content" style="max-width: 440px; text-align: center; border-color: rgba(239, 68, 68, 0.4); border-top: 3px solid #ef4444; box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 35px 90px -10px rgba(0,0,0,0.95), 0 0 50px rgba(239,68,68,0.3);">
+      <div style="width: 56px; height: 56px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ef4444;">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 style="margin: 0 0 8px; color: #ffffff; font-size: 1.25rem; font-weight: 700;">Encerrar SlideControl?</h3>
+      <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px; line-height: 1.5; margin: 0 0 24px;">
+        Isso fechará todas as janelas do operador, o telão de projeção, e encerrará todos os serviços internos rodando em segundo plano.
+      </p>
+      
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button id="btn-cancel-quit" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; cursor: pointer; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" onclick="document.getElementById('modal-quit-confirm').classList.add('hidden')">
+          Cancelar
+        </button>
+        <button id="btn-confirm-quit" style="flex: 1; padding: 10px; background: #ef4444; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 700; transition: background 0.2s; box-shadow: 0 4px 16px rgba(239,68,68,0.4);" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'" onclick="if(window.electronAPI && window.electronAPI.fecharApp) { window.electronAPI.fecharApp(); } else { window.close(); }">
+          Sim, Encerrar
+        </button>
       </div>
     </div>
   </div>

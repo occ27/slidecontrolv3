@@ -36,6 +36,15 @@ class GlobeApp {
     this.bindPanelButtons();
     this.bindKeyboardShortcuts();
 
+    const modalQuit = document.getElementById('modal-quit-confirm');
+    if (modalQuit) {
+      modalQuit.addEventListener('click', (e) => {
+        if (e.target === modalQuit) {
+          modalQuit.classList.add('hidden');
+        }
+      });
+    }
+
     const openBtn = document.getElementById('btn-open-display');
     if (openBtn) {
       openBtn.addEventListener('click', () => {
@@ -186,6 +195,19 @@ class GlobeApp {
   bindKeyboardShortcuts() {
     window.addEventListener('keydown', e => {
       if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+      if (e.key === 'Escape') {
+        const modalQuit = document.getElementById('modal-quit-confirm');
+        if (modalQuit && !modalQuit.classList.contains('hidden')) {
+          modalQuit.classList.add('hidden');
+        }
+        const modalScreen = document.getElementById('modal-screen-manager');
+        if (modalScreen && !modalScreen.classList.contains('hidden')) {
+          modalScreen.classList.add('hidden');
+          const screenList = document.getElementById('screen-list');
+          if (screenList) screenList.innerHTML = '';
+        }
+      }
 
       // Navegação vertical entre linhas (Norte <-> Equador <-> Sul)
       if (e.key === 'ArrowUp') {

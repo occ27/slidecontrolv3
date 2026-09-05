@@ -1,8 +1,12 @@
 const { app, BrowserWindow, screen, ipcMain, dialog } = require('electron');
+const { spawn } = require('child_process');
+const http = require('http');
 const path = require('path');
 const fs = require('fs');
 
 let mainWindow = null;
+let pythonProcess = null;
+let isShuttingDown = false;
 let telaoWindow = null;
 let retornoWindow = null;
 let savedTelaoMonitorId = null;
@@ -473,6 +477,7 @@ ipcMain.on('fechar-app', () => {
 
 // ── INICIALIZAÇÃO DA APLICAÇÃO ELECTRON ──
 app.whenReady().then(() => {
+  startPythonBackend();
   createMainWindow();
 
   // Checagem pós-inicialização para restaurar telas salvas
@@ -492,8 +497,66 @@ app.whenReady().then(() => {
   });
 });
 
+function startPythonBackend() {
+  if (process.env.DEV_MODE === 'true') return;
+
+  const backendScript = path.join(__dirname, 'run_backend.py');
+  if (!fs.existsSync(backendScript)) return;
+
+  console.log('[PyBackend] Iniciando backend Python...');
+  if (app.isPackaged) {
+    const backendExe = process.platform === 'win32' ? 'backend.exe' : 'backend';
+    const backendPath = path.join(process.resourcesPath, 'backend', backendExe);
+    if (process.platform !== 'win32' && fs.existsSync(backendPath)) {
+      fs.chmodSync(backendPath, '755');
+    }
+    pythonProcess = spawn(backendPath, [], { cwd: path.join(process.resourcesPath, 'backend') });
+  } else {
+    const isWin = process.platform === 'win32';
+    const pythonPath = isWin 
+      ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
+      : path.join(__dirname, 'venv', 'bin', 'python');
+    const exe = fs.existsSync(pythonPath) ? pythonPath : 'python3';
+    pythonProcess = spawn(exe, ['run_backend.py'], { cwd: __dirname });
+  }
+
+  pythonProcess.stdout?.on('data', (d) => console.log(`[Py]: ${d}`));
+  pythonProcess.stderr?.on('data', (d) => console.error(`[PyErr]: ${d}`));
+}
+
+app.on('before-quit', (e) => {
+  if (!isShuttingDown) {
+    e.preventDefault();
+    isShuttingDown = true;
+
+    // Fecha todas as janelas imediatamente
+    if (telaoWindow && !telaoWindow.isDestroyed()) telaoWindow.close();
+    if (retornoWindow && !retornoWindow.isDestroyed()) retornoWindow.close();
+
+    // Notifica backend Python para encerramento gracioso
+    http.get('http://127.0.0.1:8767/api/system/shutdown').on('error', () => {});
+    http.get('http://127.0.0.1:8769/api/system/shutdown').on('error', () => {});
+
+    if (pythonProcess) {
+      try {
+        pythonProcess.kill('SIGTERM');
+      } catch (err) {}
+    }
+
+    setTimeout(() => {
+      app.quit();
+    }, 200);
+  }
+});
+
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  app.quit();
+});
+
+app.on('quit', () => {
+  if (pythonProcess) {
+    try {
+      pythonProcess.kill('SIGKILL');
+    } catch (err) {}
   }
 });
