@@ -214,7 +214,7 @@ class SphericalSurfaceEngine {
           <button class="ctrl-btn danger" onclick="window.projectionSync.toggleBlackout()">⚫ BLACKOUT [F2]</button>
           <button class="ctrl-btn warning" onclick="window.projectionSync.toggleClearText()">🔲 LIMPAR TEXTO [F3]</button>
           <button class="ctrl-btn" onclick="window.projectionSync.toggleLogo()">🔷 LOGO OFICIAL [F4]</button>
-          <button class="ctrl-btn" onclick="window.projectionSync.openDisplayWindow()">🖥️ ABRIR TELÃO [F11]</button>
+          <button class="ctrl-btn highlight" onclick="document.getElementById('btn-manage-screens')?.click()">🖥️ GERENCIAR TELAS [F10]</button>
         </div>
         <div class="card-footer">
           <span class="card-subtext">Teclas de atalho ativas</span>

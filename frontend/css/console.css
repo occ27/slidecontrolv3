@@ -1063,14 +1063,15 @@ body::before {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 7, 18, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: transparent; /* Fundo transparente: usuario enxerga o que acontece atras */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: auto; /* Permite fechar ao clicar fora */
 }
 
 .modal-overlay.hidden {
@@ -1080,10 +1081,11 @@ body::before {
 }
 
 .modal-content {
-  background: rgba(11, 19, 35, 0.96);
-  border: 1px solid rgba(0, 240, 255, 0.35);
+  background: rgba(11, 19, 35, 0.98);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-top: 3px solid #00f0ff; /* Linha de destaque para separar do fundo */
   border-radius: 16px;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 240, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.25), 0 35px 90px -10px rgba(0, 0, 0, 0.95), 0 0 50px rgba(0, 0, 0, 0.7);
   width: 92vw;
   max-width: 920px;
   max-height: 88vh;
@@ -1092,6 +1094,12 @@ body::before {
   padding: 24px;
   color: #ffffff;
   overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.hidden .modal-content {
+  transform: translateY(20px);
 }
 
 .modal-header {
