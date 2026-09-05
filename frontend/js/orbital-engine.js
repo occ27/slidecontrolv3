@@ -191,6 +191,13 @@ class SphericalSurfaceEngine {
         this.rows[rowIdx].cards.push(cardObj);
       });
     });
+
+    if (window.slideTelemetry) {
+      const activeRowObj = this.rows[this.activeRow];
+      const currentLatDeg = (1 - this.verticalOffset) * 24.5;
+      const currentLonDeg = -(activeRowObj ? activeRowObj.scrollIndex : 0) * 34.0;
+      window.slideTelemetry.updateCoordinates(currentLatDeg, currentLonDeg, this.isDragging);
+    }
   }
 
   createCardDOM(data, rowIdx, cardIdx) {
@@ -325,6 +332,15 @@ class SphericalSurfaceEngine {
 
       const pill = document.getElementById('on-air-pill-text');
       if (pill) pill.textContent = `${data.tag} — ${data.title}`;
+
+      if (window.slideTelemetry) {
+        window.slideTelemetry.updateInspector(data);
+        window.slideTelemetry.appendLog(data.tag, `Projetado no Telão: "${data.title}"`, 'success');
+      }
+    } else {
+      if (window.slideTelemetry) {
+        window.slideTelemetry.updateInspector(data);
+      }
     }
   }
 

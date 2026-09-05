@@ -14,15 +14,25 @@
   <div id="webgl-container"></div>
   <div id="css3d-container"></div>
 
-  <!-- Minimal Floating HUD Bezel -->
-  <div class="globe-hud">
+  <!-- HUD Interface Layer -->
+  <div class="globe-hud" id="globe-hud">
 
-    <!-- Top Bezel -->
+    <!-- Top Telemetry & Control Bezel -->
     <header class="top-bezel hud-interactive">
-      <div class="brand-section">
-        <span class="brand-pulse"></span>
-        <span class="brand-text">SLIDECONTROL_V3</span>
-        <span class="brand-tag">TELA-GLOBO</span>
+      <div class="topbar-left">
+        <div class="brand-section">
+          <span class="brand-pulse"></span>
+          <span class="brand-text">SLIDECONTROL_V3</span>
+          <span class="brand-tag">TELA-GLOBO</span>
+        </div>
+        <div class="sys-metric">
+          <span class="metric-label">STATUS</span>
+          <span class="metric-val status-live">ONLINE • 60 FPS</span>
+        </div>
+        <div class="sys-metric">
+          <span class="metric-label">UPTIME</span>
+          <span class="metric-val" id="uptime-display">00:00:00</span>
+        </div>
       </div>
 
       <!-- Current Projected Slide Pill -->
@@ -31,8 +41,15 @@
         <span class="pill-title" id="on-air-pill-text">ESTROFE 1 — Porque Ele Vive</span>
       </div>
 
-      <div class="top-actions">
-        <button id="btn-open-display" class="hud-btn" title="Abrir Janela do Telão no Monitor Secundário">
+      <div class="topbar-right">
+        <div class="sys-metric">
+          <span class="metric-label">SAÍDA HDMI</span>
+          <span class="metric-val highlight" id="global-throughput">60.0 FPS</span>
+        </div>
+        <button id="btn-toggle-panels" class="hud-btn" title="Exibir / Ocultar Painéis Laterais">
+          <span>◨ PAINÉIS</span>
+        </button>
+        <button id="btn-open-display" class="hud-btn highlight-btn" title="Abrir Janela do Telão no Monitor Secundário">
           <span>🖥️ ABRIR TELÃO</span>
           <kbd style="font-size:0.65rem; padding:1px 4px; border:1px solid rgba(255,255,255,0.2); border-radius:3px; margin-left:4px;">F11</kbd>
         </button>
@@ -42,6 +59,168 @@
     <!-- Center Interaction Guidance -->
     <div class="center-hint" id="center-hint">
       <span>🖱️ Arraste para girar o globo • Clique em qualquer cartão para projetar no telão</span>
+    </div>
+
+    <!-- Middle Body: Left Panel, Center 3D Space, Right Inspector -->
+    <div class="hud-middle-body">
+
+      <!-- Left Floating Telemetry & Navigation Controls -->
+      <aside class="hud-left-panel hud-interactive" id="hud-left-panel">
+        
+        <!-- Card 1: Geo Esférica Telemetry -->
+        <div class="hud-card mini-telemetry">
+          <div class="card-header-bracket">
+            <span class="bracket-tag">GEO_ESFÉRICA</span>
+            <span class="header-status-dot"></span>
+          </div>
+          <div class="coord-grid">
+            <div class="coord-item">
+              <span class="coord-label">LATITUDE (Φ)</span>
+              <span class="coord-value" id="coord-lat">0.0° (Equador)</span>
+            </div>
+            <div class="coord-item">
+              <span class="coord-label">LONGITUDE (θ)</span>
+              <span class="coord-value" id="coord-lon">0.0°</span>
+            </div>
+            <div class="coord-item">
+              <span class="coord-label">STATUS</span>
+              <span class="coord-value" id="coord-velocity">ESTÁVEL</span>
+            </div>
+            <div class="coord-item">
+              <span class="coord-label">ÓRBITA</span>
+              <span class="coord-value highlight" id="coord-orbit">NO AR</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Zonas do Culto / Categorias da Esfera -->
+        <nav class="hud-card nav-categories" aria-label="Zonas do Culto">
+          <div class="card-header-bracket">
+            <span class="bracket-tag">ZONAS DO CULTO</span>
+          </div>
+          <div class="category-buttons">
+            <button class="cat-btn" id="cat-north">
+              <span class="cat-dot bible"></span>
+              <span class="cat-text">Norte: Bíblia Sagrada</span>
+              <span class="cat-badge">6</span>
+            </button>
+            <button class="cat-btn active" id="cat-equator">
+              <span class="cat-dot song"></span>
+              <span class="cat-text">Equador: Louvor & Culto</span>
+              <span class="cat-badge">8</span>
+            </button>
+            <button class="cat-btn" id="cat-south">
+              <span class="cat-dot ctrl"></span>
+              <span class="cat-text">Sul: Cabine & Controles</span>
+              <span class="cat-badge">4</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- Card 3: Camera Presets & Recenter -->
+        <div class="hud-card camera-controls">
+          <div class="card-header-bracket">
+            <span class="bracket-tag">NAVEGAÇÃO RÁPIDA</span>
+          </div>
+          <button id="btn-reset-view" class="hud-btn secondary-btn w-full">
+            <span>🔄 Recentralizar Globo</span>
+          </button>
+          <div class="preset-buttons">
+            <button class="preset-btn" id="preset-north" title="Focar Polo Norte (Bíblia)">Polo Norte</button>
+            <button class="preset-btn active" id="preset-equator" title="Focar Equador (Louvor)">Equador</button>
+            <button class="preset-btn" id="preset-south" title="Focar Polo Sul (Controles)">Polo Sul</button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Center transparent spacer for pure 3D interaction -->
+      <div class="hud-center-spacer" aria-hidden="true"></div>
+
+      <!-- Right Sliding Contextual Glassmorphic Inspector -->
+      <section class="hud-right-inspector hud-interactive" id="process-inspector">
+        <div class="inspector-card glass-panel">
+          
+          <!-- Inspector Header -->
+          <div class="inspector-header">
+            <div class="node-title-group">
+              <span class="node-type-tag" id="node-type-badge">SLIDE_NO_AR</span>
+              <h2 class="node-title" id="node-title-display">ESTROFE 1</h2>
+              <p class="node-subtitle" id="node-desc-display">Deus enviou seu Filho amado para morrer em meu lugar...</p>
+            </div>
+            <button class="close-inspector-btn" id="close-inspector-btn" aria-label="Recolher Painel" title="Recolher Painel">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+
+          <!-- Telemetry Metrics Grid -->
+          <div class="inspector-telemetry-grid">
+            <div class="telemetry-box">
+              <span class="t-label">LATÊNCIA TELÃO</span>
+              <span class="t-val highlight" id="node-latency">&lt; 1 ms</span>
+              <span class="t-trend trend-good">Conectado (Local)</span>
+            </div>
+            <div class="telemetry-box">
+              <span class="t-label">SAÍDA DE VÍDEO</span>
+              <span class="t-val">1080p @ 60Hz</span>
+              <span class="t-trend">HDMI 1 Ativo</span>
+            </div>
+            <div class="telemetry-box">
+              <span class="t-label">MONITOR PALCO</span>
+              <span class="t-val" id="node-stage-mon">SINCRONIZADO</span>
+              <span class="t-trend">Retorno Púlpito</span>
+            </div>
+            <div class="telemetry-box">
+              <span class="t-label">TRANSMISSÃO</span>
+              <span class="t-val highlight" id="node-success">AO VIVO</span>
+              <span class="t-trend">Sem Quedas</span>
+            </div>
+          </div>
+
+          <!-- Live Waveform Signal Canvas -->
+          <div class="waveform-container">
+            <div class="waveform-header">
+              <span class="section-tag">SINAL DO TELÃO EM TEMPO REAL</span>
+              <span class="live-signal-badge"><span class="signal-dot"></span> LIVE 60Hz</span>
+            </div>
+            <canvas id="waveform-canvas" width="320" height="70"></canvas>
+          </div>
+
+          <!-- Interactive Process Actions -->
+          <div class="actions-container">
+            <span class="section-tag">COMANDOS RÁPIDOS</span>
+            <div class="actions-grid">
+              <button class="action-btn primary" id="btn-quick-project">
+                <span>🔴 Projetar Atual</span>
+              </button>
+              <button class="action-btn warning" id="btn-quick-blackout">
+                <span>⏹️ Blackout (F2)</span>
+              </button>
+              <button class="action-btn" id="btn-quick-clear">
+                <span>🔤 Limpar Texto (F3)</span>
+              </button>
+              <button class="action-btn" id="btn-quick-logo">
+                <span>🖼️ Logo Igreja (F4)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Real-time Console Log Stream -->
+          <div class="log-stream-container">
+            <div class="log-header">
+              <span class="section-tag">STREAM DE TRANSMISSÃO</span>
+              <span class="log-cursor-indicator"></span>
+            </div>
+            <div class="log-terminal" id="node-log-terminal">
+              <div class="log-line info">[14:50:00] SlideControl V3 inicializado.</div>
+              <div class="log-line success">[14:50:01] Tela-Globo esférica sincronizada.</div>
+              <div class="log-line info">[14:50:02] Canal de projeção BroadcastChannel online.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
     </div>
 
     <!-- Bottom Controls & Zone Bar -->
@@ -88,6 +267,7 @@
 
   <!-- App Logic -->
   <script src="js/projection-sync.js"></script>
+  <script src="js/telemetry.js"></script>
   <script src="js/orbital-engine.js"></script>
   <script src="js/app.js"></script>
 </body>
