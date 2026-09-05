@@ -130,6 +130,9 @@ function createMainWindow() {
     title: 'SlideControl V3 — Console Orbital de Produção',
     backgroundColor: '#030508',
     autoHideMenuBar: true,
+    closable: false,
+    minimizable: true,
+    maximizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -148,7 +151,15 @@ function createMainWindow() {
   mainWindow.on('moved', saveState);
   mainWindow.on('maximize', saveState);
   mainWindow.on('unmaximize', saveState);
-  mainWindow.on('close', saveState);
+  mainWindow.on('close', (e) => {
+    saveState();
+    if (!isShuttingDown) {
+      e.preventDefault();
+      if (!mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('show-quit-modal');
+      }
+    }
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -472,6 +483,10 @@ ipcMain.on('refocus-main-window', () => {
 });
 
 ipcMain.on('fechar-app', () => {
+  isShuttingDown = true;
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.setClosable(true);
+  }
   app.quit();
 });
 
@@ -528,6 +543,10 @@ app.on('before-quit', (e) => {
   if (!isShuttingDown) {
     e.preventDefault();
     isShuttingDown = true;
+
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.setClosable(true);
+    }
 
     // Fecha todas as janelas imediatamente
     if (telaoWindow && !telaoWindow.isDestroyed()) telaoWindow.close();

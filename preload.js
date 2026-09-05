@@ -12,5 +12,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setPref: (key, val) => ipcRenderer.send('set-pref', key, val),
   removePref: (key) => ipcRenderer.send('remove-pref', key),
   refocusWindow: () => ipcRenderer.send('refocus-main-window'),
-  fecharApp: () => ipcRenderer.send('fechar-app')
+  fecharApp: () => ipcRenderer.send('fechar-app'),
+  onShowQuitModal: (callback) => ipcRenderer.on('show-quit-modal', callback)
 });

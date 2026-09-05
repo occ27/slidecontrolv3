@@ -45,6 +45,12 @@ class GlobeApp {
       });
     }
 
+    if (window.electronAPI && window.electronAPI.onShowQuitModal) {
+      window.electronAPI.onShowQuitModal(() => {
+        if (modalQuit) modalQuit.classList.remove('hidden');
+      });
+    }
+
     const openBtn = document.getElementById('btn-open-display');
     if (openBtn) {
       openBtn.addEventListener('click', () => {
