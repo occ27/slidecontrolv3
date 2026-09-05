@@ -61,6 +61,12 @@
 
     let alertTimer = null;
 
+    function applyBgFit(fitMode) {
+      const bg = document.querySelector('.stage-wrapper');
+      if (!bg) return;
+      // Ajuste de preenchimento caso utilize imagem/video de fundo no retorno
+    }
+
     channel.onmessage = (event) => {
       const msg = event.data;
       if (!msg) return;
@@ -98,6 +104,12 @@
 
         case 'CLEAR_ALERT':
           alertEl.classList.remove('visible');
+          break;
+
+        case 'SET_BG_FIT':
+          if (!msg.target || msg.target === 'retorno') {
+            applyBgFit(msg.value);
+          }
           break;
       }
     };

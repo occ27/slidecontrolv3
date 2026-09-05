@@ -286,6 +286,57 @@
               <input type="checkbox" id="telao-cfg-footer" checked> Mostrar Identificação e Estrofe
             </label>
           </div>
+
+          <!-- Ajuste de Mídia do Telão -->
+          <p style="margin: 10px 0 8px 0; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
+            Preenchimento da Mídia de Fundo (Telão)
+          </p>
+          <div class="bg-fit-picker" id="telao-bg-fit-picker" role="group" aria-label="Modo de preenchimento do fundo do Telão">
+            <button class="bg-fit-option" data-value="cover" data-target="telao" title="Preenche a tela inteira, cortando o excesso">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:130%;height:130%;top:-15%;left:-15%;"></div>
+                </div>
+                <div class="bg-fit-preview-corners">
+                  <span class="bg-fit-cut-indicator">✂</span>
+                </div>
+              </div>
+              <span class="bg-fit-label">Preencher</span>
+              <span class="bg-fit-desc">Sem faixas pretas<br>Pode cortar bordas</span>
+            </button>
+            <button class="bg-fit-option active" data-value="width" data-target="telao" title="Ajusta pela largura, proporção preservada">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:100%;height:70%;top:15%;left:0;"></div>
+                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;top:0;left:0;"></div>
+                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;bottom:0;left:0;"></div>
+                </div>
+              </div>
+              <span class="bg-fit-label">Largura</span>
+              <span class="bg-fit-desc">Largura 100%<br>Faixa vertical</span>
+            </button>
+            <button class="bg-fit-option" data-value="contain" data-target="telao" title="Mostra a mídia completa sem cortar, com faixas pretas">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:70%;height:100%;top:0;left:15%;"></div>
+                  <div class="bg-fit-preview-bars" style="width:15%;left:0;height:100%;top:0;"></div>
+                  <div class="bg-fit-preview-bars" style="width:15%;right:0;height:100%;top:0;"></div>
+                </div>
+              </div>
+              <span class="bg-fit-label">Contido</span>
+              <span class="bg-fit-desc">Sem cortes<br>Faixas nas bordas</span>
+            </button>
+            <button class="bg-fit-option" data-value="stretch" data-target="telao" title="Estica para preencher completamente (pode distorcer)">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:100%;height:100%;top:0;left:0;"></div>
+                  <div class="bg-fit-preview-distort">⤢</div>
+                </div>
+              </div>
+              <span class="bg-fit-label">Esticar</span>
+              <span class="bg-fit-desc">Preenche tudo<br>Pode distorcer</span>
+            </button>
+          </div>
         </details>
 
         <!-- Customizações do Retorno de Palco -->
@@ -301,6 +352,57 @@
             <label>
               <input type="checkbox" id="retorno-cfg-next" checked> Mostrar Prévia do Próximo Slide
             </label>
+          </div>
+
+          <!-- Ajuste de Mídia do Retorno -->
+          <p style="margin: 10px 0 8px 0; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
+            Preenchimento da Mídia de Fundo (Retorno)
+          </p>
+          <div class="bg-fit-picker" id="retorno-bg-fit-picker" role="group" aria-label="Modo de preenchimento do fundo do Retorno">
+            <button class="bg-fit-option" data-value="cover" data-target="retorno" title="Preenche a tela inteira, cortando o excesso">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:130%;height:130%;top:-15%;left:-15%;"></div>
+                </div>
+                <div class="bg-fit-preview-corners">
+                  <span class="bg-fit-cut-indicator">✂</span>
+                </div>
+              </div>
+              <span class="bg-fit-label">Preencher</span>
+              <span class="bg-fit-desc">Sem faixas pretas<br>Pode cortar bordas</span>
+            </button>
+            <button class="bg-fit-option active" data-value="width" data-target="retorno" title="Ajusta pela largura, proporção preservada">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:100%;height:70%;top:15%;left:0;"></div>
+                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;top:0;left:0;"></div>
+                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;bottom:0;left:0;"></div>
+                </div>
+              </div>
+              <span class="bg-fit-label">Largura</span>
+              <span class="bg-fit-desc">Largura 100%<br>Faixa vertical</span>
+            </button>
+            <button class="bg-fit-option" data-value="contain" data-target="retorno" title="Mostra a mídia completa sem cortar, com faixas pretas">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:70%;height:100%;top:0;left:15%;"></div>
+                  <div class="bg-fit-preview-bars" style="width:15%;left:0;height:100%;top:0;"></div>
+                  <div class="bg-fit-preview-bars" style="width:15%;right:0;height:100%;top:0;"></div>
+                </div>
+              </div>
+              <span class="bg-fit-label">Contido</span>
+              <span class="bg-fit-desc">Sem cortes<br>Faixas nas bordas</span>
+            </button>
+            <button class="bg-fit-option" data-value="stretch" data-target="retorno" title="Estica para preencher completamente (pode distorcer)">
+              <div class="bg-fit-preview">
+                <div class="bg-fit-preview-screen">
+                  <div class="bg-fit-preview-media" style="width:100%;height:100%;top:0;left:0;"></div>
+                  <div class="bg-fit-preview-distort">⤢</div>
+                </div>
+              </div>
+              <span class="bg-fit-label">Esticar</span>
+              <span class="bg-fit-desc">Preenche tudo<br>Pode distorcer</span>
+            </button>
           </div>
         </details>
       </div>

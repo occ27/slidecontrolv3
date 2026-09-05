@@ -1185,3 +1185,132 @@ body::before {
   height: 16px;
   cursor: pointer;
 }
+
+/* ── SELETOR DE PREENCHIMENTO DE MÍDIA (BG-FIT-PICKER) ── */
+.bg-fit-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.bg-fit-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 8px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.bg-fit-option:hover {
+  background: rgba(0, 240, 255, 0.05);
+  border-color: rgba(0, 240, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.bg-fit-option.active {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: #00f0ff;
+  box-shadow: 0 0 0 1px #00f0ff, 0 4px 18px rgba(0, 240, 255, 0.25);
+}
+
+.bg-fit-option.active::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
+  color: #00f0ff;
+  font-weight: 800;
+}
+
+.bg-fit-preview {
+  position: relative;
+  width: 68px;
+  height: 42px;
+}
+
+.bg-fit-preview-screen {
+  width: 100%;
+  height: 100%;
+  background: #090e18;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.bg-fit-preview-media {
+  position: absolute;
+  background: linear-gradient(135deg, #00f0ff 0%, #3b82f6 50%, #9333ea 100%);
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
+.bg-fit-preview-bars {
+  position: absolute;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 4px,
+    rgba(255, 255, 255, 0.06) 4px,
+    rgba(255, 255, 255, 0.06) 8px
+  );
+  background-color: #050810;
+}
+
+.bg-fit-preview-corners {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bg-fit-cut-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 13px;
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+  pointer-events: none;
+}
+
+.bg-fit-preview-distort {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 11px;
+  color: #fbbf24;
+  pointer-events: none;
+}
+
+.bg-fit-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.02em;
+}
+
+.bg-fit-option.active .bg-fit-label {
+  color: #00f0ff;
+}
+
+.bg-fit-desc {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  line-height: 1.25;
+}

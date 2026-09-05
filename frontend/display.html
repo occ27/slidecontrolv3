@@ -55,6 +55,22 @@
 
     let alertTimeout = null;
 
+    function applyBgFit(fitMode) {
+      if (!bgImage) return;
+      if (fitMode === 'cover') {
+        bgImage.style.backgroundSize = 'cover';
+      } else if (fitMode === 'contain') {
+        bgImage.style.backgroundSize = 'contain';
+      } else if (fitMode === 'stretch') {
+        bgImage.style.backgroundSize = '100% 100%';
+      } else if (fitMode === 'width') {
+        bgImage.style.backgroundSize = '100% auto';
+      }
+    }
+
+    const initialFit = (window.electronAPI && window.electronAPI.getPref('slideState_bgFit_telao')) || 'width';
+    applyBgFit(initialFit);
+
     channel.onmessage = (event) => {
       const msg = event.data;
       if (!msg) return;
@@ -114,6 +130,12 @@
 
         case 'CLEAR_ALERT':
           alertOverlay.classList.remove('visible');
+          break;
+
+        case 'SET_BG_FIT':
+          if (!msg.target || msg.target === 'telao') {
+            applyBgFit(msg.value);
+          }
           break;
       }
     };

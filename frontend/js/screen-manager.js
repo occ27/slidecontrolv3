@@ -325,5 +325,40 @@ document.addEventListener('DOMContentLoaded', () => {
         };
       }
     });
+
+    setupBgFitPickers();
+  }
+
+  function setupBgFitPickers() {
+    setupBgFitPicker('telao-bg-fit-picker', 'telao');
+    setupBgFitPicker('retorno-bg-fit-picker', 'retorno');
+  }
+
+  function setupBgFitPicker(pickerId, target) {
+    const picker = document.getElementById(pickerId);
+    if (!picker) return;
+
+    const btns = picker.querySelectorAll('.bg-fit-option');
+    const storageKey = 'slideState_bgFit_' + target;
+
+    const applyVisual = (value) => {
+      btns.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+    };
+
+    const savedFit = (window.electronAPI && window.electronAPI.getPref(storageKey)) || 'width';
+    applyVisual(savedFit);
+
+    btns.forEach(btn => {
+      btn.onclick = () => {
+        const value = btn.dataset.value;
+        applyVisual(value);
+        if (window.electronAPI) {
+          window.electronAPI.setPref(storageKey, value);
+        }
+        // Broadcast instantâneo para os displays
+        const channel = new BroadcastChannel('slidecontrol_orbital_v3');
+        channel.postMessage({ action: 'SET_BG_FIT', target, value });
+      };
+    });
   }
 });
