@@ -106,6 +106,21 @@
           alertEl.classList.remove('visible');
           break;
 
+        case 'SET_BACKGROUND':
+          if (msg.target === 'retorno') {
+            const wrapper = document.querySelector('.stage-wrapper');
+            if (wrapper) {
+              if (msg.kind === 'color') {
+                wrapper.style.backgroundColor = msg.url || '#000000';
+                wrapper.style.backgroundImage = 'none';
+              } else if (msg.kind === 'image') {
+                wrapper.style.backgroundImage = `url("${msg.url}")`;
+                wrapper.style.backgroundSize = 'cover';
+                wrapper.style.backgroundPosition = 'center';
+              }
+            }
+          }
+          break;
         case 'SET_BG_FIT':
           if (!msg.target || msg.target === 'retorno') {
             applyBgFit(msg.value);

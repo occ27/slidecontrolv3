@@ -519,20 +519,26 @@ function startPythonBackend() {
   if (!fs.existsSync(backendScript)) return;
 
   console.log('[PyBackend] Iniciando backend Python...');
+  const userDataPath = app.getPath('userData');
+  const spawnEnv = {
+    ...process.env,
+    SLIDECONTROL_USER_DATA: userDataPath
+  };
+
   if (app.isPackaged) {
     const backendExe = process.platform === 'win32' ? 'backend.exe' : 'backend';
     const backendPath = path.join(process.resourcesPath, 'backend', backendExe);
     if (process.platform !== 'win32' && fs.existsSync(backendPath)) {
       fs.chmodSync(backendPath, '755');
     }
-    pythonProcess = spawn(backendPath, [], { cwd: path.join(process.resourcesPath, 'backend') });
+    pythonProcess = spawn(backendPath, [], { cwd: path.join(process.resourcesPath, 'backend'), env: spawnEnv });
   } else {
     const isWin = process.platform === 'win32';
     const pythonPath = isWin 
       ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
       : path.join(__dirname, 'venv', 'bin', 'python');
     const exe = fs.existsSync(pythonPath) ? pythonPath : 'python3';
-    pythonProcess = spawn(exe, ['run_backend.py'], { cwd: __dirname });
+    pythonProcess = spawn(exe, ['run_backend.py'], { cwd: __dirname, env: spawnEnv });
   }
 
   pythonProcess.stdout?.on('data', (d) => console.log(`[Py]: ${d}`));

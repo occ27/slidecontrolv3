@@ -52,7 +52,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 venv/
+venv
 .venv/
+venv
 env/
 ENV/
 
@@ -66,3 +68,5 @@ frontend/uploads/
 frontend/presets/
 transcriptions/
 window-state.json
+
+auth.json
