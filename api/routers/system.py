@@ -202,27 +202,3 @@ async def reset_registration():
     save_prefs(prefs)
     return {"status": "ok", "message": "Registro resetado com sucesso."}
 
-@router.get("/api/system/shutdown")
-async def system_shutdown():
-    """Encerramento gracioso acionado pelo Electron ao fechar a aplicação."""
-    print("[Shutdown] Recebido pedido de encerramento do Electron.")
-    def _kill():
-        import time
-        time.sleep(0.15)
-        try:
-            parent_pid = os.getppid()
-            if parent_pid and parent_pid > 1:
-                os.kill(parent_pid, signal.SIGTERM)
-        except Exception:
-            pass
-        try:
-            os.kill(os.getpid(), signal.SIGTERM)
-        except Exception:
-            pass
-        try:
-            os._exit(0)
-        except Exception:
-            pass
-    import threading
-    threading.Thread(target=_kill, daemon=True).start()
-    return {"status": "shutting_down"}

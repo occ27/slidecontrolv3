@@ -191,6 +191,7 @@ function createMainWindow() {
     mainWindow = null;
     if (telaoWindow && !telaoWindow.isDestroyed()) telaoWindow.close();
     if (retornoWindow && !retornoWindow.isDestroyed()) retornoWindow.close();
+    app.quit();
   });
 }
 
@@ -509,7 +510,6 @@ ipcMain.on('refocus-main-window', () => {
 });
 
 ipcMain.on('fechar-app', () => {
-  isShuttingDown = true;
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.setClosable(true);
   }
@@ -599,8 +599,7 @@ app.on('before-quit', (e) => {
     if (retornoWindow && !retornoWindow.isDestroyed()) retornoWindow.close();
 
     // Notifica backend Python para encerramento gracioso
-    http.get('http://127.0.0.1:8767/api/system/shutdown').on('error', () => {});
-    http.get('http://127.0.0.1:8769/api/system/shutdown').on('error', () => {});
+    http.get(`http://127.0.0.1:${PORT}/api/system/shutdown`).on('error', () => {});
 
     if (pythonProcess) {
       try {
