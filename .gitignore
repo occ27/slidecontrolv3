@@ -1,0 +1,68 @@
+# ==============================================================================
+# SLIDECONTROL V3 — GITIGNORE
+# Arquivos temporários, dependências, builds e caches descartáveis
+# ==============================================================================
+
+# Dependências Node.js
+node_modules/
+package-lock.json
+
+# Logs & Relatórios de Debug
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Arquivos de Sistema Operacional (macOS, Windows, Linux)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editores & IDEs (VS Code, JetBrains, Vim)
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Builds, Empacotamento Electron e Instaladores
+dist/
+build/
+build_secure/
+out/
+release/
+*.app
+*.dmg
+*.exe
+*.zip
+*.tar.gz
+*.pkg
+installer.iss
+
+# Python & Ambientes Virtuais (Scripts e Serviços)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+ENV/
+
+# Bancos de Dados Locais, Backups e Dados Transitórios
+.data/
+*.db
+*.db.bak
+*.db-shm
+*.db-wal
+frontend/uploads/
+frontend/presets/
+transcriptions/
+window-state.json

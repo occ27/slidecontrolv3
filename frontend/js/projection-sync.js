@@ -166,7 +166,11 @@ class ProjectionSyncService {
     }
   }
 
-  openDisplayWindow() {
+  async openDisplayWindow(monitorId = null) {
+    if (window.electronAPI && typeof window.electronAPI.assignScreen === 'function') {
+      await window.electronAPI.assignScreen('telao', monitorId);
+      return;
+    }
     const displayUrl = 'display.html';
     const features = 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no';
     window.open(displayUrl, 'SlideControlDisplayWindow', features);

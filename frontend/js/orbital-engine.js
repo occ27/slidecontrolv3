@@ -253,17 +253,30 @@ class SphericalSurfaceEngine {
       el.innerHTML = `
         <div class="card-top-row">
           <span class="card-tag">SAÍDAS DE VÍDEO</span>
-          <span class="card-status-badge" style="color:#10b981;">1080p @ 60Hz</span>
+          <span class="card-status-badge" style="color:#10b981;">NATIVO ELECTRON</span>
         </div>
-        <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.4;">
-          • Telão Projetor: HDMI 1 (Conectado)<br>
-          • Retorno Púlpito: HDMI 2 (Conectado)<br>
-          • Latência de Projeção: 0ms (Local)
+        <div id="hardware-screens-list" style="font-size:0.82rem; color:#cbd5e1; line-height:1.45; min-height:48px;">
+          • Detectando telas do sistema...
         </div>
-        <div class="card-footer">
-          <button class="btn-project-card" style="width:100%;" onclick="window.projectionSync.openDisplayWindow()">🖥️ Abrir Janela do Telão</button>
+        <div class="card-footer" style="display:flex; gap:6px;">
+          <button class="ctrl-btn" style="flex:1;" onclick="if(window.electronAPI) window.electronAPI.identifyScreens()">🔍 Identificar Telas</button>
+          <button class="btn-project-card" style="flex:1;" onclick="window.projectionSync.openDisplayWindow()">🖥️ Abrir Telão</button>
         </div>
       `;
+
+      if (window.electronAPI && typeof window.electronAPI.getScreens === 'function') {
+        window.electronAPI.getScreens().then(screens => {
+          const list = el.querySelector('#hardware-screens-list');
+          if (list) {
+            list.innerHTML = screens.map(s => `• Monitor ${s.index}: ${s.bounds.width}x${s.bounds.height} ${s.isOperador ? '<span style="color:#00f0ff;">(Operador)</span>' : '<span style="color:#10b981;">(Telão HDMI)</span>'}`).join('<br>');
+          }
+        });
+      } else {
+        const list = el.querySelector('#hardware-screens-list');
+        if (list) {
+          list.innerHTML = `• Modo Web / Electron Híbrido<br>• Saída Telão via BroadcastChannel<br>• Latência: &lt; 1ms (Local)`;
+        }
+      }
     } else {
       el.innerHTML = `
         <div class="card-top-row">
