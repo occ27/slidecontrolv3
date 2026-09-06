@@ -77,6 +77,8 @@ class GlobeApp {
         window.projectionSync.openDisplayWindow();
       });
     }
+
+    this.updateTrackToolsVisibility(this.engine ? this.engine.activeRow : 1);
   }
 
   bindNavigationButtons() {
@@ -320,6 +322,41 @@ class GlobeApp {
     if (window.slideTelemetry) {
       const rowNames = ['Bíblia Sagrada (Norte)', 'Louvor & Slides (Equador)', 'Cabine & Controles (Sul)'];
       window.slideTelemetry.appendLog('ÓRBITA', `Transição de zona para: ${rowNames[rowIndex]}`, 'info');
+    }
+
+    // Atualiza visibilidade dos botões de Mídias e Estilos de acordo com a trilha
+    this.updateTrackToolsVisibility(rowIndex);
+  }
+
+  updateTrackToolsVisibility(rowIndex) {
+    const btnBg = document.getElementById('btn-open-bg-modal');
+    const btnTs = document.getElementById('btn-open-text-style-modal');
+    const isSlideTrack = (rowIndex === 0 || rowIndex === 1);
+
+    if (btnBg) {
+      btnBg.style.display = isSlideTrack ? '' : 'none';
+    }
+    if (btnTs) {
+      btnTs.style.display = isSlideTrack ? '' : 'none';
+    }
+
+    if (!isSlideTrack) {
+      // Se estiver no Polo Sul (Cabine), fecha os modais caso estejam abertos
+      const modalBg = document.getElementById('bg-picker-modal');
+      const modalTs = document.getElementById('text-style-modal');
+      if (modalBg) modalBg.classList.add('hidden');
+      if (modalTs) modalTs.classList.add('hidden');
+    } else {
+      // Se algum modal estiver aberto ao alternar entre Bíblia (0) e Louvor (1), atualiza seu contexto e UI
+      const modalBg = document.getElementById('bg-picker-modal');
+      if (modalBg && !modalBg.classList.contains('hidden') && window.mediaManager) {
+        window.mediaManager.refreshUI();
+      }
+      const modalTs = document.getElementById('text-style-modal');
+      if (modalTs && !modalTs.classList.contains('hidden') && window.textStyleManager) {
+        window.textStyleManager.loadPreferences();
+        window.textStyleManager.refreshTsModalUI();
+      }
     }
   }
 
@@ -744,14 +781,18 @@ class GlobeApp {
         item.addEventListener('click', async () => {
           await window.bibleService.loadPassageToOrbital(res.book.abbrev, res.chapter.number, res.verse.number);
           closeModal();
+          const verUpper = (window.bibleService ? window.bibleService.selectedVersion : 'acf').toUpperCase();
+          const fullRef = `${res.book.name} ${res.chapter.number}:${res.verse.number} — ${verUpper}`;
           window.projectionSync.projectSlide({
-            header: refStr.toUpperCase(),
+            header: '',
             text: res.verse.text,
-            subtitle: `${res.book.name} (${window.bibleService.selectedVersion.toUpperCase()})`,
+            subtitle: fullRef,
+            reference: fullRef,
+            caption: fullRef,
             theme: 'bible'
           });
           const pill = document.getElementById('on-air-pill-text');
-          if (pill) pill.textContent = refStr;
+          if (pill) pill.textContent = fullRef;
         });
         versesList.appendChild(item);
       });
@@ -900,11 +941,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.updateCardAspectRatio = async function() {
   if (window.electronAPI && typeof window.electronAPI.getScreens === 'function') {
-    const telaoMonitorId = window.electronAPI.getPref('slideState_monitor_telao');
-    if (!telaoMonitorId) return;
     const screens = await window.electronAPI.getScreens();
-    const telaoScreen = screens.find(s => String(s.id) === String(telaoMonitorId));
-    if (telaoScreen) {
+    let telaoScreen = screens.find(s => s.isTelao);
+    if (!telaoScreen) {
+      const telaoMonitorId = window.electronAPI.getPref('slideState_monitor_telao');
+      if (telaoMonitorId) {
+        telaoScreen = screens.find(s => String(s.id) === String(telaoMonitorId));
+      }
+    }
+    if (telaoScreen && telaoScreen.bounds) {
       const ratio = telaoScreen.bounds.width / telaoScreen.bounds.height;
       document.documentElement.style.setProperty('--card-aspect-ratio', ratio);
     }

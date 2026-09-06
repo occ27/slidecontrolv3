@@ -18,7 +18,7 @@ class ProjectionSyncService {
       isLogo: false,
       logoUrl: initialLogoUrl,
       currentSlide: {
-        header: 'SLIDECONTROL V3',
+        header: 'SLIDECONTROL LUMINA',
         text: 'Bem-vindo ao Culto',
         subtitle: 'Sistema de Projeção Orbital',
         theme: 'general'
@@ -131,6 +131,39 @@ class ProjectionSyncService {
     }
   }
 
+  getTextStyleForTheme(theme) {
+    const isBible = theme === 'bible';
+    if (isBible) {
+      return {
+        textStyle: this.getPref('slideState_bible_textStyle') || 'ts-holy-default',
+        fontFamily: this.getPref('slideState_bible_fontFamily') || '',
+        fontWeight: this.getPref('slideState_bible_fontWeight') || '',
+        fontSize: parseInt(this.getPref('slideState_bible_fontSize')) || 52,
+        captionFontSize: this.getPref('slideState_bible_captionFontSize') || 'clamp(13px, 1.4vw, 22px)',
+        linesLimit: '0',
+        textStyleRetorno: this.getPref('slideState_bible_textStyleRetorno') || 'ts-holy-default',
+        fontFamilyRetorno: this.getPref('slideState_bible_fontFamilyRetorno') || '',
+        fontWeightRetorno: this.getPref('slideState_bible_fontWeightRetorno') || '',
+        fontSizeRetorno: parseInt(this.getPref('slideState_bible_fontSizeRetorno')) || 52,
+        captionFontSizeRetorno: this.getPref('slideState_bible_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)'
+      };
+    } else {
+      return {
+        textStyle: this.getPref('slideState_songs_textStyle') || this.getPref('slideState_textStyle') || 'ts-holy-default',
+        fontFamily: this.getPref('slideState_songs_fontFamily') || this.getPref('slideState_fontFamily') || '',
+        fontWeight: this.getPref('slideState_songs_fontWeight') || this.getPref('slideState_fontWeight') || '',
+        fontSize: parseInt(this.getPref('slideState_songs_fontSize') || this.getPref('slideState_fontSize')) || 52,
+        captionFontSize: this.getPref('slideState_songs_captionFontSize') || this.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)',
+        linesLimit: this.getPref('slideState_songs_linesLimit') || this.getPref('slideState_linesLimit') || '0',
+        textStyleRetorno: this.getPref('slideState_songs_textStyleRetorno') || this.getPref('slideState_textStyleRetorno') || 'ts-holy-default',
+        fontFamilyRetorno: this.getPref('slideState_songs_fontFamilyRetorno') || this.getPref('slideState_fontFamilyRetorno') || '',
+        fontWeightRetorno: this.getPref('slideState_songs_fontWeightRetorno') || this.getPref('slideState_fontWeightRetorno') || '',
+        fontSizeRetorno: parseInt(this.getPref('slideState_songs_fontSizeRetorno') || this.getPref('slideState_fontSizeRetorno')) || 52,
+        captionFontSizeRetorno: this.getPref('slideState_songs_captionFontSizeRetorno') || this.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)'
+      };
+    }
+  }
+
   updateMasterButtonsUI() {
     const bBlackout = document.getElementById('btn-blackout');
     const qBlackout = document.getElementById('btn-quick-blackout');
@@ -153,45 +186,42 @@ class ProjectionSyncService {
 
     const theme = slideData.theme || 'general';
     const bg = this.getBackgroundForTheme(theme);
-
-    const textStyle = this.getPref('slideState_textStyle') || 'ts-holy-default';
-    const fontFamily = this.getPref('slideState_fontFamily') || '';
-    const fontWeight = this.getPref('slideState_fontWeight') || '';
-    const fontSize = parseInt(this.getPref('slideState_fontSize')) || 52;
-    const captionFontSize = this.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)';
-    const linesLimit = this.getPref('slideState_linesLimit') || '0';
-
-    const textStyleRetorno = this.getPref('slideState_textStyleRetorno') || 'ts-holy-default';
-    const fontFamilyRetorno = this.getPref('slideState_fontFamilyRetorno') || '';
-    const fontWeightRetorno = this.getPref('slideState_fontWeightRetorno') || '';
-    const fontSizeRetorno = parseInt(this.getPref('slideState_fontSizeRetorno')) || 52;
-    const captionFontSizeRetorno = this.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)';
+    const ts = this.getTextStyleForTheme(theme);
 
     this.channel.postMessage({
       action: 'PROJECT_SLIDE',
       header: slideData.header,
       text: slideData.text,
       subtitle: slideData.subtitle,
+      caption: slideData.caption || slideData.reference || slideData.subtitle,
+      reference: slideData.reference || slideData.caption || slideData.subtitle,
       theme: theme,
       bgKind: bg.telao.kind,
       bgUrl: bg.telao.url,
+      bgFitTelao: this.getPref('slideState_bgFit_telao') || 'cover',
+      cfgTelaoText: this.getPref('slideState_cfg_telao_text', true) !== false && this.getPref('slideState_cfg_telao_text', true) !== 'false',
+      cfgTelaoFooter: theme === 'bible' ? true : (this.getPref('slideState_cfg_telao_footer', true) !== false && this.getPref('slideState_cfg_telao_footer', true) !== 'false'),
       bgKindRetorno: bg.retorno.kind,
       bgUrlRetorno: bg.retorno.url,
+      bgFitRetorno: this.getPref('slideState_bgFit_retorno') || 'cover',
+      cfgRetornoClock: this.getPref('slideState_cfg_retorno_clock') !== false && this.getPref('slideState_cfg_retorno_clock') !== 'false',
+      cfgRetornoCurrent: this.getPref('slideState_cfg_retorno_current') !== false && this.getPref('slideState_cfg_retorno_current') !== 'false',
+      cfgRetornoNext: this.getPref('slideState_cfg_retorno_next') !== false && this.getPref('slideState_cfg_retorno_next') !== 'false',
       nextText: slideData.nextText || '',
       isBlackout: this.currentState.isBlackout,
       isClearText: this.currentState.isClearText,
       isLogo: this.currentState.isLogo,
-      textStyle,
-      fontFamily,
-      fontWeight,
-      fontSize,
-      captionFontSize,
-      linesLimit,
-      textStyleRetorno,
-      fontFamilyRetorno,
-      fontWeightRetorno,
-      fontSizeRetorno,
-      captionFontSizeRetorno
+      textStyle: ts.textStyle,
+      fontFamily: ts.fontFamily,
+      fontWeight: ts.fontWeight,
+      fontSize: ts.fontSize,
+      captionFontSize: ts.captionFontSize,
+      linesLimit: theme === 'bible' ? '0' : ts.linesLimit,
+      textStyleRetorno: ts.textStyleRetorno,
+      fontFamilyRetorno: ts.fontFamilyRetorno,
+      fontWeightRetorno: ts.fontWeightRetorno,
+      fontSizeRetorno: ts.fontSizeRetorno,
+      captionFontSizeRetorno: ts.captionFontSizeRetorno
     });
 
     this.updateMiniPreview(slideData);
@@ -202,45 +232,42 @@ class ProjectionSyncService {
     if (this.currentState.currentSlide) {
       const theme = this.currentState.currentSlide.theme || 'general';
       const bg = this.getBackgroundForTheme(theme);
-
-      const textStyle = this.getPref('slideState_textStyle') || 'ts-holy-default';
-      const fontFamily = this.getPref('slideState_fontFamily') || '';
-      const fontWeight = this.getPref('slideState_fontWeight') || '';
-      const fontSize = parseInt(this.getPref('slideState_fontSize')) || 52;
-      const captionFontSize = this.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)';
-      const linesLimit = this.getPref('slideState_linesLimit') || '0';
-
-      const textStyleRetorno = this.getPref('slideState_textStyleRetorno') || 'ts-holy-default';
-      const fontFamilyRetorno = this.getPref('slideState_fontFamilyRetorno') || '';
-      const fontWeightRetorno = this.getPref('slideState_fontWeightRetorno') || '';
-      const fontSizeRetorno = parseInt(this.getPref('slideState_fontSizeRetorno')) || 52;
-      const captionFontSizeRetorno = this.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)';
+      const ts = this.getTextStyleForTheme(theme);
 
       this.channel.postMessage({
         action: 'PROJECT_SLIDE',
         header: this.currentState.currentSlide.header,
         text: this.currentState.currentSlide.text,
         subtitle: this.currentState.currentSlide.subtitle,
+        caption: this.currentState.currentSlide.caption || this.currentState.currentSlide.reference || this.currentState.currentSlide.subtitle,
+        reference: this.currentState.currentSlide.reference || this.currentState.currentSlide.caption || this.currentState.currentSlide.subtitle,
         theme: theme,
         bgKind: bg.telao.kind,
         bgUrl: bg.telao.url,
+        bgFitTelao: this.getPref('slideState_bgFit_telao') || 'cover',
+        cfgTelaoText: this.getPref('slideState_cfg_telao_text', true) !== false && this.getPref('slideState_cfg_telao_text', true) !== 'false',
+        cfgTelaoFooter: theme === 'bible' ? true : (this.getPref('slideState_cfg_telao_footer', true) !== false && this.getPref('slideState_cfg_telao_footer', true) !== 'false'),
         bgKindRetorno: bg.retorno.kind,
         bgUrlRetorno: bg.retorno.url,
+        bgFitRetorno: this.getPref('slideState_bgFit_retorno') || 'cover',
+        cfgRetornoClock: this.getPref('slideState_cfg_retorno_clock') !== false && this.getPref('slideState_cfg_retorno_clock') !== 'false',
+        cfgRetornoCurrent: this.getPref('slideState_cfg_retorno_current') !== false && this.getPref('slideState_cfg_retorno_current') !== 'false',
+        cfgRetornoNext: this.getPref('slideState_cfg_retorno_next') !== false && this.getPref('slideState_cfg_retorno_next') !== 'false',
         nextText: this.currentState.currentSlide.nextText || '',
         isBlackout: this.currentState.isBlackout,
         isClearText: this.currentState.isClearText,
         isLogo: this.currentState.isLogo,
-        textStyle,
-        fontFamily,
-        fontWeight,
-        fontSize,
-        captionFontSize,
-        linesLimit,
-        textStyleRetorno,
-        fontFamilyRetorno,
-        fontWeightRetorno,
-        fontSizeRetorno,
-        captionFontSizeRetorno
+        textStyle: ts.textStyle,
+        fontFamily: ts.fontFamily,
+        fontWeight: ts.fontWeight,
+        fontSize: ts.fontSize,
+        captionFontSize: ts.captionFontSize,
+        linesLimit: theme === 'bible' ? '0' : ts.linesLimit,
+        textStyleRetorno: ts.textStyleRetorno,
+        fontFamilyRetorno: ts.fontFamilyRetorno,
+        fontWeightRetorno: ts.fontWeightRetorno,
+        fontSizeRetorno: ts.fontSizeRetorno,
+        captionFontSizeRetorno: ts.captionFontSizeRetorno
       });
     }
   }

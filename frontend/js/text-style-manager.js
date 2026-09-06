@@ -62,38 +62,115 @@ class TextStyleManager {
     }
   }
 
-  loadPreferences() {
-    // Telão
-    this.state.textStyle = this.getPref('slideState_textStyle', 'ts-holy-default');
-    this.state.fontFamily = this.getPref('slideState_fontFamily', '');
-    this.state.fontWeight = this.getPref('slideState_fontWeight', '');
-    this.state.fontSize = parseInt(this.getPref('slideState_fontSize', 52)) || 52;
-    this.state.captionFontSize = this.getPref('slideState_captionFontSize', 'clamp(13px, 1.4vw, 22px)');
-    this.state.linesLimit = this.getPref('slideState_linesLimit', '0');
+  getCurrentTrackContext() {
+    if (window.orbitalEngine && typeof window.orbitalEngine.activeRow === 'number') {
+      return window.orbitalEngine.activeRow === 0 ? 'bible' : 'general';
+    }
+    const currentTheme = window.projectionSync?.currentState?.currentSlide?.theme;
+    if (currentTheme === 'bible') return 'bible';
+    return 'general';
+  }
 
-    // Retorno
-    this.state.textStyleRetorno = this.getPref('slideState_textStyleRetorno', 'ts-holy-default');
-    this.state.fontFamilyRetorno = this.getPref('slideState_fontFamilyRetorno', '');
-    this.state.fontWeightRetorno = this.getPref('slideState_fontWeightRetorno', '');
-    this.state.fontSizeRetorno = parseInt(this.getPref('slideState_fontSizeRetorno', 52)) || 52;
-    this.state.captionFontSizeRetorno = this.getPref('slideState_captionFontSizeRetorno', 'clamp(13px, 1.4vw, 22px)');
+  updateTrackBadge() {
+    const pill = document.getElementById('ts-modal-track-pill');
+    if (!pill) return;
+    const isBible = this.getCurrentTrackContext() === 'bible';
+    if (isBible) {
+      pill.textContent = '📖 Trilha: Bíblia';
+      pill.style.background = 'rgba(168, 85, 247, 0.2)';
+      pill.style.border = '1px solid rgba(168, 85, 247, 0.45)';
+      pill.style.color = '#c084fc';
+    } else {
+      pill.textContent = '🌐 Trilha: Louvor & Culto';
+      pill.style.background = 'rgba(0, 240, 255, 0.15)';
+      pill.style.border = '1px solid rgba(0, 240, 255, 0.35)';
+      pill.style.color = '#00f0ff';
+    }
+  }
+
+  loadPreferences() {
+    const isBible = this.getCurrentTrackContext() === 'bible';
+
+    if (isBible) {
+      // Telão Bíblia (Bíblia NUNCA limita linhas)
+      this.state.textStyle = this.getPref('slideState_bible_textStyle', 'ts-holy-default');
+      this.state.fontFamily = this.getPref('slideState_bible_fontFamily', '');
+      this.state.fontWeight = this.getPref('slideState_bible_fontWeight', '');
+      this.state.fontSize = parseInt(this.getPref('slideState_bible_fontSize', 52)) || 52;
+      this.state.captionFontSize = this.getPref('slideState_bible_captionFontSize', 'clamp(13px, 1.4vw, 22px)');
+      this.state.linesLimit = '0';
+
+      // Retorno Bíblia
+      this.state.textStyleRetorno = this.getPref('slideState_bible_textStyleRetorno', 'ts-holy-default');
+      this.state.fontFamilyRetorno = this.getPref('slideState_bible_fontFamilyRetorno', '');
+      this.state.fontWeightRetorno = this.getPref('slideState_bible_fontWeightRetorno', '');
+      this.state.fontSizeRetorno = parseInt(this.getPref('slideState_bible_fontSizeRetorno', 52)) || 52;
+      this.state.captionFontSizeRetorno = this.getPref('slideState_bible_captionFontSizeRetorno', 'clamp(13px, 1.4vw, 22px)');
+    } else {
+      // Telão Louvor & Geral (com fallback para chave original slideState_)
+      this.state.textStyle = this.getPref('slideState_songs_textStyle') || this.getPref('slideState_textStyle', 'ts-holy-default');
+      this.state.fontFamily = this.getPref('slideState_songs_fontFamily') || this.getPref('slideState_fontFamily', '');
+      this.state.fontWeight = this.getPref('slideState_songs_fontWeight') || this.getPref('slideState_fontWeight', '');
+      this.state.fontSize = parseInt(this.getPref('slideState_songs_fontSize') || this.getPref('slideState_fontSize', 52)) || 52;
+      this.state.captionFontSize = this.getPref('slideState_songs_captionFontSize') || this.getPref('slideState_captionFontSize', 'clamp(13px, 1.4vw, 22px)');
+      this.state.linesLimit = this.getPref('slideState_songs_linesLimit') || this.getPref('slideState_linesLimit', '0');
+
+      // Retorno Louvor & Geral
+      this.state.textStyleRetorno = this.getPref('slideState_songs_textStyleRetorno') || this.getPref('slideState_textStyleRetorno', 'ts-holy-default');
+      this.state.fontFamilyRetorno = this.getPref('slideState_songs_fontFamilyRetorno') || this.getPref('slideState_fontFamilyRetorno', '');
+      this.state.fontWeightRetorno = this.getPref('slideState_songs_fontWeightRetorno') || this.getPref('slideState_fontWeightRetorno', '');
+      this.state.fontSizeRetorno = parseInt(this.getPref('slideState_songs_fontSizeRetorno') || this.getPref('slideState_fontSizeRetorno', 52)) || 52;
+      this.state.captionFontSizeRetorno = this.getPref('slideState_songs_captionFontSizeRetorno') || this.getPref('slideState_captionFontSizeRetorno', 'clamp(13px, 1.4vw, 22px)');
+    }
   }
 
   savePreferences() {
-    // Telão
-    this.setPref('slideState_textStyle', this.state.textStyle);
-    this.setPref('slideState_fontFamily', this.state.fontFamily);
-    this.setPref('slideState_fontWeight', this.state.fontWeight);
-    this.setPref('slideState_fontSize', this.state.fontSize);
-    this.setPref('slideState_captionFontSize', this.state.captionFontSize);
-    this.setPref('slideState_linesLimit', this.state.linesLimit);
+    const isBible = this.getCurrentTrackContext() === 'bible';
 
-    // Retorno
-    this.setPref('slideState_textStyleRetorno', this.state.textStyleRetorno);
-    this.setPref('slideState_fontFamilyRetorno', this.state.fontFamilyRetorno);
-    this.setPref('slideState_fontWeightRetorno', this.state.fontWeightRetorno);
-    this.setPref('slideState_fontSizeRetorno', this.state.fontSizeRetorno);
-    this.setPref('slideState_captionFontSizeRetorno', this.state.captionFontSizeRetorno);
+    if (isBible) {
+      // Telão Bíblia
+      this.setPref('slideState_bible_textStyle', this.state.textStyle);
+      this.setPref('slideState_bible_fontFamily', this.state.fontFamily);
+      this.setPref('slideState_bible_fontWeight', this.state.fontWeight);
+      this.setPref('slideState_bible_fontSize', this.state.fontSize);
+      this.setPref('slideState_bible_captionFontSize', this.state.captionFontSize);
+      this.setPref('slideState_bible_linesLimit', '0');
+
+      // Retorno Bíblia
+      this.setPref('slideState_bible_textStyleRetorno', this.state.textStyleRetorno);
+      this.setPref('slideState_bible_fontFamilyRetorno', this.state.fontFamilyRetorno);
+      this.setPref('slideState_bible_fontWeightRetorno', this.state.fontWeightRetorno);
+      this.setPref('slideState_bible_fontSizeRetorno', this.state.fontSizeRetorno);
+      this.setPref('slideState_bible_captionFontSizeRetorno', this.state.captionFontSizeRetorno);
+    } else {
+      // Telão Louvor
+      this.setPref('slideState_songs_textStyle', this.state.textStyle);
+      this.setPref('slideState_songs_fontFamily', this.state.fontFamily);
+      this.setPref('slideState_songs_fontWeight', this.state.fontWeight);
+      this.setPref('slideState_songs_fontSize', this.state.fontSize);
+      this.setPref('slideState_songs_captionFontSize', this.state.captionFontSize);
+      this.setPref('slideState_songs_linesLimit', this.state.linesLimit);
+
+      // Retorno Louvor
+      this.setPref('slideState_songs_textStyleRetorno', this.state.textStyleRetorno);
+      this.setPref('slideState_songs_fontFamilyRetorno', this.state.fontFamilyRetorno);
+      this.setPref('slideState_songs_fontWeightRetorno', this.state.fontWeightRetorno);
+      this.setPref('slideState_songs_fontSizeRetorno', this.state.fontSizeRetorno);
+      this.setPref('slideState_songs_captionFontSizeRetorno', this.state.captionFontSizeRetorno);
+
+      // Salva chaves legadas para compatibilidade
+      this.setPref('slideState_textStyle', this.state.textStyle);
+      this.setPref('slideState_fontFamily', this.state.fontFamily);
+      this.setPref('slideState_fontWeight', this.state.fontWeight);
+      this.setPref('slideState_fontSize', this.state.fontSize);
+      this.setPref('slideState_captionFontSize', this.state.captionFontSize);
+      this.setPref('slideState_linesLimit', this.state.linesLimit);
+      this.setPref('slideState_textStyleRetorno', this.state.textStyleRetorno);
+      this.setPref('slideState_fontFamilyRetorno', this.state.fontFamilyRetorno);
+      this.setPref('slideState_fontWeightRetorno', this.state.fontWeightRetorno);
+      this.setPref('slideState_fontSizeRetorno', this.state.fontSizeRetorno);
+      this.setPref('slideState_captionFontSizeRetorno', this.state.captionFontSizeRetorno);
+    }
   }
 
   init() {
@@ -239,6 +316,7 @@ class TextStyleManager {
 
   openModal() {
     if (!this.modal) return;
+    this.loadPreferences();
     this.refreshTsModalUI();
     this.modal.classList.remove('hidden');
   }
@@ -267,6 +345,7 @@ class TextStyleManager {
 
   broadcastStyle(target) {
     const isRetorno = target === 'retorno';
+    const isBible = this.getCurrentTrackContext() === 'bible';
     const payload = {
       action: 'SET_TEXT_STYLE',
       target: target,
@@ -275,14 +354,20 @@ class TextStyleManager {
       fontWeight: isRetorno ? this.state.fontWeightRetorno : this.state.fontWeight,
       fontSize: isRetorno ? this.state.fontSizeRetorno : this.state.fontSize,
       captionFontSize: isRetorno ? this.state.captionFontSizeRetorno : this.state.captionFontSize,
-      linesLimit: isRetorno ? '0' : this.state.linesLimit
+      linesLimit: (isRetorno || isBible) ? '0' : this.state.linesLimit
     };
 
-    this.channel.postMessage(payload);
+    const activeTheme = window.projectionSync?.currentState?.currentSlide?.theme || 'general';
+    const matchesCurrentSlide = (isBible && activeTheme === 'bible') || (!isBible && activeTheme !== 'bible');
+    if (matchesCurrentSlide) {
+      this.channel.postMessage(payload);
+    }
   }
 
   refreshTsModalUI() {
+    this.updateTrackBadge();
     const isRetorno = this.currentTarget === 'retorno';
+    const isBible = this.getCurrentTrackContext() === 'bible';
 
     // Abas de destino
     document.querySelectorAll('.ts-target-tab').forEach(tab => {
@@ -307,14 +392,14 @@ class TextStyleManager {
       weightSelect.value = (isRetorno ? this.state.fontWeightRetorno : this.state.fontWeight) || '';
     }
 
-    // Limite de Linhas (Apenas Telão)
+    // Limite de Linhas (Apenas Telão de Louvor/Geral - Oculto no Retorno E na Bíblia)
     const linesContainer = document.getElementById('ts-lines-limit-container');
     if (linesContainer) {
-      linesContainer.style.display = isRetorno ? 'none' : 'flex';
+      linesContainer.style.display = (isRetorno || isBible) ? 'none' : 'flex';
     }
     const linesSelect = document.getElementById('ts-lines-limit-select');
     if (linesSelect) {
-      linesSelect.value = (isRetorno ? '0' : this.state.linesLimit) || '0';
+      linesSelect.value = (isRetorno || isBible ? '0' : this.state.linesLimit) || '0';
     }
 
     // Tamanho da Legenda

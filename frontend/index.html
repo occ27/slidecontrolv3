@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SlideControl V3 Orbital</title>
+  <title>SlideControl Lumina</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -57,8 +57,10 @@
           <span>MÍDIAS</span>
         </button>
         <button id="btn-open-text-style-modal" class="hud-btn" title="Modelos de Texto e Estilos (Telão e Retorno)">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24" style="width: 16px; height: 16px; fill: currentColor;">
-            <text x="50%" y="68%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="20" fill="currentColor">Aa</text>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24"
+            style="width: 16px; height: 16px; fill: currentColor;">
+            <text x="50%" y="68%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif"
+              font-weight="bold" font-size="20" fill="currentColor">Aa</text>
           </svg>
           <span>ESTILOS</span>
         </button>
@@ -102,7 +104,8 @@
         <div class="hud-card bible-quick-card">
           <div class="card-header-bracket">
             <span class="bracket-tag bible-tag">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
@@ -112,16 +115,20 @@
           </div>
           <div class="bible-search-box">
             <div class="quick-input-wrap">
-              <svg class="search-ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              <svg class="search-ico" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
               </svg>
-              <input type="text" id="bible-quick-search-input" placeholder="Referência (ex: Jo 3:16, Sl 23)..." title="Digite a referência e pressione Enter para projetar" />
+              <input type="text" id="bible-quick-search-input" placeholder="Referência (ex: Jo 3:16, Sl 23)..."
+                title="Digite a referência e pressione Enter para projetar" />
               <button id="btn-clear-bible-input" class="icon-btn" style="display:none;" title="Limpar busca">✕</button>
             </div>
             <div class="bible-card-actions">
               <span class="quick-hint">Pressione <kbd>Enter</kbd> para projetar</span>
               <button id="btn-open-bible-modal" class="bible-link-btn" title="Abrir Seletor Completo da Bíblia (F4)">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:13px; height:13px; flex-shrink:0;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2" style="width:13px; height:13px; flex-shrink:0;">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
@@ -139,7 +146,8 @@
             <span class="playlist-count-badge" id="playlist-count-badge">4 itens</span>
           </div>
           <div class="service-playlist" id="service-playlist">
-            <button class="playlist-item active" data-card-idx="0" data-row-idx="1" title="Clique para focar nesta música">
+            <button class="playlist-item active" data-card-idx="0" data-row-idx="1"
+              title="Clique para focar nesta música">
               <div class="playlist-item-icon">🎵</div>
               <div class="playlist-item-info">
                 <span class="playlist-item-title">Porque Ele Vive</span>
@@ -173,9 +181,12 @@
 
         <!-- Card 3: Controle Rápido de Foco / Recentralizar -->
         <div class="hud-card quick-nav-card">
-          <button id="btn-reset-view" class="hud-btn highlight-btn w-full" title="Recentralizar no slide selecionado ou ativo [Espaço]">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <button id="btn-reset-view" class="hud-btn highlight-btn w-full"
+            title="Recentralizar no slide selecionado ou ativo [Espaço]">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2" style="width:16px;height:16px;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span>Recentralizar Slide Atual</span>
           </button>
@@ -189,7 +200,6 @@
       <!-- Right Sliding Contextual Glassmorphic Inspector -->
       <section class="hud-right-inspector hud-interactive" id="process-inspector">
         <div class="inspector-card glass-panel">
-
           <!-- Inspector Header -->
           <div class="inspector-header">
             <div class="node-title-group">
@@ -202,7 +212,8 @@
               <p class="node-subtitle" id="node-desc-display" style="display:none;"></p>
               <span id="node-type-badge" style="display:none;"></span>
             </div>
-            <button class="close-inspector-btn" id="close-inspector-btn" aria-label="Recolher Painel" title="Recolher Painel">
+            <button class="close-inspector-btn" id="close-inspector-btn" aria-label="Recolher Painel"
+              title="Recolher Painel">
               <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -219,13 +230,13 @@
             <div class="live-preview-box" id="live-screen-preview">
               <!-- Camada de Fundo Dinâmico (Sincronizado) -->
               <div class="live-preview-bg" id="live-preview-bg-layer"></div>
-              
+
               <!-- Texto Formatado no Telão -->
               <div class="live-preview-content">
                 <div class="live-preview-text" id="preview-slide-text">Deus enviou seu Filho amado
-Para morrer em meu lugar
-Na cruz pagou por meus pecados
-Mas o sepulcro vazio está porque Ele vive</div>
+                  Para morrer em meu lugar
+                  Na cruz pagou por meus pecados
+                  Mas o sepulcro vazio está porque Ele vive</div>
               </div>
 
               <!-- Overlay Indicators -->
@@ -240,26 +251,33 @@ Mas o sepulcro vazio está porque Ele vive</div>
             <span class="section-tag">COMANDOS MESTRES DE PROJEÇÃO</span>
             <div class="actions-grid">
               <button class="action-btn primary" id="btn-quick-project" title="Projetar Slide Selecionado no Telão">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>Projetar Slide</span>
               </button>
               <button class="action-btn danger" id="btn-quick-blackout" title="Apaga a tela imediatamente (F2)">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2">
                   <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
                 </svg>
                 <span>Blackout (F2)</span>
               </button>
-              <button class="action-btn warning" id="btn-quick-clear" title="Oculta o texto mantendo o fundo de mídia (F3)">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+              <button class="action-btn warning" id="btn-quick-clear"
+                title="Oculta o texto mantendo o fundo de mídia (F3)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
                 </svg>
                 <span>Limpar Texto (F3)</span>
               </button>
               <button class="action-btn" id="btn-quick-logo" title="Exibe a logo institucional (ESC)">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <circle cx="9" cy="9" r="2" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" />
@@ -287,7 +305,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
               </button>
             </div>
             <div class="custom-alert-row">
-              <input type="text" id="custom-alert-input" class="custom-alert-input" placeholder="Digitar aviso para o telão..." />
+              <input type="text" id="custom-alert-input" class="custom-alert-input"
+                placeholder="Digitar aviso para o telão..." />
               <button id="btn-send-custom-alert" class="hud-btn-sm btn-send-alert" title="Enviar aviso">
                 ENVIAR
               </button>
@@ -318,28 +337,35 @@ Mas o sepulcro vazio está porque Ele vive</div>
       <div class="footer-center-dock hud-interactive">
         <div class="zone-switcher">
           <button class="zone-btn" id="btn-zone-north" title="Girar para Trilha da Bíblia (Norte)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2" style="width:16px;height:16px;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
             <span>Bíblia (Norte)</span>
           </button>
           <button class="zone-btn active" id="btn-zone-equator" title="Girar para Trilha de Louvor & Slides (Equador)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2" style="width:16px;height:16px;">
               <circle cx="12" cy="12" r="10" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
             </svg>
             <span>Louvor & Culto (Equador)</span>
           </button>
           <button class="zone-btn" id="btn-zone-south" title="Girar para Trilha de Cabine & Controles (Sul)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2" style="width:16px;height:16px;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
             </svg>
             <span>Cabine & Controles (Sul)</span>
           </button>
         </div>
 
         <div class="bottom-helper-hint">
-          <span>💡 Arraste para girar • Clique em qualquer slide para projetar • Teclas <kbd>↑</kbd> <kbd>↓</kbd> alternam trilhas</span>
+          <span>💡 Arraste para girar • Clique em qualquer slide para projetar • Teclas <kbd>↑</kbd> <kbd>↓</kbd>
+            alternam trilhas</span>
         </div>
       </div>
     </footer>
@@ -352,24 +378,31 @@ Mas o sepulcro vazio está porque Ele vive</div>
     <div class="modal-content bible-modal-content">
       <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div class="modal-header-icon" style="background:linear-gradient(135deg, rgba(124,58,237,0.22), rgba(99,102,241,0.15)); border:1px solid rgba(167,139,250,0.35); border-radius:9px; padding:7px; display:flex; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;color:#c4b5fd;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          <div class="modal-header-icon"
+            style="background:linear-gradient(135deg, rgba(124,58,237,0.22), rgba(99,102,241,0.15)); border:1px solid rgba(167,139,250,0.35); border-radius:9px; padding:7px; display:flex; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2" style="width:22px;height:22px;color:#c4b5fd;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
           <div>
-            <h3 style="margin:0; font-size:1.18rem; color:#f8fafc; font-weight:700; display:flex; align-items:center; gap:10px;">
+            <h3
+              style="margin:0; font-size:1.18rem; color:#f8fafc; font-weight:700; display:flex; align-items:center; gap:10px;">
               <span>Bíblia Sagrada</span>
               <span class="hud-badge-purple" id="bible-current-ref-badge">Carregando...</span>
             </h3>
-            <span style="font-size:0.72rem; color:#a5b4fc; letter-spacing:0.06em; text-transform:uppercase; font-weight:600;">Navegador & Pesquisa de Passagens</span>
+            <span
+              style="font-size:0.72rem; color:#a5b4fc; letter-spacing:0.06em; text-transform:uppercase; font-weight:600;">Navegador
+              & Pesquisa de Passagens</span>
           </div>
         </div>
 
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:0.75rem; color:#94a3b8; font-weight:500;">Versão:</span>
-            <select id="bible-version-select" class="hud-select-sm" style="background:rgba(20,26,48,0.85); border:1px solid rgba(167,139,250,0.3); color:#f1f5f9; padding:5px 10px; border-radius:7px; font-size:0.82rem; outline:none;">
+            <select id="bible-version-select" class="hud-select-sm"
+              style="background:rgba(20,26,48,0.85); border:1px solid rgba(167,139,250,0.3); color:#f1f5f9; padding:5px 10px; border-radius:7px; font-size:0.82rem; outline:none;">
               <!-- Populado via BibleService -->
             </select>
           </div>
@@ -380,10 +413,13 @@ Mas o sepulcro vazio está porque Ele vive</div>
       <!-- Barra de Busca Rápida com auto-sugestão -->
       <div class="bible-modal-search-bar">
         <div style="flex:1; position:relative;">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#a78bfa;">
-            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+            style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#a78bfa;">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
           </svg>
-          <input type="text" id="bible-modal-search-input" placeholder="Digite uma referência (ex: Jo 3:16, Sl 23, 1Co 13) ou palavra para buscar..." />
+          <input type="text" id="bible-modal-search-input"
+            placeholder="Digite uma referência (ex: Jo 3:16, Sl 23, 1Co 13) ou palavra para buscar..." />
         </div>
         <button id="btn-bible-search-exec" class="hud-btn">
           <span>BUSCAR</span>
@@ -419,10 +455,17 @@ Mas o sepulcro vazio está porque Ele vive</div>
           <div class="bible-col-header" style="display:flex; justify-content:space-between; align-items:center;">
             <div>
               <span id="bible-verses-header-title">VERSÍCULOS</span>
-              <span class="bible-col-subtitle" id="bible-verses-header-sub">Clique para projetar ou carregar no globo</span>
+              <span class="bible-col-subtitle" id="bible-verses-header-sub">Clique para projetar ou carregar no
+                globo</span>
             </div>
-            <button id="btn-load-chapter-to-globe" class="hud-btn-sm" style="background:linear-gradient(135deg, rgba(124,58,237,0.3), rgba(99,102,241,0.2)); border:1px solid rgba(167,139,250,0.35); color:#f3e8ff; border-radius:7px; font-weight:600; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Carrega todos os versículos deste capítulo na esfera 3D">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:#c4b5fd;"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            <button id="btn-load-chapter-to-globe" class="hud-btn-sm"
+              style="background:linear-gradient(135deg, rgba(124,58,237,0.3), rgba(99,102,241,0.2)); border:1px solid rgba(167,139,250,0.35); color:#f3e8ff; border-radius:7px; font-weight:600; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;"
+              title="Carrega todos os versículos deste capítulo na esfera 3D">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2" style="width:13px;height:13px;color:#c4b5fd;">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+              </svg>
               <span>CARREGAR NO GLOBO 3D</span>
             </button>
           </div>
@@ -434,7 +477,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
 
       <!-- Rodapé: Passagens Recentes -->
       <div class="bible-modal-footer">
-        <span style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Recentes:</span>
+        <span
+          style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Recentes:</span>
         <div class="bible-history-tags" id="bible-history-tags">
           <!-- Tags clicáveis de passagens recentes -->
         </div>
@@ -639,6 +683,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
               font-weight="bold" font-size="21" fill="currentColor">Aa</text>
           </svg>
           <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-main);">Modelos de Texto</h3>
+          <span id="ts-modal-track-pill"
+            style="font-size:0.72rem; padding:3px 8px; border-radius:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;"></span>
         </div>
         <button class="icon-btn" id="btn-close-text-style-modal" title="Fechar">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
@@ -651,17 +697,19 @@ Mas o sepulcro vazio está porque Ele vive</div>
       <!-- Abas de Destino: Telão vs Retorno -->
       <div class="modal-target-tabs">
         <button class="ts-target-tab active" data-target="telao">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
           </svg>
           <span>Estilo do Telão</span>
         </button>
         <button class="ts-target-tab" data-target="retorno">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-            <polyline points="17 2 12 7 7 2"/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+            <polyline points="17 2 12 7 7 2" />
           </svg>
           <span>Estilo do Retorno</span>
         </button>
@@ -671,12 +719,16 @@ Mas o sepulcro vazio está porque Ele vive</div>
       <div class="ts-font-size-bar">
         <!-- Fonte -->
         <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 220px;">
-          <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Fonte:</label>
+          <label
+            style="font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Fonte:</label>
           <div id="font-picker-wrapper">
             <div id="ts-font-picker-trigger">
-              <span id="ts-font-picker-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Padrão do Modelo</span>
-              <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16" style="margin-left: 8px; flex-shrink: 0;">
-                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+              <span id="ts-font-picker-value"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Padrão do Modelo</span>
+              <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"
+                style="margin-left: 8px; flex-shrink: 0;">
+                <path
+                  d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
               </svg>
             </div>
             <div id="ts-font-picker-options" class="hidden">
@@ -698,7 +750,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
 
         <!-- Linhas (Telão apenas) -->
         <div id="ts-lines-limit-container" style="display: flex; align-items: center; gap: 8px; min-width: 120px;">
-          <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Linhas:</label>
+          <label
+            style="font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Linhas:</label>
           <select id="ts-lines-limit-select" class="ts-select">
             <option value="0">Tudo (Padrão)</option>
             <option value="1">1 Linha</option>
@@ -709,8 +762,10 @@ Mas o sepulcro vazio está porque Ele vive</div>
         </div>
 
         <!-- Tamanho Legenda -->
-        <div id="ts-caption-font-size-container" style="display: flex; align-items: center; gap: 8px; min-width: 150px;">
-          <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Legenda:</label>
+        <div id="ts-caption-font-size-container"
+          style="display: flex; align-items: center; gap: 8px; min-width: 150px;">
+          <label
+            style="font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Legenda:</label>
           <select id="ts-caption-font-size-select" class="ts-select">
             <option value="clamp(10px, 1.0vw, 16px)">Pequeno</option>
             <option value="clamp(13px, 1.4vw, 22px)">Médio (Padrão)</option>
@@ -749,28 +804,32 @@ Mas o sepulcro vazio está porque Ele vive</div>
             <div class="ts-card" data-value="ts-holy-default">
               <div class="ts-preview" style="background:#0f0f23;">
                 <span
-                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0,0,0,0.8);font-weight:900;font-size:15px;">Holy Padrão</span>
+                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0,0,0,0.8);font-weight:900;font-size:15px;">Holy
+                  Padrão</span>
               </div>
             </div>
 
             <div class="ts-card" data-value="ts-holy-contour">
               <div class="ts-preview" style="background:#0f0f23;">
                 <span
-                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 0 0 10px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1);font-weight:900;font-size:14px;text-align:center;line-height:1.2;">Holy<br>Sombra de Contorno</span>
+                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 0 0 10px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,1);font-weight:900;font-size:14px;text-align:center;line-height:1.2;">Holy<br>Sombra
+                  de Contorno</span>
               </div>
             </div>
 
             <div class="ts-card" data-value="ts-holy-dark-bg">
               <div class="ts-preview" style="background:rgba(0,0,0,0.7);border-radius:6px;padding:8px;">
                 <span
-                  style="font-family:Arial,sans-serif;color:#fff;font-weight:700;font-size:14px;text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Fundo Escuro</span>
+                  style="font-family:Arial,sans-serif;color:#fff;font-weight:700;font-size:14px;text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Fundo
+                  Escuro</span>
               </div>
             </div>
 
             <div class="ts-card" data-value="ts-holy-yellow">
               <div class="ts-preview" style="background:#0d0d0d;">
                 <span
-                  style="font-family:'Arial Black',sans-serif;color:#FFD700;text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0,0,0,0.8);font-size:14px;">Destaque Amarelo</span>
+                  style="font-family:'Arial Black',sans-serif;color:#FFD700;text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0,0,0,0.8);font-size:14px;">Destaque
+                  Amarelo</span>
               </div>
             </div>
 
@@ -784,7 +843,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
             <div class="ts-card" data-value="ts-holy-thick-stroke">
               <div class="ts-preview" style="background:#2d1b69;">
                 <span
-                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000,0 4px 15px rgba(0,0,0,0.9);font-weight:900;font-size:13px;">Contorno Grosso</span>
+                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000,0 4px 15px rgba(0,0,0,0.9);font-weight:900;font-size:13px;">Contorno
+                  Grosso</span>
               </div>
             </div>
 
@@ -792,14 +852,16 @@ Mas o sepulcro vazio está porque Ele vive</div>
               <div class="ts-preview"
                 style="background:radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%);">
                 <span
-                  style="font-family:Arial,sans-serif;color:#fff;text-shadow:2px 2px 5px #000;font-weight:700;font-size:14px;">Sombra Suave</span>
+                  style="font-family:Arial,sans-serif;color:#fff;text-shadow:2px 2px 5px #000;font-weight:700;font-size:14px;">Sombra
+                  Suave</span>
               </div>
             </div>
 
             <div class="ts-card" data-value="ts-holy-triple-outline">
               <div class="ts-preview" style="background:#5a189a;">
                 <span
-                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,2px 2px 0 #e2e8f0,-2px -2px 0 #e2e8f0,2px -2px 0 #e2e8f0,-2px 2px 0 #e2e8f0,3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000,0 4px 10px rgba(0,0,0,0.9);font-weight:900;font-size:13px;letter-spacing:1px;">Triplo Contorno</span>
+                  style="font-family:'Arial Black',sans-serif;color:#fff;text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,2px 2px 0 #e2e8f0,-2px -2px 0 #e2e8f0,2px -2px 0 #e2e8f0,-2px 2px 0 #e2e8f0,3px 3px 0 #000,-3px -3px 0 #000,3px -3px 0 #000,-3px 3px 0 #000,0 4px 10px rgba(0,0,0,0.9);font-weight:900;font-size:13px;letter-spacing:1px;">Triplo
+                  Contorno</span>
               </div>
             </div>
 
@@ -831,8 +893,10 @@ Mas o sepulcro vazio está porque Ele vive</div>
             <div class="ts-card" data-value="ts-worship-lyric-video">
               <div class="ts-preview" style="background:#000;">
                 <span
-                  style="font-family:'Inter', sans-serif; font-weight:900; text-transform:uppercase; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.4), 2px 2px 5px rgba(0,0,0,1); font-size:12px; letter-spacing:2px; text-align:center;">Lyric Video<br><span
-                    style="font-weight:600; font-size:8px; color:rgba(255,255,255,0.7); letter-spacing:1px;">GLOW ANIMADO</span></span>
+                  style="font-family:'Inter', sans-serif; font-weight:900; text-transform:uppercase; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.4), 2px 2px 5px rgba(0,0,0,1); font-size:12px; letter-spacing:2px; text-align:center;">Lyric
+                  Video<br><span
+                    style="font-weight:600; font-size:8px; color:rgba(255,255,255,0.7); letter-spacing:1px;">GLOW
+                    ANIMADO</span></span>
               </div>
             </div>
 
@@ -902,7 +966,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
               <div class="ts-preview"
                 style="background: rgba(10, 10, 18, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items:center; justify-content:center; flex-direction:column; padding:8px; border-top:2px solid rgba(255,255,255,0.4); border-radius:8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
                 <span
-                  style="font-family:'Inter',sans-serif; font-size:12px; color:#fff; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.8);">Vidro Premium</span>
+                  style="font-family:'Inter',sans-serif; font-size:12px; color:#fff; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.8);">Vidro
+                  Premium</span>
               </div>
             </div>
 
@@ -910,7 +975,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
               <div class="ts-preview"
                 style="background: transparent; align-items:flex-start; justify-content:center; flex-direction:column; padding:10px; border-left:4px solid #fbbf24;">
                 <span
-                  style="font-family:'Inter',sans-serif; font-size:12px; color:#fff; font-weight:600; text-shadow:0 2px 5px rgba(0,0,0,0.9);">Surgimento Mágico</span>
+                  style="font-family:'Inter',sans-serif; font-size:12px; color:#fff; font-weight:600; text-shadow:0 2px 5px rgba(0,0,0,0.9);">Surgimento
+                  Mágico</span>
               </div>
             </div>
 
@@ -935,28 +1001,14 @@ Mas o sepulcro vazio está porque Ele vive</div>
             <path d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" />
           </svg>
           <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-main);">Mídias de Fundo</h3>
+          <span id="bg-modal-track-pill"
+            style="font-size:0.72rem; padding:3px 8px; border-radius:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;"></span>
         </div>
         <button class="icon-btn" id="btn-close-bg-modal" title="Fechar">
           <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
-        </button>
-      </div>
-
-      <!-- Contexto de Trilha: Louvor & Geral vs Bíblia -->
-      <div class="modal-track-context-tabs" style="display:flex; gap:8px; margin-bottom:10px;">
-        <button class="bg-track-context-btn active" data-context="general" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:7px 12px; background:rgba(0,240,255,0.12); border:1px solid rgba(0,240,255,0.35); border-radius:8px; color:#00f0ff; font-weight:600; font-size:0.8rem; cursor:pointer; transition:all 0.2s;">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
-            <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-          </svg>
-          <span>🌐 Trilha Louvor & Culto</span>
-        </button>
-        <button class="bg-track-context-btn" data-context="bible" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:7px 12px; background:rgba(30,41,59,0.5); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#94a3b8; font-weight:600; font-size:0.8rem; cursor:pointer; transition:all 0.2s;">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-          </svg>
-          <span>📖 Trilha da Bíblia</span>
         </button>
       </div>
 

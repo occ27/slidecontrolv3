@@ -172,12 +172,12 @@ class SphericalSurfaceEngine {
   populateAllRows() {
     // ── TRILHA 0: BÍBLIA SAGRADA (NORTE) ──
     const bibleData = [
-      { tag: 'JOÃO 3:16', title: 'Bíblia Sagrada', text: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.', theme: 'bible' },
-      { tag: 'JOÃO 3:17', title: 'Bíblia Sagrada', text: 'Porque Deus enviou o seu Filho ao mundo, não para que condenasse o mundo, mas para que o mundo fosse salvo por ele.', theme: 'bible' },
-      { tag: 'SALMOS 23:1-3', title: 'Bíblia Sagrada', text: 'O Senhor é o meu pastor; nada me faltará.\nDeitar-me faz em verdes pastos, guia-me mansamente a águas tranqüilas.\nRefrigera a minha alma.', theme: 'bible' },
-      { tag: 'FILIPENSES 4:13', title: 'Bíblia Sagrada', text: 'Posso todas as coisas naquele que me fortalece.\n\nE a paz de Deus guardará os vossos corações.', theme: 'bible' },
-      { tag: '1 CORÍNTIOS 13:13', title: 'Bíblia Sagrada', text: 'Agora, pois, permanecem a fé, a esperança e o amor, estes três;\nmas o maior destes é o amor.', theme: 'bible' },
-      { tag: 'ROMANOS 8:28', title: 'Bíblia Sagrada', text: 'E sabemos que todas as coisas concorrem para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito.', theme: 'bible' }
+      { tag: 'JOÃO 3:16', title: 'Bíblia Sagrada', reference: 'João 3:16 — ACF', text: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.', theme: 'bible', verseNum: 16, bookName: 'João', chapterNum: 3, version: 'ACF' },
+      { tag: 'JOÃO 3:17', title: 'Bíblia Sagrada', reference: 'João 3:17 — ACF', text: 'Porque Deus enviou o seu Filho ao mundo, não para que condenasse o mundo, mas para que o mundo fosse salvo por ele.', theme: 'bible', verseNum: 17, bookName: 'João', chapterNum: 3, version: 'ACF' },
+      { tag: 'SALMOS 23:1-3', title: 'Bíblia Sagrada', reference: 'Salmos 23:1-3 — ACF', text: 'O Senhor é o meu pastor; nada me faltará.\nDeitar-me faz em verdes pastos, guia-me mansamente a águas tranqüilas.\nRefrigera a minha alma.', theme: 'bible', verseNum: '1-3', bookName: 'Salmos', chapterNum: 23, version: 'ACF' },
+      { tag: 'FILIPENSES 4:13', title: 'Bíblia Sagrada', reference: 'Filipenses 4:13 — ACF', text: 'Posso todas as coisas naquele que me fortalece.\n\nE a paz de Deus guardará os vossos corações.', theme: 'bible', verseNum: 13, bookName: 'Filipenses', chapterNum: 4, version: 'ACF' },
+      { tag: '1 CORÍNTIOS 13:13', title: 'Bíblia Sagrada', reference: '1 Coríntios 13:13 — ACF', text: 'Agora, pois, permanecem a fé, a esperança e o amor, estes três;\nmas o maior destes é o amor.', theme: 'bible', verseNum: 13, bookName: '1 Coríntios', chapterNum: 13, version: 'ACF' },
+      { tag: 'ROMANOS 8:28', title: 'Bíblia Sagrada', reference: 'Romanos 8:28 — ACF', text: 'E sabemos que todas as coisas concorrem para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito.', theme: 'bible', verseNum: 28, bookName: 'Romanos', chapterNum: 8, version: 'ACF' }
     ];
 
     // ── TRILHA 1: LOUVOR & SLIDES DO CULTO (EQUADOR) ──
@@ -237,14 +237,17 @@ class SphericalSurfaceEngine {
     let focusCardIdx = 0;
     versesList.forEach((item, cardIdx) => {
       const vNum = item.verse || (cardIdx + 1);
+      const reference = `${bookName} ${chapterNum}:${vNum} — ${versionAbbrev.toUpperCase()}`;
       const data = {
         tag: `${bookName.toUpperCase()} ${chapterNum}:${vNum}`,
         title: `${bookName} ${chapterNum} (${versionAbbrev.toUpperCase()})`,
+        reference: reference,
         text: item.text,
         theme: 'bible',
         verseNum: vNum,
         bookName: bookName,
-        chapterNum: chapterNum
+        chapterNum: chapterNum,
+        version: versionAbbrev.toUpperCase()
       };
       if (Number(vNum) === Number(focusVerseNum)) {
         focusCardIdx = cardIdx;
@@ -454,16 +457,23 @@ class SphericalSurfaceEngine {
         nextText = row.cards[cardIdx + 1].data.text || '';
       }
 
+      const isBible = data.theme === 'bible';
+      const ref = data.reference || (isBible ? `${data.bookName || ''} ${data.chapterNum || ''}:${data.verseNum || ''} — ${data.version || 'ACF'}`.trim() : '');
+
       window.projectionSync.projectSlide({
-        header: data.tag,
+        header: isBible ? '' : data.tag,
         text: data.text,
-        subtitle: data.title,
+        subtitle: isBible ? ref : data.title,
+        reference: ref,
+        caption: isBible ? ref : (data.title || data.tag),
         theme: data.theme,
         nextText: nextText
       });
 
       const pill = document.getElementById('on-air-pill-text');
-      if (pill) pill.textContent = `${data.tag} — ${data.title}`;
+      if (pill) {
+        pill.textContent = (isBible && ref) ? ref : `${data.tag} — ${data.title}`;
+      }
 
       // Se for Bíblia, atualiza o versículo e salva preferências
       if (data.theme === 'bible' && window.bibleService) {
@@ -473,7 +483,7 @@ class SphericalSurfaceEngine {
 
       if (window.slideTelemetry) {
         window.slideTelemetry.updateInspector(data);
-        window.slideTelemetry.appendLog(data.tag, `Projetado no Telão: "${data.title}"`, 'success');
+        window.slideTelemetry.appendLog(data.tag, `Projetado no Telão: "${(isBible && ref) ? ref : data.title}"`, 'success');
       }
     } else {
       if (window.slideTelemetry) {

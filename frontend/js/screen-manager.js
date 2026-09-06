@@ -189,20 +189,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Preview ao vivo em iframe se for monitor atribuído
-        if (String(assignedTelao) === String(m.id) && isTelaoOpen) {
+        const hasTelao = m.isTelao || (String(assignedTelao) === String(m.id) && isTelaoOpen);
+        const hasRetorno = m.isRetorno || (String(assignedRetorno) === String(m.id) && isRetornoOpen);
+
+        if (hasTelao) {
           const iframeScale = thumbW / m.bounds.width;
           const iframe = document.createElement('iframe');
           iframe.src = 'display.html?mode=screen-manager';
           iframe.style.cssText = `position: absolute; top: 0; left: 0; width: ${m.bounds.width}px; height: ${m.bounds.height}px; transform: scale(${iframeScale}); transform-origin: top left; border: none; pointer-events: none; opacity: 0.85; z-index: 1;`;
           monDiv.appendChild(iframe);
+          // Se o monitor ativo for onde o telão está mas a preferência guardava outro ID, sincronizar!
+          if (m.isTelao && String(assignedTelao) !== String(m.id)) {
+            window.electronAPI.setPref('slideState_monitor_telao', m.id);
+            assignedTelao = m.id;
+          }
         }
 
-        if (String(assignedRetorno) === String(m.id) && isRetornoOpen) {
+        if (hasRetorno) {
           const iframeScale = thumbW / m.bounds.width;
           const iframe = document.createElement('iframe');
           iframe.src = 'retorno.html?mode=screen-manager';
           iframe.style.cssText = `position: absolute; top: 0; left: 0; width: ${m.bounds.width}px; height: ${m.bounds.height}px; transform: scale(${iframeScale}); transform-origin: top left; border: none; pointer-events: none; opacity: 0.85; z-index: 1;`;
           monDiv.appendChild(iframe);
+          // Se o monitor ativo for onde o retorno está mas a preferência guardava outro ID, sincronizar!
+          if (m.isRetorno && String(assignedRetorno) !== String(m.id)) {
+            window.electronAPI.setPref('slideState_monitor_retorno', m.id);
+            assignedRetorno = m.id;
+          }
         }
 
         // Eventos de Drag and Drop
@@ -267,19 +280,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       telaoTag.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', 'telao'));
 
-      if (assignedTelao && isTelaoOpen) {
-        const assignedMonitor = monitors.findIndex(m => String(m.id) === String(assignedTelao));
-        if (assignedMonitor !== -1) {
-          const m = monitors[assignedMonitor];
-          const thumbX = Math.round((m.bounds.x - minX) * scaleFactor);
-          const thumbY = Math.round((m.bounds.y - minY) * scaleFactor);
-          telaoTag.style.position = 'absolute';
-          telaoTag.style.left = `${thumbX + 10}px`;
-          telaoTag.style.top = `${thumbY + 34}px`;
-          visualContainer.appendChild(telaoTag);
-        } else {
-          tagZone.appendChild(telaoTag);
+      // Posicionar Tag do Telão
+      let assignedTelaoIndex = -1;
+      if (isTelaoOpen) {
+        assignedTelaoIndex = monitors.findIndex(m => m.isTelao);
+        if (assignedTelaoIndex === -1 && assignedTelao) {
+          assignedTelaoIndex = monitors.findIndex(m => String(m.id) === String(assignedTelao));
         }
+      }
+
+      if (assignedTelaoIndex !== -1 && isTelaoOpen) {
+        const m = monitors[assignedTelaoIndex];
+        const thumbX = Math.round((m.bounds.x - minX) * scaleFactor);
+        const thumbY = Math.round((m.bounds.y - minY) * scaleFactor);
+        telaoTag.style.position = 'absolute';
+        telaoTag.style.left = `${thumbX + 10}px`;
+        telaoTag.style.top = `${thumbY + 34}px`;
+        visualContainer.appendChild(telaoTag);
       } else {
         tagZone.appendChild(telaoTag);
       }
@@ -309,20 +326,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
       retornoTag.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', 'retorno'));
 
-      if (assignedRetorno && isRetornoOpen) {
-        const assignedMonitor = monitors.findIndex(m => String(m.id) === String(assignedRetorno));
-        if (assignedMonitor !== -1) {
-          const m = monitors[assignedMonitor];
-          const thumbX = Math.round((m.bounds.x - minX) * scaleFactor);
-          const thumbY = Math.round((m.bounds.y - minY) * scaleFactor);
-          retornoTag.style.position = 'absolute';
-          retornoTag.style.left = `${thumbX + 10}px`;
-          const topOffset = (assignedTelao === assignedRetorno && isTelaoOpen) ? 68 : 34;
-          retornoTag.style.top = `${thumbY + topOffset}px`;
-          visualContainer.appendChild(retornoTag);
-        } else {
-          tagZone.appendChild(retornoTag);
+      // Posicionar Tag do Retorno
+      let assignedRetornoIndex = -1;
+      if (isRetornoOpen) {
+        assignedRetornoIndex = monitors.findIndex(m => m.isRetorno);
+        if (assignedRetornoIndex === -1 && assignedRetorno) {
+          assignedRetornoIndex = monitors.findIndex(m => String(m.id) === String(assignedRetorno));
         }
+      }
+
+      if (assignedRetornoIndex !== -1 && isRetornoOpen) {
+        const m = monitors[assignedRetornoIndex];
+        const thumbX = Math.round((m.bounds.x - minX) * scaleFactor);
+        const thumbY = Math.round((m.bounds.y - minY) * scaleFactor);
+        retornoTag.style.position = 'absolute';
+        retornoTag.style.left = `${thumbX + 10}px`;
+        const topOffset = (assignedTelaoIndex === assignedRetornoIndex && isTelaoOpen) ? 68 : 34;
+        retornoTag.style.top = `${thumbY + topOffset}px`;
+        visualContainer.appendChild(retornoTag);
       } else {
         tagZone.appendChild(retornoTag);
       }
@@ -349,11 +370,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     configs.forEach(item => {
       const el = document.getElementById(item.id);
-      if (el && window.electronAPI) {
-        const saved = window.electronAPI.getPref(item.key);
-        el.checked = saved !== null ? saved : item.def;
+      if (el) {
+        let saved = null;
+        if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+          saved = window.electronAPI.getPref(item.key);
+        }
+        if (saved === null) {
+          try {
+            const local = localStorage.getItem(item.key);
+            if (local !== null) saved = JSON.parse(local);
+          } catch (e) {}
+        }
+        el.checked = saved !== null ? (saved === true || saved === 'true') : item.def;
         el.onchange = () => {
-          window.electronAPI.setPref(item.key, el.checked);
+          if (window.electronAPI && typeof window.electronAPI.setPref === 'function') {
+            window.electronAPI.setPref(item.key, el.checked);
+          }
+          try {
+            localStorage.setItem(item.key, JSON.stringify(el.checked));
+          } catch (e) {}
+
+          // Atualiza instantaneamente o Telão e Retorno ao vivo
+          if (window.projectionSync && typeof window.projectionSync.sendCurrentSlide === 'function') {
+            window.projectionSync.sendCurrentSlide();
+          }
         };
       }
     });
@@ -377,19 +417,35 @@ document.addEventListener('DOMContentLoaded', () => {
       btns.forEach(b => b.classList.toggle('active', b.dataset.value === value));
     };
 
-    const savedFit = (window.electronAPI && window.electronAPI.getPref(storageKey)) || 'width';
-    applyVisual(savedFit);
+    let savedFit = null;
+    if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+      savedFit = window.electronAPI.getPref(storageKey);
+    }
+    if (!savedFit) {
+      try {
+        const local = localStorage.getItem(storageKey);
+        if (local) savedFit = JSON.parse(local);
+      } catch (e) {}
+    }
+    applyVisual(savedFit || 'width');
 
     btns.forEach(btn => {
       btn.onclick = () => {
         const value = btn.dataset.value;
         applyVisual(value);
-        if (window.electronAPI) {
+        if (window.electronAPI && typeof window.electronAPI.setPref === 'function') {
           window.electronAPI.setPref(storageKey, value);
         }
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(value));
+        } catch (e) {}
         // Broadcast instantâneo para os displays
         const channel = new BroadcastChannel('slidecontrol_orbital_v3');
         channel.postMessage({ action: 'SET_BG_FIT', target, value });
+
+        if (window.projectionSync && typeof window.projectionSync.sendCurrentSlide === 'function') {
+          window.projectionSync.sendCurrentSlide();
+        }
       };
     });
   }

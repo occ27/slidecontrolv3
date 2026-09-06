@@ -96,6 +96,10 @@ html, body {
   border: 1px solid rgba(0, 240, 255, 0.3);
 }
 
+.stage-badge:empty {
+  display: none !important;
+}
+
 .stage-clock {
   font-size: clamp(1.8rem, 3.2vw, 4rem);
   font-weight: 800;
@@ -125,11 +129,13 @@ html, body {
 }
 
 .stage-current-text {
-  font-size: clamp(2rem, 5vw, 6.2rem);
+  font-size: 52px;
   font-weight: 700;
   line-height: 1.2;
   color: #ffffff;
+  width: 100%;
   max-width: 90vw;
+  box-sizing: border-box;
   white-space: pre-wrap;
   word-break: break-word;
   transition: opacity 0.25s ease;

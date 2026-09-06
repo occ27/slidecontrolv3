@@ -1,8 +1,8 @@
 {
   "name": "slidecontrol-v3",
-  "productName": "SlideControl V3 Orbital",
+  "productName": "SlideControl Lumina",
   "version": "3.0.0",
-  "description": "SlideControl V3 — Console de Produção e Projeção com Interface Esférica Orbital",
+  "description": "SlideControl Lumina — Console de Produção e Projeção com Interface Esférica Orbital",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

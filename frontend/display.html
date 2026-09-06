@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telão de Projeção — SlideControl V3</title>
+  <title>Telão de Projeção — SlideControl Lumina</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
   <!-- Content Presentation Layer -->
   <main class="content-layer" id="content-layer">
     <div class="header-badge" id="slide-header" style="display: none;">JOÃO 3:16</div>
-    <h1 class="slide-text" id="slide-text">SlideControl V3 Orbital</h1>
+    <h1 class="slide-text" id="slide-text">SlideControl Lumina</h1>
     <div class="slide-subtitle" id="slide-subtitle">Aguardando comando da cabine de projeção...</div>
   </main>
 
@@ -31,7 +31,7 @@
 
   <!-- Logo Projection Layer -->
   <div class="logo-layer" id="logo-layer">
-    <div class="logo-text">SLIDECONTROL V3</div>
+    <div class="logo-text">SLIDECONTROL LUMINA</div>
   </div>
 
   <!-- Alert Overlay Banner -->
@@ -123,6 +123,137 @@
       }
     }
 
+    let lastEffectiveFontSize = 52;
+
+    function formatDisplayText(rawText, textStyle) {
+      if (!rawText) return '';
+      let processed = String(rawText).replace(/(\w)-(\w)/g, '$1&#8209;$2');
+
+      const isAnimatedWorship = textStyle === 'ts-worship-highlight-animated';
+      const isRandomHighlight = textStyle === 'ts-worship-highlight-word';
+      const isHandwritten = textStyle === 'ts-worship-handwritten';
+      const isWorship = isAnimatedWorship || isRandomHighlight || isHandwritten;
+
+      if (!isWorship) {
+        return processed.replace(/\n/g, '<br/>');
+      }
+
+      const lines = processed.replace(/<br\s*\/?>/gi, '\n').split('\n').filter(l => l.trim() !== '');
+      const importantWords = new Set(['deus', 'jesus', 'rei', 'maior', 'santo', 'pai', 'senhor', 'poder', 'amor', 'luz', 'paz', 'vida', 'cruz', 'fogo', 'amém', 'bom', 'fiel', 'justo', 'eterno', 'glória', 'graça', 'céu', 'digno', 'forte', 'vivo', 'leão', 'cristo', 'salvo', 'sangue', 'cura']);
+      const cleanWord = (w) => w.trim().replace(/[^a-zA-ZÀ-ÿ]/g, '').toLowerCase();
+
+      const importantLineIndices = [];
+      const normalLineIndices = [];
+
+      let tempVisibleCount = 0;
+      lines.forEach((line) => {
+        if (line.trim() !== '') {
+          const words = line.split(' ');
+          const hasImportantWord = words.some(w => importantWords.has(cleanWord(w)));
+          if (hasImportantWord) {
+            importantLineIndices.push(tempVisibleCount);
+          } else {
+            const hasValidLength = words.some(w => cleanWord(w).length > 2 && cleanWord(w).length <= 5);
+            if (hasValidLength) {
+              normalLineIndices.push(tempVisibleCount);
+            }
+          }
+          tempVisibleCount++;
+        }
+      });
+
+      const linesToHighlight = new Set();
+      while (importantLineIndices.length > 0 && linesToHighlight.size < 2) {
+        const randIdx = Math.floor(Math.random() * importantLineIndices.length);
+        linesToHighlight.add(importantLineIndices[randIdx]);
+        importantLineIndices.splice(randIdx, 1);
+      }
+      while (normalLineIndices.length > 0 && linesToHighlight.size < 2) {
+        const randIdx = Math.floor(Math.random() * normalLineIndices.length);
+        linesToHighlight.add(normalLineIndices[randIdx]);
+        normalLineIndices.splice(randIdx, 1);
+      }
+
+      let visibleLineCount = 0;
+      const htmlLines = lines.map(line => {
+        if (line.trim() === '') return `<span>${line}</span>`;
+        const type = visibleLineCount % 2 === 0 ? 'line-odd' : 'line-even';
+        const currentVisibleIndex = visibleLineCount;
+        visibleLineCount++;
+
+        const words = line.split(' ');
+        if (words.length > 0 && linesToHighlight.has(currentVisibleIndex)) {
+          let targetWordIdx = -1;
+          for (let i = 0; i < words.length; i++) {
+            if (importantWords.has(cleanWord(words[i]))) { targetWordIdx = i; break; }
+          }
+          if (targetWordIdx === -1) {
+            for (let i = 0; i < words.length; i++) {
+              const len = cleanWord(words[i]).length;
+              if (len > 2 && len <= 5) { targetWordIdx = i; break; }
+            }
+          }
+          if (targetWordIdx === -1) targetWordIdx = Math.floor(Math.random() * words.length);
+
+          const w = words[targetWordIdx];
+          words[targetWordIdx] = `<span class="word-highlight">${w}</span>`;
+
+          const alignments = ['align-left', 'align-center', 'align-right'];
+          const alignment = isAnimatedWorship ? alignments[currentVisibleIndex % alignments.length] : '';
+
+          const anims = ['anim-left', 'anim-right', 'anim-top', 'anim-bottom'];
+          const anim = isAnimatedWorship ? anims[currentVisibleIndex % anims.length] : '';
+
+          return `<span class="${type} ${alignment} ${anim}">${words.join(' ')}</span>`;
+        }
+
+        const anims = ['anim-left', 'anim-right', 'anim-top', 'anim-bottom'];
+        const anim = isAnimatedWorship ? anims[currentVisibleIndex % anims.length] : '';
+        return `<span class="${type} ${anim}">${line}</span>`;
+      });
+      return htmlLines.join('<br/>');
+    }
+
+    function autoFitDisplayFontSize(baseSize) {
+      if (baseSize !== undefined && baseSize !== null) {
+        lastEffectiveFontSize = parseInt(baseSize) || 52;
+      }
+      const targetBase = lastEffectiveFontSize;
+      if (!targetBase || isNaN(targetBase)) return;
+
+      if (!textEl || !contentLayer) return;
+
+      const hasHeader = headerEl && headerEl.textContent.trim() !== '' && headerEl.style.display !== 'none';
+      const hasSubtitle = subtitleEl && subtitleEl.textContent.trim() !== '' && subtitleEl.style.display !== 'none';
+      const hasCaption = hasHeader || hasSubtitle;
+
+      const vh = window.innerHeight || document.documentElement.clientHeight || 1080;
+      const maxAllowedHeight = hasCaption ? (vh * 0.70) : (vh * 0.82);
+
+      let currentSize = targetBase;
+      const minSize = Math.max(16, Math.floor(targetBase * 0.35));
+
+      // Reset to target size first
+      textEl.style.fontSize = currentSize + "px";
+
+      const checkOverflow = () => {
+        if (textEl.scrollHeight > maxAllowedHeight) return true;
+        if (textEl.scrollWidth > textEl.clientWidth + 4) return true;
+        return false;
+      };
+
+      let iterations = 0;
+      while (checkOverflow() && currentSize > minSize && iterations < 35) {
+        currentSize -= 2;
+        textEl.style.fontSize = currentSize + "px";
+        iterations++;
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      autoFitDisplayFontSize();
+    });
+
     function applyTextStyle(data) {
       if (!data) return;
 
@@ -143,8 +274,9 @@
         textEl.style.fontWeight = data.fontWeight || '';
       }
 
-      if (data.fontSize !== undefined) {
-        textEl.style.fontSize = data.fontSize ? `${data.fontSize}px` : '';
+      if (data.fontSize !== undefined && data.fontSize) {
+        lastEffectiveFontSize = parseInt(data.fontSize) || 52;
+        textEl.style.fontSize = `${lastEffectiveFontSize}px`;
       }
 
       if (data.captionFontSize !== undefined && data.captionFontSize) {
@@ -166,6 +298,8 @@
           textEl.style.overflow = '';
         }
       }
+
+      autoFitDisplayFontSize();
     }
 
     function triggerTextAnimation() {
@@ -232,13 +366,23 @@
 
         // Restaura estilo de texto inicial das preferências
         applyTextStyle({
-          textStyle: window.electronAPI.getPref('slideState_textStyle') || 'ts-holy-default',
-          fontFamily: window.electronAPI.getPref('slideState_fontFamily') || '',
-          fontWeight: window.electronAPI.getPref('slideState_fontWeight') || '',
-          fontSize: parseInt(window.electronAPI.getPref('slideState_fontSize')) || 52,
-          captionFontSize: window.electronAPI.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)',
-          linesLimit: window.electronAPI.getPref('slideState_linesLimit') || '0'
+          textStyle: window.electronAPI.getPref('slideState_songs_textStyle') || window.electronAPI.getPref('slideState_textStyle') || 'ts-holy-default',
+          fontFamily: window.electronAPI.getPref('slideState_songs_fontFamily') || window.electronAPI.getPref('slideState_fontFamily') || '',
+          fontWeight: window.electronAPI.getPref('slideState_songs_fontWeight') || window.electronAPI.getPref('slideState_fontWeight') || '',
+          fontSize: parseInt(window.electronAPI.getPref('slideState_songs_fontSize') || window.electronAPI.getPref('slideState_fontSize')) || 52,
+          captionFontSize: window.electronAPI.getPref('slideState_songs_captionFontSize') || window.electronAPI.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)',
+          linesLimit: window.electronAPI.getPref('slideState_songs_linesLimit') || window.electronAPI.getPref('slideState_linesLimit') || '0'
         });
+
+        const initCfgFooter = window.electronAPI.getPref('slideState_cfg_telao_footer');
+        if (initCfgFooter === false || initCfgFooter === 'false') {
+          if (headerEl) headerEl.style.display = 'none';
+          if (subtitleEl) subtitleEl.style.display = 'none';
+        }
+        const initCfgText = window.electronAPI.getPref('slideState_cfg_telao_text');
+        if (initCfgText === false || initCfgText === 'false') {
+          if (textEl) textEl.style.display = 'none';
+        }
       } catch (err) {
         console.warn('Erro ao restaurar preferências do telão:', err);
       }
@@ -263,15 +407,45 @@
             contentLayer.classList.toggle('text-hidden', !!msg.isClearText);
           }
 
-          if (msg.header) {
-            headerEl.textContent = msg.header;
-            headerEl.style.display = 'inline-block';
+          const isBible = msg.theme === 'bible';
+          const bibleRef = msg.reference || msg.caption || msg.subtitle || '';
+
+          if (isBible) {
+            // Em Bíblia: exatamente igual ao V2, não exibe cápsula/header-badge no topo.
+            // A referência unificada "Livro C:V — VERSÃO" é exibida no rodapé (bottom: 8%).
+            if (headerEl) {
+              headerEl.textContent = '';
+              headerEl.style.display = 'none';
+            }
+            if (subtitleEl) {
+              subtitleEl.textContent = bibleRef;
+              subtitleEl.style.display = bibleRef ? '' : 'none';
+            }
           } else {
-            headerEl.style.display = 'none';
+            const showFooter = (msg.cfgTelaoFooter !== false && msg.cfgTelaoFooter !== 'false');
+            if (msg.header && showFooter) {
+              headerEl.textContent = msg.header;
+              headerEl.style.display = 'inline-block';
+            } else {
+              headerEl.textContent = '';
+              headerEl.style.display = 'none';
+            }
+
+            if (subtitleEl) {
+              if (showFooter && msg.subtitle) {
+                subtitleEl.textContent = msg.subtitle;
+                subtitleEl.style.display = '';
+              } else {
+                subtitleEl.textContent = '';
+                subtitleEl.style.display = 'none';
+              }
+            }
           }
 
-          textEl.textContent = msg.text || '';
-          subtitleEl.textContent = msg.subtitle || '';
+          const showText = msg.cfgTelaoText !== false && msg.cfgTelaoText !== 'false';
+          if (textEl) {
+            textEl.style.display = showText ? '' : 'none';
+          }
 
           if (msg.theme === 'bible') {
             bgGradient.style.background = 'radial-gradient(circle at center, #1e1b4b 0%, #030712 100%)';
@@ -287,19 +461,29 @@
             headerEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
           }
 
+          if (msg.bgFitTelao) {
+            applyBgFit(msg.bgFitTelao);
+          }
+
           if (msg.bgKind && msg.bgUrl) {
             applyBackground(msg.bgKind, msg.bgUrl);
           }
 
-          if (msg.textStyle) {
+          textEl.innerHTML = formatDisplayText(msg.text, msg.textStyle || currentTextStyle);
+
+          const effectiveLinesLimit = isBible ? '0' : (msg.linesLimit || '0');
+
+          if (msg.textStyle || msg.fontSize || typeof msg.linesLimit !== 'undefined') {
             applyTextStyle({
               textStyle: msg.textStyle,
               fontFamily: msg.fontFamily,
               fontWeight: msg.fontWeight,
               fontSize: msg.fontSize,
               captionFontSize: msg.captionFontSize,
-              linesLimit: msg.linesLimit
+              linesLimit: effectiveLinesLimit
             });
+          } else {
+            autoFitDisplayFontSize(msg.fontSize || lastEffectiveFontSize);
           }
 
           triggerTextAnimation();
@@ -353,6 +537,10 @@
         case 'SET_TEXT_STYLE':
           if (!msg.target || msg.target === 'telao') {
             applyTextStyle(msg);
+            if (textEl && textEl.textContent) {
+              textEl.innerHTML = formatDisplayText(textEl.textContent, currentTextStyle);
+            }
+            autoFitDisplayFontSize();
           }
           break;
       }

@@ -16,7 +16,7 @@ import api.models
 # Cria as tabelas do banco de dados caso não existam
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="SlideControl V3 API", version="3.0.0")
+app = FastAPI(title="SlideControl Lumina API", version="3.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,7 +46,7 @@ app.include_router(bible.router)
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "app": "SlideControl V3", "port": 8767}
+    return {"status": "ok", "app": "SlideControl Lumina", "port": 8767}
 
 @app.get("/")
 @app.get("/index.html")
@@ -55,7 +55,7 @@ async def get_root():
     if os.path.exists(index_file):
         with open(index_file, "r", encoding="utf-8") as f:
             return HTMLResponse(f.read())
-    return {"message": "SlideControl V3 API running"}
+    return {"message": "SlideControl Lumina API running"}
 
 @app.get("/display")
 @app.get("/display.html")

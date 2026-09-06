@@ -29,7 +29,6 @@ class MediaManager {
 
   init() {
     this.setupTargets();
-    this.setupTrackContexts();
     this.setupTabs();
     this.setupColorPalette();
     this.setupCloudModal();
@@ -83,29 +82,30 @@ class MediaManager {
     });
   }
 
-  setupTrackContexts() {
-    document.querySelectorAll(".bg-track-context-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        this.currentBgContext = btn.dataset.context || "general";
-        document.querySelectorAll(".bg-track-context-btn").forEach(b => {
-          b.classList.remove("active");
-          b.style.background = "rgba(30,41,59,0.5)";
-          b.style.borderColor = "rgba(255,255,255,0.1)";
-          b.style.color = "#94a3b8";
-        });
-        btn.classList.add("active");
-        if (this.currentBgContext === "bible") {
-          btn.style.background = "rgba(168,85,247,0.18)";
-          btn.style.borderColor = "rgba(168,85,247,0.45)";
-          btn.style.color = "#c084fc";
-        } else {
-          btn.style.background = "rgba(0,240,255,0.12)";
-          btn.style.borderColor = "rgba(0,240,255,0.35)";
-          btn.style.color = "#00f0ff";
-        }
-        this.refreshUI();
-      });
-    });
+  getCurrentContext() {
+    if (window.orbitalEngine && typeof window.orbitalEngine.activeRow === "number") {
+      return window.orbitalEngine.activeRow === 0 ? "bible" : "general";
+    }
+    const currentTheme = window.projectionSync?.currentState?.currentSlide?.theme;
+    if (currentTheme === "bible") return "bible";
+    return "general";
+  }
+
+  updateTrackBadge() {
+    const pill = document.getElementById("bg-modal-track-pill");
+    if (!pill) return;
+    const isBible = this.currentBgContext === "bible";
+    if (isBible) {
+      pill.textContent = "📖 Trilha: Bíblia";
+      pill.style.background = "rgba(168, 85, 247, 0.2)";
+      pill.style.border = "1px solid rgba(168, 85, 247, 0.45)";
+      pill.style.color = "#c084fc";
+    } else {
+      pill.textContent = "🌐 Trilha: Louvor & Culto";
+      pill.style.background = "rgba(0, 240, 255, 0.15)";
+      pill.style.border = "1px solid rgba(0, 240, 255, 0.35)";
+      pill.style.color = "#00f0ff";
+    }
   }
 
   setupTabs() {
@@ -1004,6 +1004,7 @@ class MediaManager {
   }
 
   applyBackground(kind, url) {
+    this.currentBgContext = this.getCurrentContext();
     const isRetorno = this.currentBgTarget === "retorno";
     const isBible = this.currentBgContext === "bible";
 
@@ -1089,6 +1090,8 @@ class MediaManager {
   }
 
   refreshUI() {
+    this.currentBgContext = this.getCurrentContext();
+    this.updateTrackBadge();
     this.highlightActiveSelection();
   }
 }

@@ -54,9 +54,11 @@ class PlannerService {
         targetNode: 'node_biblia',
         passage: 'joao 3',
         slide: {
-          header: 'JOÃO 3:16',
+          header: '',
           text: 'Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.',
-          subtitle: 'Evangelho de João',
+          subtitle: 'João 3:16 — ACF',
+          reference: 'João 3:16 — ACF',
+          caption: 'João 3:16 — ACF',
           theme: 'bible'
         }
       },

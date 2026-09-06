@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retorno de Palco — SlideControl V3</title>
+  <title>Retorno de Palco — SlideControl Lumina</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -22,13 +22,12 @@
   <div class="stage-wrapper">
     <!-- Topbar -->
     <header class="stage-topbar">
-      <span class="stage-badge" id="stage-header">SLIDECONTROL V3</span>
+      <span class="stage-badge" id="stage-header">SLIDECONTROL LUMINA</span>
       <time class="stage-clock" id="stage-clock">00:00:00</time>
     </header>
 
     <!-- Center: Slide Atual -->
     <main class="stage-center">
-      <span class="stage-current-label">SLIDE ATUAL</span>
       <h1 class="stage-current-text" id="stage-current-text">Aguardando início...</h1>
     </main>
 
@@ -137,11 +136,147 @@
     }
 
     const stageWrapper = document.querySelector('.stage-wrapper');
+    const topbarEl = document.querySelector('.stage-topbar');
+    const centerEl = document.querySelector('.stage-center');
+    const footerEl = document.querySelector('.stage-footer');
+
+    let currentTextStyle = 'ts-holy-default';
+    let lastEffectiveRetornoFontSize = 52;
+    let lastCaptionFontSize = null;
+
+    function formatDisplayText(rawText, textStyle) {
+      if (!rawText) return '';
+      let processed = String(rawText).replace(/(\w)-(\w)/g, '$1&#8209;$2');
+
+      const isAnimatedWorship = textStyle === 'ts-worship-highlight-animated';
+      const isRandomHighlight = textStyle === 'ts-worship-highlight-word';
+      const isHandwritten = textStyle === 'ts-worship-handwritten';
+      const isWorship = isAnimatedWorship || isRandomHighlight || isHandwritten;
+
+      if (!isWorship) {
+        return processed.replace(/\n/g, '<br/>');
+      }
+
+      const lines = processed.replace(/<br\s*\/?>/gi, '\n').split('\n').filter(l => l.trim() !== '');
+      const importantWords = new Set(['deus', 'jesus', 'rei', 'maior', 'santo', 'pai', 'senhor', 'poder', 'amor', 'luz', 'paz', 'vida', 'cruz', 'fogo', 'amém', 'bom', 'fiel', 'justo', 'eterno', 'glória', 'graça', 'céu', 'digno', 'forte', 'vivo', 'leão', 'cristo', 'salvo', 'sangue', 'cura']);
+      const cleanWord = (w) => w.trim().replace(/[^a-zA-ZÀ-ÿ]/g, '').toLowerCase();
+
+      const importantLineIndices = [];
+      const normalLineIndices = [];
+
+      let tempVisibleCount = 0;
+      lines.forEach((line) => {
+        if (line.trim() !== '') {
+          const words = line.split(' ');
+          const hasImportantWord = words.some(w => importantWords.has(cleanWord(w)));
+          if (hasImportantWord) {
+            importantLineIndices.push(tempVisibleCount);
+          } else {
+            const hasValidLength = words.some(w => cleanWord(w).length > 2 && cleanWord(w).length <= 5);
+            if (hasValidLength) {
+              normalLineIndices.push(tempVisibleCount);
+            }
+          }
+          tempVisibleCount++;
+        }
+      });
+
+      const linesToHighlight = new Set();
+      while (importantLineIndices.length > 0 && linesToHighlight.size < 2) {
+        const randIdx = Math.floor(Math.random() * importantLineIndices.length);
+        linesToHighlight.add(importantLineIndices[randIdx]);
+        importantLineIndices.splice(randIdx, 1);
+      }
+      while (normalLineIndices.length > 0 && linesToHighlight.size < 2) {
+        const randIdx = Math.floor(Math.random() * normalLineIndices.length);
+        linesToHighlight.add(normalLineIndices[randIdx]);
+        normalLineIndices.splice(randIdx, 1);
+      }
+
+      let visibleLineCount = 0;
+      const htmlLines = lines.map(line => {
+        if (line.trim() === '') return `<span>${line}</span>`;
+        const type = visibleLineCount % 2 === 0 ? 'line-odd' : 'line-even';
+        const currentVisibleIndex = visibleLineCount;
+        visibleLineCount++;
+
+        const words = line.split(' ');
+        if (words.length > 0 && linesToHighlight.has(currentVisibleIndex)) {
+          let targetWordIdx = -1;
+          for (let i = 0; i < words.length; i++) {
+            if (importantWords.has(cleanWord(words[i]))) { targetWordIdx = i; break; }
+          }
+          if (targetWordIdx === -1) {
+            for (let i = 0; i < words.length; i++) {
+              const len = cleanWord(words[i]).length;
+              if (len > 2 && len <= 5) { targetWordIdx = i; break; }
+            }
+          }
+          if (targetWordIdx === -1) targetWordIdx = Math.floor(Math.random() * words.length);
+
+          const w = words[targetWordIdx];
+          words[targetWordIdx] = `<span class="word-highlight">${w}</span>`;
+
+          const alignments = ['align-left', 'align-center', 'align-right'];
+          const alignment = isAnimatedWorship ? alignments[currentVisibleIndex % alignments.length] : '';
+
+          const anims = ['anim-left', 'anim-right', 'anim-top', 'anim-bottom'];
+          const anim = isAnimatedWorship ? anims[currentVisibleIndex % anims.length] : '';
+
+          return `<span class="${type} ${alignment} ${anim}">${words.join(' ')}</span>`;
+        }
+
+        const anims = ['anim-left', 'anim-right', 'anim-top', 'anim-bottom'];
+        const anim = isAnimatedWorship ? anims[currentVisibleIndex % anims.length] : '';
+        return `<span class="${type} ${anim}">${line}</span>`;
+      });
+      return htmlLines.join('<br/>');
+    }
+
+    function updateRetornoFontSize(baseSize) {
+      if (baseSize !== undefined && baseSize !== null) {
+        lastEffectiveRetornoFontSize = parseInt(baseSize) || 52;
+      }
+      const targetBase = lastEffectiveRetornoFontSize;
+      if (!targetBase || isNaN(targetBase)) return;
+
+      if (!currentEl) return;
+
+      let targetSize = targetBase;
+      const minSize = Math.max(16, Math.floor(targetBase * 0.35));
+
+      currentEl.style.setProperty('font-size', targetSize + 'px', 'important');
+
+      if (lastCaptionFontSize && nextEl) {
+        nextEl.style.setProperty('font-size', lastCaptionFontSize + 'px', 'important');
+      }
+
+      const vh = window.innerHeight || document.documentElement.clientHeight || 1080;
+      const maxOverlayHeight = vh * 0.52;
+
+      const checkOverflow = () => {
+        if (currentEl.scrollHeight > maxOverlayHeight) return true;
+        if (currentEl.scrollWidth > currentEl.clientWidth + 4) return true;
+        return false;
+      };
+
+      let iterations = 0;
+      while (checkOverflow() && targetSize > minSize && iterations < 35) {
+        targetSize -= 2;
+        currentEl.style.setProperty('font-size', targetSize + 'px', 'important');
+        iterations++;
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      updateRetornoFontSize();
+    });
 
     function applyRetornoTextStyle(data) {
       if (!data) return;
 
       if (data.textStyle !== undefined && data.textStyle && stageWrapper) {
+        currentTextStyle = data.textStyle;
         const classes = Array.from(stageWrapper.classList);
         classes.forEach(c => {
           if (c.startsWith('ts-')) stageWrapper.classList.remove(c);
@@ -159,57 +294,34 @@
       }
 
       if (data.fontSize !== undefined && currentEl) {
-        currentEl.style.fontSize = data.fontSize ? `${data.fontSize}px` : '';
+        lastEffectiveRetornoFontSize = parseInt(data.fontSize) || 52;
       }
 
       if (data.captionFontSize !== undefined && data.captionFontSize) {
+        lastCaptionFontSize = parseInt(data.captionFontSize) || null;
         if (headerEl) headerEl.style.fontSize = data.captionFontSize;
         if (nextEl) nextEl.style.fontSize = data.captionFontSize;
       }
-    }
 
-    // Restaura background inicial das preferências se existir
-    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
-      try {
-        const initKind = window.electronAPI.getPref("slideState_bgKindRetorno");
-        const initUrl = window.electronAPI.getPref("slideState_bgUrlRetorno");
-        if (initKind && initUrl) {
-          applyRetornoBackground(initKind, initUrl);
+      if (data.linesLimit !== undefined && currentEl) {
+        const limit = parseInt(data.linesLimit) || 0;
+        if (limit > 0) {
+          currentEl.style.display = '-webkit-box';
+          currentEl.style.webkitLineClamp = limit;
+          currentEl.style.webkitBoxOrient = 'vertical';
+          currentEl.style.overflow = 'hidden';
+        } else {
+          currentEl.style.display = '';
+          currentEl.style.webkitLineClamp = '';
+          currentEl.style.webkitBoxOrient = '';
+          currentEl.style.overflow = '';
         }
-        
-        const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
-        if (initLogoUrl) {
-          const fitModeRet = window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover';
-          let objectFitRet = 'cover';
-          if (fitModeRet === 'contain') objectFitRet = 'contain';
-          else if (fitModeRet === 'stretch') objectFitRet = 'fill';
-          const logoLayerRet = document.getElementById('logo-layer');
-          if (logoLayerRet) {
-              logoLayerRet.innerHTML = `<img id="logo-img-ret" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
-          }
-        }
-
-        // Restaura estilos iniciais do retorno das preferências
-        applyRetornoTextStyle({
-          textStyle: window.electronAPI.getPref('slideState_textStyleRetorno') || 'ts-holy-default',
-          fontFamily: window.electronAPI.getPref('slideState_fontFamilyRetorno') || '',
-          fontWeight: window.electronAPI.getPref('slideState_fontWeightRetorno') || '',
-          fontSize: parseInt(window.electronAPI.getPref('slideState_fontSizeRetorno')) || 52,
-          captionFontSize: window.electronAPI.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)'
-        });
-      } catch (err) {
-        console.warn('Erro ao restaurar preferências do retorno:', err);
       }
+
+      updateRetornoFontSize();
     }
 
-    const blackoutEl = document.getElementById('stage-blackout');
-    const logoEl = document.getElementById('logo-layer');
-    const alertEl = document.getElementById('stage-alert');
-    const alertTextEl = document.getElementById('stage-alert-text');
-
-    let alertTimer = null;
-
-    function applyBgFit(fitMode) {
+    function applyRetornoBgFit(fitMode) {
       if (bgImage) {
         if (fitMode === 'cover') bgImage.style.backgroundSize = 'cover';
         else if (fitMode === 'contain') bgImage.style.backgroundSize = 'contain';
@@ -233,6 +345,48 @@
       }
     }
 
+    // Restaura background e estilos iniciais do retorno das preferências se existir
+    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
+      try {
+        const initKind = window.electronAPI.getPref("slideState_bgKindRetorno") || window.electronAPI.getPref("slideState_songs_bgKindRetorno");
+        const initUrl = window.electronAPI.getPref("slideState_bgUrlRetorno") || window.electronAPI.getPref("slideState_songs_bgUrlRetorno");
+        if (initKind && initUrl) {
+          applyRetornoBackground(initKind, initUrl);
+        }
+
+        const fitModeRet = window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover';
+        applyRetornoBgFit(fitModeRet);
+        
+        const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
+        if (initLogoUrl) {
+          let objectFitRet = 'cover';
+          if (fitModeRet === 'contain') objectFitRet = 'contain';
+          else if (fitModeRet === 'stretch') objectFitRet = 'fill';
+          const logoLayerRet = document.getElementById('logo-layer');
+          if (logoLayerRet) {
+              logoLayerRet.innerHTML = `<img id="logo-img-ret" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+          }
+        }
+
+        applyRetornoTextStyle({
+          textStyle: window.electronAPI.getPref('slideState_songs_textStyleRetorno') || window.electronAPI.getPref('slideState_textStyleRetorno') || 'ts-holy-default',
+          fontFamily: window.electronAPI.getPref('slideState_songs_fontFamilyRetorno') || window.electronAPI.getPref('slideState_fontFamilyRetorno') || '',
+          fontWeight: window.electronAPI.getPref('slideState_songs_fontWeightRetorno') || window.electronAPI.getPref('slideState_fontWeightRetorno') || '',
+          fontSize: parseInt(window.electronAPI.getPref('slideState_songs_fontSizeRetorno') || window.electronAPI.getPref('slideState_fontSizeRetorno')) || 52,
+          captionFontSize: window.electronAPI.getPref('slideState_songs_captionFontSizeRetorno') || window.electronAPI.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)'
+        });
+      } catch (err) {
+        console.warn('Erro ao restaurar preferências do retorno:', err);
+      }
+    }
+
+    const blackoutEl = document.getElementById('stage-blackout');
+    const logoEl = document.getElementById('logo-layer');
+    const alertEl = document.getElementById('stage-alert');
+    const alertTextEl = document.getElementById('stage-alert-text');
+
+    let alertTimer = null;
+
     channel.onmessage = (event) => {
       const msg = event.data;
       if (!msg) return;
@@ -251,27 +405,65 @@
             currentEl.style.opacity = msg.isClearText ? '0' : '1';
           }
 
-          if (msg.header) {
-            headerEl.textContent = msg.header;
+          if (typeof msg.cfgRetornoClock !== 'undefined' && topbarEl) {
+            topbarEl.style.display = msg.cfgRetornoClock ? 'flex' : 'none';
           }
-          currentEl.textContent = msg.text || '';
-          if (msg.nextText) {
-            nextEl.textContent = msg.nextText;
-          } else {
-            nextEl.textContent = '—';
+          if (typeof msg.cfgRetornoCurrent !== 'undefined' && centerEl) {
+            centerEl.style.display = msg.cfgRetornoCurrent ? 'flex' : 'none';
           }
+          if (typeof msg.cfgRetornoNext !== 'undefined' && footerEl) {
+            footerEl.style.display = msg.cfgRetornoNext ? 'flex' : 'none';
+          }
+
+          if (msg.bgFitRetorno) {
+            applyRetornoBgFit(msg.bgFitRetorno);
+          }
+
           if (msg.bgKindRetorno && msg.bgUrlRetorno) {
             applyRetornoBackground(msg.bgKindRetorno, msg.bgUrlRetorno);
           }
 
-          if (msg.textStyleRetorno) {
+          currentEl.innerHTML = formatDisplayText(msg.text, msg.textStyleRetorno || currentTextStyle);
+
+          const isBibleRetorno = msg.theme === 'bible';
+          const bibleRef = msg.reference || msg.caption || msg.subtitle || '';
+
+          if (isBibleRetorno) {
+            if (headerEl) {
+              headerEl.textContent = bibleRef;
+              headerEl.style.display = bibleRef ? '' : 'none';
+            }
+            if (msg.nextText) {
+              nextEl.innerHTML = (msg.nextText).replace(/\n/g, ' • ');
+            } else {
+              nextEl.textContent = '—';
+            }
+          } else {
+            const songHeader = msg.header || '';
+            if (headerEl) {
+              headerEl.textContent = songHeader;
+              headerEl.style.display = songHeader ? '' : 'none';
+            }
+            if (msg.nextText) {
+              nextEl.innerHTML = (msg.nextText).replace(/\n/g, ' • ');
+            } else {
+              nextEl.textContent = '—';
+            }
+          }
+
+          const effectiveLinesLimitRetorno = isBibleRetorno ? '0' : (msg.linesLimit || '0');
+
+          if (msg.textStyleRetorno || msg.fontSizeRetorno || typeof msg.linesLimit !== 'undefined') {
             applyRetornoTextStyle({
               textStyle: msg.textStyleRetorno,
               fontFamily: msg.fontFamilyRetorno,
               fontWeight: msg.fontWeightRetorno,
               fontSize: msg.fontSizeRetorno,
-              captionFontSize: msg.captionFontSizeRetorno
+              captionFontSize: msg.captionFontSizeRetorno,
+              linesLimit: effectiveLinesLimitRetorno
             });
+          } else {
+            updateRetornoFontSize(msg.fontSizeRetorno || msg.fontSize || lastEffectiveRetornoFontSize);
           }
           break;
 
@@ -317,7 +509,7 @@
           break;
         case 'SET_BG_FIT':
           if (!msg.target || msg.target === 'retorno') {
-            applyBgFit(msg.value);
+            applyRetornoBgFit(msg.value);
           }
           break;
         case 'SET_TEXT_STYLE':
