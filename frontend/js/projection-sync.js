@@ -7,10 +7,16 @@ class ProjectionSyncService {
   constructor() {
     this.channel = new BroadcastChannel('slidecontrol_orbital_v3');
     this.isDisplayConnected = false;
+    let initialLogoUrl = null;
+    if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+      initialLogoUrl = window.electronAPI.getPref('slideState_logoUrl') || null;
+    }
+    
     this.currentState = {
       isBlackout: false,
       isClearText: false,
       isLogo: false,
+      logoUrl: initialLogoUrl,
       currentSlide: {
         header: 'SLIDECONTROL V3',
         text: 'Bem-vindo ao Culto',
@@ -27,12 +33,36 @@ class ProjectionSyncService {
       const msg = event.data;
       if (!msg) return;
 
-      if (msg.action === 'DISPLAY_CONNECTED') {
-        this.isDisplayConnected = true;
-        this.updateDisplayStatusUI(true);
+      if (msg.action === 'DISPLAY_CONNECTED' || msg.action === 'RETORNO_CONNECTED') {
+        if (msg.action === 'DISPLAY_CONNECTED') {
+          this.isDisplayConnected = true;
+          this.updateDisplayStatusUI(true);
+        }
 
         // Synchronize current slide to newly connected display
         this.sendCurrentSlide();
+        
+        if (this.currentState.logoUrl) {
+          this.channel.postMessage({
+            action: 'SET_LOGO',
+            url: this.currentState.logoUrl
+          });
+        }
+
+        this.channel.postMessage({
+          action: 'TOGGLE_LOGO',
+          active: this.currentState.isLogo
+        });
+        
+        this.channel.postMessage({
+          action: 'TOGGLE_BLACKOUT',
+          active: this.currentState.isBlackout
+        });
+        
+        this.channel.postMessage({
+          action: 'TOGGLE_CLEAR_TEXT',
+          active: this.currentState.isClearText
+        });
       }
     };
 
@@ -96,6 +126,8 @@ class ProjectionSyncService {
 
     const btn = document.getElementById('btn-blackout');
     if (btn) btn.classList.toggle('active', this.currentState.isBlackout);
+    const qbtn = document.getElementById('btn-quick-blackout');
+    if (qbtn) qbtn.classList.toggle('active', this.currentState.isBlackout);
 
     this.updatePreviewTags();
     return this.currentState.isBlackout;
@@ -110,9 +142,23 @@ class ProjectionSyncService {
 
     const btn = document.getElementById('btn-clear-text');
     if (btn) btn.classList.toggle('active', this.currentState.isClearText);
+    const qbtn = document.getElementById('btn-quick-clear');
+    if (qbtn) qbtn.classList.toggle('active', this.currentState.isClearText);
 
     this.updatePreviewTags();
     return this.currentState.isClearText;
+  }
+
+
+  setOfficialLogo(url) {
+    this.currentState.logoUrl = url;
+    if (window.electronAPI && typeof window.electronAPI.setPref === 'function') {
+      window.electronAPI.setPref('slideState_logoUrl', url);
+    }
+    this.channel.postMessage({
+      action: 'SET_LOGO',
+      url: url
+    });
   }
 
   toggleLogo() {
@@ -124,6 +170,8 @@ class ProjectionSyncService {
 
     const btn = document.getElementById('btn-logo');
     if (btn) btn.classList.toggle('active', this.currentState.isLogo);
+    const qbtn = document.getElementById('btn-quick-logo');
+    if (qbtn) qbtn.classList.toggle('active', this.currentState.isLogo);
 
     this.updatePreviewTags();
     return this.currentState.isLogo;

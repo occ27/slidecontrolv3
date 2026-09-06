@@ -202,19 +202,6 @@ class GlobeApp {
     window.addEventListener('keydown', e => {
       if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
-      if (e.key === 'Escape') {
-        const modalQuit = document.getElementById('modal-quit-confirm');
-        if (modalQuit && !modalQuit.classList.contains('hidden')) {
-          modalQuit.classList.add('hidden');
-        }
-        const modalScreen = document.getElementById('modal-screen-manager');
-        if (modalScreen && !modalScreen.classList.contains('hidden')) {
-          modalScreen.classList.add('hidden');
-          const screenList = document.getElementById('screen-list');
-          if (screenList) screenList.innerHTML = '';
-        }
-      }
-
       // Navegação vertical entre linhas (Norte <-> Equador <-> Sul)
       if (e.key === 'ArrowUp') {
         e.preventDefault();
@@ -248,7 +235,7 @@ class GlobeApp {
           window.slideTelemetry.appendLog('CABINE', 'Limpar Texto alternado (F3)', 'warning');
         }
       }
-      if (e.key === 'F4') {
+      if (e.key === 'Escape') {
         e.preventDefault();
         window.projectionSync.toggleLogo();
         if (window.slideTelemetry) {
@@ -264,3 +251,50 @@ class GlobeApp {
 }
 
 window.globeApp = new GlobeApp();
+
+window.updateOnAirCardBg = function() {
+  const onAirCard = document.querySelector('.globe-card.on-air');
+  if (!onAirCard) return;
+
+  // Remover background layer antigo se existir
+  const existingLayer = onAirCard.querySelector('.on-air-bg-layer');
+  if (existingLayer) existingLayer.remove();
+
+  if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
+    const kind = window.electronAPI.getPref("slideState_bgKind");
+    const url = window.electronAPI.getPref("slideState_bgUrl");
+    if (kind && url) {
+      const bgLayer = document.createElement("div");
+      bgLayer.className = "on-air-bg-layer";
+      bgLayer.style.cssText = "position:absolute; inset:0; z-index:0; border-radius:inherit; overflow:hidden; opacity:1; pointer-events:none; transition: opacity 0.3s ease;";
+
+      if (kind === "color") {
+        bgLayer.style.backgroundColor = url;
+      } else if (kind === "image") {
+        bgLayer.style.backgroundImage = `url("${url}")`;
+        bgLayer.style.backgroundSize = "cover";
+        bgLayer.style.backgroundPosition = "center";
+      } else if (kind === "video") {
+        const vid = document.createElement("video");
+        vid.src = url;
+        vid.autoplay = true;
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.style.cssText = "width:100%; height:100%; object-fit:cover;";
+        bgLayer.appendChild(vid);
+      }
+      
+      // Make sure the contents of the card are positioned above the bg layer
+      Array.from(onAirCard.children).forEach(child => {
+        if (child.className !== 'on-air-bg-layer') {
+            child.style.position = 'relative';
+            child.style.zIndex = '1';
+            child.style.textShadow = '0 2px 10px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,1)';
+        }
+      });
+      
+      onAirCard.insertBefore(bgLayer, onAirCard.firstChild);
+    }
+  }
+};

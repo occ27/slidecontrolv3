@@ -97,6 +97,15 @@
       if (initKind && initUrl) {
         applyBackground(initKind, initUrl);
       }
+      
+      const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
+      if (initLogoUrl) {
+        const fitMode = window.electronAPI.getPref('slideState_bgFit_telao') || 'cover';
+        let objectFit = 'cover';
+        if (fitMode === 'contain') objectFit = 'contain';
+        else if (fitMode === 'stretch') objectFit = 'fill';
+        logoEl.innerHTML = `<img id="logo-img" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFit}; max-width: none; max-height: none; filter: none;">`;
+      }
     }
 
     let alertTimeout = null;
@@ -111,6 +120,14 @@
         bgImage.style.backgroundSize = '100% 100%';
       } else if (fitMode === 'width') {
         bgImage.style.backgroundSize = '100% auto';
+      }
+      
+      const logoImg = document.getElementById('logo-img');
+      if (logoImg) {
+        if (fitMode === 'cover') logoImg.style.objectFit = 'cover';
+        else if (fitMode === 'contain') logoImg.style.objectFit = 'contain';
+        else if (fitMode === 'stretch') logoImg.style.objectFit = 'fill';
+        else if (fitMode === 'width') logoImg.style.objectFit = 'cover';
       }
     }
 
@@ -158,6 +175,15 @@
 
         case 'TOGGLE_CLEAR_TEXT':
           contentLayer.classList.toggle('text-hidden', msg.active);
+          break;
+
+        
+        case 'SET_LOGO':
+          const fitMode = window.electronAPI ? window.electronAPI.getPref('slideState_bgFit_telao') || 'cover' : 'cover';
+          let objectFit = 'cover';
+          if (fitMode === 'contain') objectFit = 'contain';
+          else if (fitMode === 'stretch') objectFit = 'fill';
+          logoEl.innerHTML = `<img id="logo-img" src="${msg.url}" style="width: 100vw; height: 100vh; object-fit: ${objectFit}; max-width: none; max-height: none; filter: none;">`;
           break;
 
         case 'TOGGLE_LOGO':

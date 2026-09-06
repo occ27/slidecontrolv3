@@ -580,6 +580,34 @@ body::before {
   stroke: #000000;
 }
 
+.ctrl-btn.active {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: var(--accent-cyan, #0ea5e9);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.6);
+}
+
+.ctrl-btn.danger.active {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+}
+
+.ctrl-btn.warning.active {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #000;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+}
+
+.ctrl-btn.warning.active svg,
+.ctrl-btn.warning.active i {
+  stroke: #000000;
+  color: #000000;
+}
+
+
 /* ==========================================================================
    RESGATADOS: PAINÉIS LATERAIS ESQUERDO E DIREITO (FUTURISTIC SCI-FI HUD)
    ========================================================================== */
@@ -1107,6 +1135,33 @@ body::before {
   color: #ffffff;
 }
 
+
+.action-btn.danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.action-btn.danger:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.action-btn.danger.active {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.action-btn.danger.active svg,
+.action-btn.danger.active i {
+  stroke: #ffffff;
+  color: #ffffff;
+}
+
 .action-btn.primary:hover {
   background: var(--accent-rose);
   box-shadow: 0 0 10px var(--accent-rose-glow);
@@ -1117,6 +1172,33 @@ body::before {
   color: #000;
   border-color: var(--accent-amber);
 }
+
+.action-btn.active {
+  background: var(--accent-cyan, #0ea5e9);
+  border-color: var(--accent-cyan, #0ea5e9);
+  color: #000000;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.6);
+}
+
+.action-btn.active svg,
+.action-btn.active i {
+  stroke: #000000;
+  color: #000000;
+}
+
+.action-btn.warning.active {
+  background: var(--accent-amber, #f59e0b);
+  border-color: var(--accent-amber, #f59e0b);
+  color: #000000;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+}
+
+.action-btn.warning.active svg,
+.action-btn.warning.active i {
+  stroke: #000000;
+  color: #000000;
+}
+
 
 /* Log Terminal */
 .log-stream-container {
@@ -1873,4 +1955,70 @@ body::before {
   border-color: rgba(0, 240, 255, 0.4) !important;
   transform: translateY(-2px) scale(1.02) !important;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0, 240, 255, 0.15) !important;
+}
+
+.set-logo-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s;
+  backdrop-filter: blur(2px);
+}
+
+.bg-item:hover .set-logo-btn {
+  opacity: 1;
+}
+
+.set-logo-btn:hover, .set-logo-btn.selected {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #000000;
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.set-logo-btn.selected svg {
+  stroke: #000000;
+}
+
+.delete-preset-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239, 68, 68, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s;
+  backdrop-filter: blur(2px);
+  font-size: 14px;
+}
+
+.bg-item:hover .delete-preset-btn {
+  opacity: 1;
+}
+
+.delete-preset-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+  transform: scale(1.05);
 }

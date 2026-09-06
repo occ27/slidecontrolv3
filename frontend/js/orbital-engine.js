@@ -18,7 +18,7 @@ class SphericalSurfaceEngine {
     // 0: Norte (Bíblia Sagrada)
     // 1: Equador (Louvor & Slides)
     // 2: Sul (Cabine & Controles)
-    this.activeRow = 1; 
+    this.activeRow = 1;
     this.verticalOffset = 1.0; // Posição vertical contínua (0, 1 ou 2)
 
     this.rows = [
@@ -211,21 +211,21 @@ class SphericalSurfaceEngine {
           <span class="card-status-badge">PRONTO</span>
         </div>
         <div class="control-buttons-grid">
-          <button class="ctrl-btn danger" onclick="window.projectionSync.toggleBlackout()">
+          <button class="ctrl-btn highlight" onclick="document.getElementById('btn-manage-screens')?.click()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <span>GERENCIAR TELAS</span>
+          </button>
+          <button id="btn-blackout" class="ctrl-btn danger" onclick="window.projectionSync.toggleBlackout()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><rect x="4" y="4" width="16" height="16" rx="2" ry="2" /></svg>
             <span>BLACKOUT [F2]</span>
           </button>
-          <button class="ctrl-btn warning" onclick="window.projectionSync.toggleClearText()">
+          <button id="btn-clear-text" class="ctrl-btn warning" onclick="window.projectionSync.toggleClearText()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
             <span>LIMPAR TEXTO [F3]</span>
           </button>
-          <button class="ctrl-btn" onclick="window.projectionSync.toggleLogo()">
+          <button id="btn-logo" class="ctrl-btn" onclick="window.projectionSync.toggleLogo()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" /></svg>
-            <span>LOGO OFICIAL [F4]</span>
-          </button>
-          <button class="ctrl-btn highlight" onclick="document.getElementById('btn-manage-screens')?.click()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-            <span>GERENCIAR TELAS [F10]</span>
+            <span>LOGO [ESC]</span>
           </button>
         </div>
         <div class="card-footer">
@@ -366,8 +366,13 @@ class SphericalSurfaceEngine {
 
     // 3. Se for um slide de conteúdo (com texto), projeta imediatamente no telão
     if (data.text) {
-      document.querySelectorAll('.globe-card').forEach(c => c.classList.remove('on-air'));
+      document.querySelectorAll('.globe-card').forEach(c => {
+        c.classList.remove('on-air');
+        const oldBg = c.querySelector('.on-air-bg-layer');
+        if (oldBg) oldBg.remove();
+      });
       cardEl.classList.add('on-air');
+      if (window.updateOnAirCardBg) window.updateOnAirCardBg();
 
       window.projectionSync.projectSlide({
         header: data.tag,
@@ -415,7 +420,7 @@ class SphericalSurfaceEngine {
         const z = R_lat * Math.cos(thetaRad);
 
         card.object.position.set(x, posY, z);
-        
+
         // Orientação tangencial à esfera:
         // pitch = -lambda (inclina para acompanhar o domo esférico Norte/Sul)
         // yaw = thetaRad (curva suavemente em torno do meridiano)
@@ -433,7 +438,7 @@ class SphericalSurfaceEngine {
           const cardScale = rowScale * (0.86 + (z / globeRadius) * 0.14);
 
           card.object.scale.set(cardScale, cardScale, 1);
-          
+
           card.element.style.opacity = isCenterRow ? (isPrimeCenter ? "1" : "0.6") : "0.48";
           card.element.style.pointerEvents = "auto"; // ← QUALQUER CARTÃO VISÍVEL É CLICÁVEL!
         }

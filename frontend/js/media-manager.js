@@ -157,6 +157,22 @@ class MediaManager {
     }
   }
 
+
+  async deletePreset(url, mediaType) {
+    if (!confirm("Tem certeza que deseja excluir esta mídia do seu computador?")) return;
+    const filename = decodeURIComponent(url.split("/").pop());
+    try {
+      const res = await fetch(`${MEDIA_API_BASE}/api/backgrounds/presets/${encodeURIComponent(filename)}`, { method: "DELETE" });
+      if (res.ok) {
+        const selectId = mediaType === "image" ? "local-image-category-select" : "local-video-category-select";
+        const selectEl = document.getElementById(selectId);
+        this.loadLocalBackgrounds(mediaType || "image", selectEl ? selectEl.value : "Todas");
+      }
+    } catch (e) {
+      console.error("Erro ao excluir", e);
+    }
+  }
+
   async loadLocalBackgrounds(mediaType, category = "Todas") {
     const gridId = mediaType === "image" ? "bg-image-grid" : "bg-video-grid";
     const grid = document.getElementById(gridId);
@@ -186,6 +202,25 @@ class MediaManager {
           img.loading = "lazy";
           img.style.cssText = "width:100%;height:100%;object-fit:cover;";
           el.appendChild(img);
+
+          const btnLogo = document.createElement("button");
+          btnLogo.className = "set-logo-btn";
+          btnLogo.title = "Definir como Logo Oficial";
+          btnLogo.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" /></svg>`;
+          btnLogo.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (window.projectionSync) window.projectionSync.setOfficialLogo(item.url);
+            document.querySelectorAll(".set-logo-btn").forEach(b => b.classList.remove("selected"));
+            btnLogo.classList.add("selected");
+          });
+          el.appendChild(btnLogo);
+
+          const btnDel = document.createElement("button");
+          btnDel.className = "delete-preset-btn";
+          btnDel.title = "Excluir mídia";
+          btnDel.innerHTML = `🗑️`;
+          btnDel.addEventListener("click", (e) => { e.stopPropagation(); this.deletePreset(item.url, mediaType); });
+          el.appendChild(btnDel);
 
           el.addEventListener("click", () => this.applyBackground("image", item.url));
         } else {
@@ -226,6 +261,13 @@ class MediaManager {
             img.style.opacity = "1";
             playIcon.style.opacity = "1";
           });
+
+          const btnDel = document.createElement("button");
+          btnDel.className = "delete-preset-btn";
+          btnDel.title = "Excluir mídia";
+          btnDel.innerHTML = `🗑️`;
+          btnDel.addEventListener("click", (e) => { e.stopPropagation(); this.deletePreset(item.url, mediaType); });
+          el.appendChild(btnDel);
 
           el.addEventListener("click", () => this.applyBackground("video", item.url));
         }
@@ -781,6 +823,18 @@ class MediaManager {
             img.style.cssText = "width:100%;height:100%;object-fit:cover;";
             el.appendChild(img);
 
+            const btnLogo = document.createElement("button");
+            btnLogo.className = "set-logo-btn";
+            btnLogo.title = "Definir como Logo Oficial";
+            btnLogo.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" /></svg>`;
+            btnLogo.addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (window.projectionSync) window.projectionSync.setOfficialLogo(item.url);
+              document.querySelectorAll(".set-logo-btn").forEach(b => b.classList.remove("selected"));
+              btnLogo.classList.add("selected");
+            });
+            el.appendChild(btnLogo);
+
             el.addEventListener("click", () => this.applyBackground("image", item.url));
           }
 
@@ -941,6 +995,11 @@ class MediaManager {
       kind: kind,
       url: url
     });
+    
+    // Atualiza o background do card que está projetado (se for o telão)
+    if (!isRetorno && window.updateOnAirCardBg) {
+      window.updateOnAirCardBg();
+    }
 
     this.highlightActiveSelection();
   }

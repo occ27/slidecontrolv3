@@ -55,6 +55,41 @@
     const headerEl = document.getElementById('stage-header');
     const currentEl = document.getElementById('stage-current-text');
     const nextEl = document.getElementById('stage-next-text');
+
+    // Restaura background inicial das preferências se existir
+    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
+      const initKind = window.electronAPI.getPref("slideState_bgKindRetorno");
+      const initUrl = window.electronAPI.getPref("slideState_bgUrlRetorno");
+      if (initKind && initUrl) {
+        const wrapper = document.querySelector('.stage-wrapper');
+        if (wrapper) {
+          if (initKind === 'color') {
+            wrapper.style.backgroundColor = initUrl || '#000000';
+            wrapper.style.backgroundImage = 'none';
+          } else if (initKind === 'image') {
+            wrapper.style.backgroundImage = `url("${initUrl}")`;
+            wrapper.style.backgroundSize = 'cover';
+            wrapper.style.backgroundPosition = 'center';
+          } else if (initKind === 'video') {
+            // Em retorno geralmente não se toca vídeo como background nativo para não pesar,
+            // ou se quiser, pode ser implementado.
+          }
+        }
+      }
+      
+      const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
+      if (initLogoUrl) {
+        const fitModeRet = window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover';
+        let objectFitRet = 'cover';
+        if (fitModeRet === 'contain') objectFitRet = 'contain';
+        else if (fitModeRet === 'stretch') objectFitRet = 'fill';
+        const logoLayerRet = document.getElementById('logo-layer');
+        if (logoLayerRet) {
+            logoLayerRet.innerHTML = `<img id="logo-img-ret" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+        }
+      }
+    }
+
     const blackoutEl = document.getElementById('stage-blackout');
     const alertEl = document.getElementById('stage-alert');
     const alertTextEl = document.getElementById('stage-alert-text');
@@ -63,8 +98,19 @@
 
     function applyBgFit(fitMode) {
       const bg = document.querySelector('.stage-wrapper');
-      if (!bg) return;
-      // Ajuste de preenchimento caso utilize imagem/video de fundo no retorno
+      if (bg) {
+        if (fitMode === 'cover') bg.style.backgroundSize = 'cover';
+        else if (fitMode === 'contain') bg.style.backgroundSize = 'contain';
+        else if (fitMode === 'stretch') bg.style.backgroundSize = '100% 100%';
+        else if (fitMode === 'width') bg.style.backgroundSize = '100% auto';
+      }
+      const logoImg = document.getElementById('logo-img-ret');
+      if (logoImg) {
+        if (fitMode === 'cover') logoImg.style.objectFit = 'cover';
+        else if (fitMode === 'contain') logoImg.style.objectFit = 'contain';
+        else if (fitMode === 'stretch') logoImg.style.objectFit = 'fill';
+        else if (fitMode === 'width') logoImg.style.objectFit = 'cover';
+      }
     }
 
     channel.onmessage = (event) => {
@@ -85,6 +131,16 @@
           }
           break;
 
+        case 'TOGGLE_LOGO':
+          document.getElementById('logo-layer').style.opacity = msg.active ? '1' : '0';
+          break;
+        case 'SET_LOGO':
+          const fitModeRet = window.electronAPI ? window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover' : 'cover';
+          let objectFitRet = 'cover';
+          if (fitModeRet === 'contain') objectFitRet = 'contain';
+          else if (fitModeRet === 'stretch') objectFitRet = 'fill';
+          document.getElementById('logo-layer').innerHTML = `<img id="logo-img-ret" src="${msg.url}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+          break;
         case 'TOGGLE_BLACKOUT':
           blackoutEl.classList.toggle('active', msg.active);
           break;
