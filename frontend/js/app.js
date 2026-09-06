@@ -569,12 +569,13 @@ class GlobeApp {
           if (window.bibleService) {
             window.bibleService.selectedBook = b;
             window.bibleService.selectedChapter = 1;
+            window.bibleService.selectedVerse = 1;
             window.bibleService.savePreferences();
           }
           Array.from(booksGrid.children).forEach(c => c.classList.remove('active'));
           btn.classList.add('active');
           renderChapters(b);
-          loadChapterVerses(b.abbrev, 1);
+          loadChapterVerses(b.abbrev, 1, 1);
         });
         booksGrid.appendChild(btn);
       });
@@ -607,18 +608,19 @@ class GlobeApp {
           selectedChapterNum = i;
           if (window.bibleService) {
             window.bibleService.selectedChapter = i;
+            window.bibleService.selectedVerse = 1;
             window.bibleService.savePreferences();
           }
           Array.from(chaptersGrid.children).forEach(c => c.classList.remove('active'));
           btn.classList.add('active');
-          loadChapterVerses(book.abbrev, i);
+          loadChapterVerses(book.abbrev, i, 1);
         });
         chaptersGrid.appendChild(btn);
       }
     };
 
     // ── Carregamento da Prévia dos Versículos ──
-    const loadChapterVerses = async (bookAbbrev, chapterNum) => {
+    const loadChapterVerses = async (bookAbbrev, chapterNum, targetVerseNum = null) => {
       if (!versesList || !window.bibleService) return;
       versesList.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;"><div class="spinner" style="margin:0 auto 10px;"></div>Carregando versículos...</div>';
 
@@ -637,13 +639,15 @@ class GlobeApp {
       if (badge) badge.textContent = refStr;
 
       versesList.innerHTML = '';
-      const savedVerse = window.bibleService ? window.bibleService.selectedVerse : 1;
+      const targetVerse = targetVerseNum !== null 
+        ? Number(targetVerseNum) 
+        : (window.bibleService ? Number(window.bibleService.selectedVerse) || 1 : 1);
 
       data.verses.forEach(v => {
         const item = document.createElement('div');
-        const isCurrentVerse = Number(v.verse) === Number(savedVerse);
+        const isCurrentVerse = Number(v.verse) === targetVerse;
         item.className = `bible-verse-item${isCurrentVerse ? ' active' : ''}`;
-        if (isCurrentVerse) {
+        if (isCurrentVerse && targetVerse > 1) {
           setTimeout(() => item.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60);
         }
         item.innerHTML = `
@@ -665,6 +669,10 @@ class GlobeApp {
         });
         versesList.appendChild(item);
       });
+
+      if (targetVerse === 1) {
+        versesList.scrollTop = 0;
+      }
     };
 
     // ── Botão "Carregar no Globo 3D" ──
@@ -698,7 +706,7 @@ class GlobeApp {
           }
           renderBooks();
           renderChapters(b);
-          await loadChapterVerses(b.abbrev, ref.chapter);
+          await loadChapterVerses(b.abbrev, ref.chapter, ref.verse || 1);
           return;
         }
       }
