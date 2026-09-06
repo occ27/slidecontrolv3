@@ -78,14 +78,18 @@ class ProjectionSyncService {
 
   updateDisplayStatusUI(online) {
     const indicator = document.getElementById('display-status-indicator');
+    const hwStatus = document.getElementById('hw-telao-status');
     if (indicator) {
       if (online) {
-        indicator.classList.add('online');
-        indicator.textContent = 'TELÃO: ONLINE (1080p)';
+        indicator.classList.add('status-live');
+        indicator.textContent = 'ONLINE';
       } else {
-        indicator.classList.remove('online');
-        indicator.textContent = 'TELÃO: AGUARDANDO CONEXÃO';
+        indicator.classList.remove('status-live');
+        indicator.textContent = 'DESCONECTADO';
       }
+    }
+    if (hwStatus) {
+      hwStatus.textContent = online ? 'Ativo (1080p)' : 'Aguardando Janela';
     }
   }
 
@@ -107,8 +111,12 @@ class ProjectionSyncService {
     // Reset emergency button states in UI
     const blackoutBtn = document.getElementById('btn-blackout');
     const logoBtn = document.getElementById('btn-logo');
+    const qBlackout = document.getElementById('btn-quick-blackout');
+    const qLogo = document.getElementById('btn-quick-logo');
     if (blackoutBtn) blackoutBtn.classList.remove('active');
     if (logoBtn) logoBtn.classList.remove('active');
+    if (qBlackout) qBlackout.classList.remove('active');
+    if (qLogo) qLogo.classList.remove('active');
   }
 
   sendCurrentSlide() {
@@ -155,7 +163,6 @@ class ProjectionSyncService {
     return this.currentState.isClearText;
   }
 
-
   setOfficialLogo(url) {
     this.currentState.logoUrl = url;
     if (window.electronAPI && typeof window.electronAPI.setPref === 'function') {
@@ -194,29 +201,61 @@ class ProjectionSyncService {
   updateMiniPreview(slideData) {
     const textEl = document.getElementById('preview-slide-text');
     const subEl = document.getElementById('preview-slide-sub');
+    const titleEl = document.getElementById('node-title-display');
 
-    if (textEl) textEl.textContent = slideData.text;
-    if (subEl) subEl.textContent = slideData.header || slideData.subtitle || '';
+    if (textEl && slideData.text) textEl.textContent = slideData.text;
+    if (subEl) subEl.textContent = slideData.subtitle || '';
+    if (titleEl) titleEl.textContent = slideData.header || slideData.tag || 'Slide Ativo';
+
+    if (window.slideTelemetry && typeof window.slideTelemetry.syncMiniPreviewBg === 'function') {
+      window.slideTelemetry.syncMiniPreviewBg();
+    }
 
     this.updatePreviewTags();
   }
 
   updatePreviewTags() {
     const tagEl = document.getElementById('preview-onair-tag');
-    if (!tagEl) return;
+    const overlayStatus = document.getElementById('preview-overlay-status');
+    const overlayMsg = document.getElementById('preview-overlay-msg');
+    const previewText = document.getElementById('preview-slide-text');
 
     if (this.currentState.isBlackout) {
-      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>BLACKOUT NO AR';
-      tagEl.style.color = '#ef4444';
+      if (tagEl) {
+        tagEl.innerHTML = '<span class="signal-dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></span><span>BLACKOUT NO AR</span>';
+        tagEl.style.color = '#ef4444';
+      }
+      if (overlayStatus) {
+        overlayStatus.style.display = 'flex';
+        overlayStatus.className = 'live-overlay-status blackout';
+        if (overlayMsg) overlayMsg.textContent = '⚫ BLACKOUT ATIVO';
+      }
     } else if (this.currentState.isLogo) {
-      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f0ff;margin-right:6px;"></span>LOGO NO AR';
-      tagEl.style.color = '#00f0ff';
+      if (tagEl) {
+        tagEl.innerHTML = '<span class="signal-dot" style="background:#00f0ff;box-shadow:0 0 6px #00f0ff;"></span><span>LOGO NO AR</span>';
+        tagEl.style.color = '#00f0ff';
+      }
+      if (overlayStatus) {
+        overlayStatus.style.display = 'flex';
+        overlayStatus.className = 'live-overlay-status logo';
+        if (overlayMsg) overlayMsg.textContent = '⛪ LOGO NO AR';
+      }
     } else if (this.currentState.isClearText) {
-      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;margin-right:6px;"></span>TEXTO OCULTO';
-      tagEl.style.color = '#f59e0b';
+      if (tagEl) {
+        tagEl.innerHTML = '<span class="signal-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></span><span>TEXTO OCULTO</span>';
+        tagEl.style.color = '#f59e0b';
+      }
+      if (overlayStatus) {
+        overlayStatus.style.display = 'none';
+      }
+      if (previewText) previewText.style.visibility = 'hidden';
     } else {
-      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:6px;"></span>AO VIVO NO TELÃO';
-      tagEl.style.color = '#10b981';
+      if (tagEl) {
+        tagEl.innerHTML = '<span class="signal-dot"></span><span>AO VIVO NO TELÃO</span>';
+        tagEl.style.color = 'var(--accent-emerald)';
+      }
+      if (overlayStatus) overlayStatus.style.display = 'none';
+      if (previewText) previewText.style.visibility = 'visible';
     }
   }
 

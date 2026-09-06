@@ -7,46 +7,52 @@ class SlideControlTelemetry {
   constructor() {
     this.canvas = document.getElementById('waveform-canvas');
     this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
-    this.points = [];
-    this.maxPoints = 50;
-    this.phase = 0;
-    this.frequency = 0.06;
-    this.amplitude = 20;
-    this.noiseScale = 6;
     this.startTime = Date.now();
 
-    this.initWaveform();
     this.startClock();
-    this.animateWaveform();
+    if (this.canvas && this.ctx) {
+      this.points = [];
+      this.maxPoints = 50;
+      this.phase = 0;
+      this.frequency = 0.06;
+      this.amplitude = 20;
+      this.noiseScale = 6;
+      this.initWaveform();
+      this.animateWaveform();
+    }
     this.bindPanelEvents();
   }
 
   initWaveform() {
-    for (let i = 0; i < this.maxPoints; i++) {
+    for (let i = 0; i < (this.maxPoints || 50); i++) {
       this.points.push(0);
     }
   }
 
   startClock() {
+    const clockEl = document.getElementById('clock-display');
     const uptimeEl = document.getElementById('uptime-display');
-    const throughputEl = document.getElementById('global-throughput');
 
-    setInterval(() => {
-      const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-      const hrs = String(Math.floor(elapsed / 3600)).padStart(2, '0');
-      const mins = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
-      const secs = String(elapsed % 60).padStart(2, '0');
+    const updateTime = () => {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('pt-BR', { hour12: false });
+      if (clockEl) clockEl.textContent = timeStr;
 
-      if (uptimeEl) uptimeEl.textContent = `${hrs}:${mins}:${secs}`;
-
-      if (throughputEl) {
-        const val = (60.0 + (Math.random() - 0.5) * 0.4).toFixed(1);
-        throughputEl.textContent = `${val} FPS`;
+      if (uptimeEl) {
+        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+        const hrs = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+        const secs = String(elapsed % 60).padStart(2, '0');
+        uptimeEl.textContent = `${hrs}:${mins}:${secs}`;
       }
-    }, 1000);
+    };
+
+    updateTime();
+    setInterval(updateTime, 1000);
   }
 
   stepWaveform() {
+    if (!this.points) return;
     this.phase += this.frequency;
     const baseSine = Math.sin(this.phase) * this.amplitude;
     const harmonic = Math.sin(this.phase * 2.3) * (this.amplitude * 0.35);
@@ -67,7 +73,6 @@ class SlideControlTelemetry {
 
     this.ctx.clearRect(0, 0, width, height);
 
-    // Grid suave
     this.ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
@@ -77,14 +82,12 @@ class SlideControlTelemetry {
     }
     this.ctx.stroke();
 
-    // Linha de centro
     this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
     this.ctx.beginPath();
     this.ctx.moveTo(0, centerY);
     this.ctx.lineTo(width, centerY);
     this.ctx.stroke();
 
-    // Linha de sinal luminoso (ciano brilhante)
     this.ctx.beginPath();
     this.ctx.strokeStyle = '#00f0ff';
     this.ctx.lineWidth = 2;
@@ -109,6 +112,7 @@ class SlideControlTelemetry {
   }
 
   animateWaveform() {
+    if (!this.canvas || !this.ctx) return;
     this.stepWaveform();
     this.drawWaveform();
     requestAnimationFrame(() => this.animateWaveform());
@@ -141,30 +145,59 @@ class SlideControlTelemetry {
     const tagEl = document.getElementById('node-type-badge');
     const titleEl = document.getElementById('node-title-display');
     const descEl = document.getElementById('node-desc-display');
+    const subEl = document.getElementById('preview-slide-sub');
+    const previewTextEl = document.getElementById('preview-slide-text');
 
     if (tagEl) {
-      tagEl.textContent = data.tag || 'SLIDE_PROJEÇÃO';
-      if (data.theme === 'bible') {
-        tagEl.style.color = 'var(--accent-violet)';
-      } else if (data.theme === 'control') {
-        tagEl.style.color = 'var(--accent-amber)';
-      } else {
-        tagEl.style.color = 'var(--accent-cyan)';
-      }
+      tagEl.textContent = data.tag || 'SLIDE';
     }
     if (titleEl) {
-      titleEl.textContent = data.title || 'Slide Ativo';
+      titleEl.textContent = data.tag || data.title || 'Slide Ativo';
+    }
+    if (subEl) {
+      subEl.textContent = data.title || '';
     }
     if (descEl) {
       const preview = data.text ? data.text.split('\n')[0] : 'Controles Mestres de Transmissão';
       descEl.textContent = preview;
     }
+    if (previewTextEl && data.text) {
+      previewTextEl.textContent = data.text;
+    }
 
-    // Se o inspetor estiver oculto, pode abrir automaticamente ao selecionar
+    // Sincroniza a camada de fundo na mini prévia
+    this.syncMiniPreviewBg();
+
     const inspector = document.getElementById('process-inspector');
     if (inspector) {
       inspector.classList.remove('hidden-panel');
     }
+  }
+
+  syncMiniPreviewBg() {
+    const miniBg = document.getElementById('live-preview-bg-layer');
+    if (!miniBg) return;
+
+    if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+      const kind = window.electronAPI.getPref('slideState_bgKind');
+      const url = window.electronAPI.getPref('slideState_bgUrl');
+      if (kind && url) {
+        if (kind === 'color') {
+          miniBg.style.backgroundImage = 'none';
+          miniBg.style.backgroundColor = url;
+        } else if (kind === 'image') {
+          miniBg.style.backgroundColor = 'transparent';
+          miniBg.style.backgroundImage = `url("${url}")`;
+          miniBg.style.backgroundSize = 'cover';
+        } else if (kind === 'video') {
+          miniBg.style.backgroundColor = 'rgba(0, 240, 255, 0.15)';
+          miniBg.style.backgroundImage = 'none';
+        }
+        return;
+      }
+    }
+    // Fallback padrão elegante
+    miniBg.style.background = 'radial-gradient(circle at center, rgba(14, 28, 56, 0.9) 0%, rgba(3, 7, 18, 0.95) 100%)';
   }
 
   appendLog(tag, message, type = 'info') {
@@ -186,7 +219,6 @@ class SlideControlTelemetry {
   }
 
   bindPanelEvents() {
-    // Botão de fechar/ocultar painel direito
     const closeBtn = document.getElementById('close-inspector-btn');
     const inspector = document.getElementById('process-inspector');
     if (closeBtn && inspector) {
@@ -195,7 +227,6 @@ class SlideControlTelemetry {
       });
     }
 
-    // Botão mestre no topo para alternar painéis
     const togglePanelsBtn = document.getElementById('btn-toggle-panels');
     const leftPanel = document.getElementById('hud-left-panel');
     if (togglePanelsBtn) {

@@ -35,6 +35,9 @@ class GlobeApp {
     this.bindZoneButtons();
     this.bindPanelButtons();
     this.bindKeyboardShortcuts();
+    this.bindBibleNavigator();
+    this.bindServicePlaylist();
+    this.bindQuickAlerts();
 
     const modalQuit = document.getElementById('modal-quit-confirm');
     if (modalQuit) {
@@ -193,6 +196,88 @@ class GlobeApp {
     }
   }
 
+  // ── INTEGRAÇÃO DO REPERTÓRIO DO CULTO (PLAYLIST) ──
+  bindServicePlaylist() {
+    const playlistContainer = document.getElementById('service-playlist');
+    if (!playlistContainer) return;
+
+    playlistContainer.addEventListener('click', (e) => {
+      const item = e.target.closest('.playlist-item');
+      if (!item) return;
+
+      const cardIdx = parseInt(item.dataset.cardIdx, 10) || 0;
+      const rowIdx = parseInt(item.dataset.rowIdx, 10) || 1;
+
+      // Desliza a esfera para o slide e linha desejada
+      this.engine.setRow(rowIdx);
+      this.engine.snapToCard(rowIdx, cardIdx);
+
+      // Atualiza visual da lista de repertório
+      Array.from(playlistContainer.children).forEach(btn => {
+        btn.classList.remove('active');
+        const tag = btn.querySelector('.playlist-item-tag');
+        if (tag) tag.remove();
+      });
+      item.classList.add('active');
+      const tag = document.createElement('span');
+      tag.className = 'playlist-item-tag';
+      tag.textContent = 'ATUAL';
+      item.appendChild(tag);
+
+      // Projeta o slide inicial daquela seção
+      const row = this.engine.rows[rowIdx];
+      if (row && row.cards[cardIdx]) {
+        const cardObj = row.cards[cardIdx];
+        this.engine.onCardClicked(cardObj.data, cardObj.element, rowIdx, cardIdx);
+      }
+    });
+  }
+
+  // ── INTEGRAÇÃO DE ALERTAS RÁPIDOS DE CULTO ──
+  bindQuickAlerts() {
+    const farolBtn = document.getElementById('btn-alert-farol');
+    const bercarioBtn = document.getElementById('btn-alert-bercario');
+    const alarmeBtn = document.getElementById('btn-alert-alarme');
+    const customInput = document.getElementById('custom-alert-input');
+    const sendBtn = document.getElementById('btn-send-custom-alert');
+
+    if (farolBtn) {
+      farolBtn.addEventListener('click', () => {
+        window.projectionSync.showAlert('🚗 Veículo com farol aceso no estacionamento', 10);
+      });
+    }
+
+    if (bercarioBtn) {
+      bercarioBtn.addEventListener('click', () => {
+        window.projectionSync.showAlert('👶 Mãe do berçário, favor comparecer ao local', 10);
+      });
+    }
+
+    if (alarmeBtn) {
+      alarmeBtn.addEventListener('click', () => {
+        window.projectionSync.showAlert('🔔 Alarme de veículo disparado no estacionamento', 10);
+      });
+    }
+
+    const sendCustom = () => {
+      if (!customInput) return;
+      const text = customInput.value.trim();
+      if (!text) return;
+      window.projectionSync.showAlert(text, 10);
+      customInput.value = '';
+    };
+
+    if (sendBtn) sendBtn.addEventListener('click', sendCustom);
+    if (customInput) {
+      customInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendCustom();
+        }
+      });
+    }
+  }
+
   onRowChanged(rowIndex) {
     // Atualiza botões da barra inferior
     const zoneIds = ['btn-zone-north', 'btn-zone-equator', 'btn-zone-south'];
@@ -271,6 +356,379 @@ class GlobeApp {
       }
     });
   }
+
+  // ── INTEGRAÇÃO E EVENTOS DO NAVEGADOR BÍBLICO ──
+  bindBibleNavigator() {
+    const modal = document.getElementById('modal-bible-navigator');
+    const openBtn = document.getElementById('btn-open-bible-modal');
+    const closeBtn = document.getElementById('btn-close-bible-modal');
+    const quickInput = document.getElementById('bible-quick-search-input');
+    const clearQuickBtn = document.getElementById('btn-clear-bible-input');
+
+    const modalSearchInput = document.getElementById('bible-modal-search-input');
+    const searchExecBtn = document.getElementById('btn-bible-search-exec');
+    const versionSelect = document.getElementById('bible-version-select');
+    const tabOt = document.getElementById('tab-books-ot');
+    const tabNt = document.getElementById('tab-books-nt');
+    const booksGrid = document.getElementById('bible-books-grid');
+    const chaptersGrid = document.getElementById('bible-chapters-grid');
+    const versesList = document.getElementById('bible-verses-list');
+    const loadGlobeBtn = document.getElementById('btn-load-chapter-to-globe');
+    const historyTags = document.getElementById('bible-history-tags');
+
+    let currentTab = 'ot';
+    let selectedBookObj = null;
+    let selectedChapterNum = 1;
+
+    const openModal = async () => {
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      if (window.bibleService) {
+        await window.bibleService.init();
+        populateVersions();
+        renderBooks();
+        renderHistory();
+      }
+      if (modalSearchInput) modalSearchInput.focus();
+    };
+
+    const closeModal = () => {
+      if (modal) modal.classList.add('hidden');
+    };
+
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+
+    // Atalho F4 para abrir/fechar Bíblia
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'F4') {
+        e.preventDefault();
+        if (modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        } else {
+          openModal();
+        }
+      }
+    });
+
+    // ── Input Rápido no Painel Esquerdo ──
+    if (quickInput) {
+      let debounceTimer = null;
+      quickInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (clearQuickBtn) clearQuickBtn.style.display = val ? 'block' : 'none';
+        clearTimeout(debounceTimer);
+        if (val.length >= 3) {
+          debounceTimer = setTimeout(async () => {
+            if (!window.bibleService) return;
+            const ref = window.bibleService.parseReference(val);
+            if (ref) {
+              await window.bibleService.loadPassageToOrbital(ref.abbrev, ref.chapter, ref.verse);
+            }
+          }, 600);
+        }
+      });
+
+      quickInput.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          clearTimeout(debounceTimer);
+          const val = quickInput.value.trim();
+          if (!val || !window.bibleService) return;
+          const ref = window.bibleService.parseReference(val);
+          if (ref) {
+            await window.bibleService.loadPassageToOrbital(ref.abbrev, ref.chapter, ref.verse);
+            quickInput.blur();
+          } else {
+            openModal();
+            if (modalSearchInput) {
+              modalSearchInput.value = val;
+              executeSearch(val);
+            }
+          }
+        }
+      });
+
+      if (clearQuickBtn) {
+        clearQuickBtn.addEventListener('click', () => {
+          quickInput.value = '';
+          clearQuickBtn.style.display = 'none';
+          quickInput.focus();
+        });
+      }
+    }
+
+    // ── Preenchimento das Versões ──
+    const populateVersions = () => {
+      if (!versionSelect || !window.bibleService) return;
+      versionSelect.innerHTML = '';
+      window.bibleService.versions.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.abbreviation;
+        opt.textContent = `${v.abbreviation.toUpperCase()} — ${v.name}`;
+        if (v.abbreviation === window.bibleService.selectedVersion) opt.selected = true;
+        versionSelect.appendChild(opt);
+      });
+    };
+
+    if (versionSelect) {
+      versionSelect.addEventListener('change', async () => {
+        if (!window.bibleService) return;
+        window.bibleService.selectedVersion = versionSelect.value;
+        if (selectedBookObj) {
+          loadChapterVerses(selectedBookObj.abbrev, selectedChapterNum);
+        }
+      });
+    }
+
+    // ── Abas de Testamento ──
+    if (tabOt) tabOt.addEventListener('click', () => {
+      currentTab = 'ot';
+      tabOt.classList.add('active');
+      if (tabNt) tabNt.classList.remove('active');
+      renderBooks();
+    });
+
+    if (tabNt) tabNt.addEventListener('click', () => {
+      currentTab = 'nt';
+      tabNt.classList.add('active');
+      if (tabOt) tabOt.classList.remove('active');
+      renderBooks();
+    });
+
+    // ── Renderização dos Livros ──
+    const renderBooks = () => {
+      if (!booksGrid || !window.bibleService) return;
+      booksGrid.innerHTML = '';
+      const booksList = currentTab === 'ot'
+        ? window.bibleService.getOldTestamentBooks()
+        : window.bibleService.getNewTestamentBooks();
+
+      if (!selectedBookObj && booksList.length > 0) {
+        selectedBookObj = booksList[0];
+      }
+
+      booksList.forEach(b => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bible-book-btn';
+        if (selectedBookObj && selectedBookObj.abbrev === b.abbrev) {
+          btn.classList.add('active');
+        }
+        btn.innerHTML = `
+          <span>${b.name}</span>
+          <span class="book-chapters-badge">${b.chapters} cap</span>
+        `;
+        btn.addEventListener('click', () => {
+          selectedBookObj = b;
+          selectedChapterNum = 1;
+          Array.from(booksGrid.children).forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          renderChapters(b);
+          loadChapterVerses(b.abbrev, 1);
+        });
+        booksGrid.appendChild(btn);
+      });
+
+      if (selectedBookObj) {
+        renderChapters(selectedBookObj);
+        loadChapterVerses(selectedBookObj.abbrev, selectedChapterNum || 1);
+      }
+    };
+
+    // ── Renderização dos Capítulos ──
+    const renderChapters = (book) => {
+      if (!chaptersGrid) return;
+      chaptersGrid.innerHTML = '';
+      const titleEl = document.getElementById('bible-selected-book-title');
+      const subEl = document.getElementById('bible-selected-book-sub');
+      if (titleEl) titleEl.textContent = book.name.toUpperCase();
+      if (subEl) subEl.textContent = `${book.chapters} capítulos`;
+
+      for (let i = 1; i <= book.chapters; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bible-chapter-btn';
+        if (Number(selectedChapterNum) === i) btn.classList.add('active');
+        btn.textContent = i;
+        btn.addEventListener('click', () => {
+          selectedChapterNum = i;
+          Array.from(chaptersGrid.children).forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          loadChapterVerses(book.abbrev, i);
+        });
+        chaptersGrid.appendChild(btn);
+      }
+    };
+
+    // ── Carregamento da Prévia dos Versículos ──
+    const loadChapterVerses = async (bookAbbrev, chapterNum) => {
+      if (!versesList || !window.bibleService) return;
+      versesList.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;"><div class="spinner" style="margin:0 auto 10px;"></div>Carregando versículos...</div>';
+
+      const data = await window.bibleService.getChapter(bookAbbrev, chapterNum);
+      if (!data || !data.verses) {
+        versesList.innerHTML = '<div style="padding:20px;text-align:center;color:#ef4444;">Erro ao carregar versículos.</div>';
+        return;
+      }
+
+      const vTitle = document.getElementById('bible-verses-header-title');
+      const vSub = document.getElementById('bible-verses-header-sub');
+      const badge = document.getElementById('bible-current-ref-badge');
+      const refStr = `${data.book} ${chapterNum}`;
+      if (vTitle) vTitle.textContent = refStr.toUpperCase();
+      if (vSub) vSub.textContent = `${data.verses.length} versículos (${window.bibleService.selectedVersion.toUpperCase()})`;
+      if (badge) badge.textContent = refStr;
+
+      versesList.innerHTML = '';
+      data.verses.forEach(v => {
+        const item = document.createElement('div');
+        item.className = 'bible-verse-item';
+        item.innerHTML = `
+          <div class="bible-verse-num">${v.verse}</div>
+          <div class="bible-verse-text">${v.text}</div>
+          <div class="bible-verse-actions">
+            <button class="hud-btn-sm" style="background:#a855f7; border-color:#c084fc; color:#fff; padding:3px 8px; font-size:0.75rem;" title="Projetar este versículo imediatamente">
+              PROJETAR
+            </button>
+          </div>
+        `;
+        item.addEventListener('click', async () => {
+          await window.bibleService.loadPassageToOrbital(bookAbbrev, chapterNum, v.verse);
+          closeModal();
+          window.projectionSync.projectSlide({
+            header: `${data.book.toUpperCase()} ${chapterNum}:${v.verse}`,
+            text: v.text,
+            subtitle: `${data.book} ${chapterNum} (${window.bibleService.selectedVersion.toUpperCase()})`,
+            theme: 'bible'
+          });
+          const pill = document.getElementById('on-air-pill-text');
+          if (pill) pill.textContent = `${data.book} ${chapterNum}:${v.verse}`;
+        });
+        versesList.appendChild(item);
+      });
+    };
+
+    // ── Botão "Carregar no Globo 3D" ──
+    if (loadGlobeBtn) {
+      loadGlobeBtn.addEventListener('click', async () => {
+        if (selectedBookObj && window.bibleService) {
+          await window.bibleService.loadPassageToOrbital(selectedBookObj.abbrev, selectedChapterNum || 1, 1);
+          closeModal();
+        }
+      });
+    }
+
+    // ── Busca no Modal ──
+    const executeSearch = async (query) => {
+      const q = (query || (modalSearchInput ? modalSearchInput.value : '')).trim();
+      if (!q || !window.bibleService) return;
+
+      const ref = window.bibleService.parseReference(q);
+      if (ref) {
+        const b = window.bibleService.books.find(item => item.abbrev === ref.abbrev);
+        if (b) {
+          selectedBookObj = b;
+          selectedChapterNum = ref.chapter;
+          currentTab = b.book_order <= 39 ? 'ot' : 'nt';
+          if (currentTab === 'ot') {
+            if (tabOt) tabOt.classList.add('active');
+            if (tabNt) tabNt.classList.remove('active');
+          } else {
+            if (tabNt) tabNt.classList.add('active');
+            if (tabOt) tabOt.classList.remove('active');
+          }
+          renderBooks();
+          renderChapters(b);
+          await loadChapterVerses(b.abbrev, ref.chapter);
+          return;
+        }
+      }
+
+      if (versesList) {
+        versesList.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">Buscando ocorrências...</div>';
+      }
+      const results = await window.bibleService.search(q);
+      if (!versesList) return;
+      versesList.innerHTML = '';
+
+      const vTitle = document.getElementById('bible-verses-header-title');
+      const vSub = document.getElementById('bible-verses-header-sub');
+      if (vTitle) vTitle.textContent = `BUSCA: "${q.toUpperCase()}"`;
+      if (vSub) vSub.textContent = `${results.length} resultados encontrados`;
+
+      if (results.length === 0) {
+        versesList.innerHTML = '<div style="padding:30px;text-align:center;color:#94a3b8;">Nenhum versículo encontrado para essa pesquisa.</div>';
+        return;
+      }
+
+      results.forEach(res => {
+        const item = document.createElement('div');
+        item.className = 'bible-verse-item';
+        const refStr = res.verse.reference || `${res.book.name} ${res.chapter.number}:${res.verse.number}`;
+        item.innerHTML = `
+          <div class="bible-verse-num" style="font-size:0.7rem; min-width:60px;">${refStr}</div>
+          <div class="bible-verse-text">${res.verse.text}</div>
+          <div class="bible-verse-actions">
+            <button class="hud-btn-sm" style="background:#a855f7; border-color:#c084fc; color:#fff; padding:3px 8px; font-size:0.75rem;">
+              PROJETAR
+            </button>
+          </div>
+        `;
+        item.addEventListener('click', async () => {
+          await window.bibleService.loadPassageToOrbital(res.book.abbrev, res.chapter.number, res.verse.number);
+          closeModal();
+          window.projectionSync.projectSlide({
+            header: refStr.toUpperCase(),
+            text: res.verse.text,
+            subtitle: `${res.book.name} (${window.bibleService.selectedVersion.toUpperCase()})`,
+            theme: 'bible'
+          });
+          const pill = document.getElementById('on-air-pill-text');
+          if (pill) pill.textContent = refStr;
+        });
+        versesList.appendChild(item);
+      });
+    };
+
+    if (searchExecBtn) searchExecBtn.addEventListener('click', () => executeSearch());
+    if (modalSearchInput) {
+      modalSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeSearch();
+        }
+      });
+    }
+
+    // ── Histórico Recente ──
+    const renderHistory = () => {
+      if (!historyTags || !window.bibleService) return;
+      historyTags.innerHTML = '';
+      const list = window.bibleService.getHistory();
+      if (list.length === 0) {
+        historyTags.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">Nenhuma passagem recente.</span>';
+        return;
+      }
+      list.slice(0, 8).forEach(h => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'bible-history-chip';
+        chip.textContent = `${h.book} ${h.chapter}:${h.verse}`;
+        chip.addEventListener('click', async () => {
+          await window.bibleService.loadPassageToOrbital(h.abbrev, h.chapter, h.verse, h.version);
+          closeModal();
+        });
+        historyTags.appendChild(chip);
+      });
+    };
+  }
 }
 
 window.globeApp = new GlobeApp();
@@ -327,6 +785,9 @@ window.updateOnAirCardBg = function() {
       
       onAirCard.insertBefore(bgLayer, onAirCard.firstChild);
     }
+  }
+  if (window.slideTelemetry && typeof window.slideTelemetry.syncMiniPreviewBg === 'function') {
+    window.slideTelemetry.syncMiniPreviewBg();
   }
 };
 

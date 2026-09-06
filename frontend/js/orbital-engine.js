@@ -200,6 +200,53 @@ class SphericalSurfaceEngine {
     }
   }
 
+  // ── CARREGAMENTO DINÂMICO DE VERSÍCULOS DA BÍBLIA NA TRILHA NORTE ──
+  loadBibleCards(versesList, bookName, chapterNum, versionAbbrev = 'ACF', focusVerseNum = 1) {
+    if (!versesList || !versesList.length) return;
+    const rowIdx = 0; // Trilha Norte
+    const row = this.rows[rowIdx];
+
+    // Remove da cena CSS3D os cartões anteriores desta trilha
+    row.cards.forEach(card => {
+      if (card.object) {
+        this.tracksGroupCSS.remove(card.object);
+      }
+      if (card.element && card.element.parentNode) {
+        card.element.parentNode.removeChild(card.element);
+      }
+    });
+    row.cards = [];
+    row.scrollIndex = 0;
+    row.targetScroll = 0;
+
+    let focusCardIdx = 0;
+    versesList.forEach((item, cardIdx) => {
+      const vNum = item.verse || (cardIdx + 1);
+      const data = {
+        tag: `${bookName.toUpperCase()} ${chapterNum}:${vNum}`,
+        title: `${bookName} ${chapterNum} (${versionAbbrev.toUpperCase()})`,
+        text: item.text,
+        theme: 'bible',
+        verseNum: vNum,
+        bookName: bookName,
+        chapterNum: chapterNum
+      };
+      if (Number(vNum) === Number(focusVerseNum)) {
+        focusCardIdx = cardIdx;
+      }
+      const cardObj = this.createCardDOM(data, rowIdx, cardIdx);
+      row.cards.push(cardObj);
+    });
+
+    const badge = document.querySelector('#cat-north .cat-badge');
+    if (badge) badge.textContent = versesList.length;
+
+    // Foca na Trilha Norte e centraliza o versículo desejado
+    this.setRow(0);
+    this.snapToCard(0, focusCardIdx);
+    this.updateCardPositions();
+  }
+
   createCardDOM(data, rowIdx, cardIdx) {
     const el = document.createElement('div');
     el.className = `globe-card theme-${data.theme}`;
