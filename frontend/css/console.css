@@ -221,7 +221,7 @@ body::before {
 /* Center Guidance Hint */
 .center-hint {
   position: fixed;
-  bottom: 82px;
+  bottom: 852px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(10, 16, 30, 0.85);
@@ -1156,12 +1156,64 @@ body::before {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.screen-config-scroll {
+#modal-screen-manager .modal-content {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#modal-screen-manager .modal-header {
+  flex-shrink: 0;
+}
+
+.screen-manager-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
   padding-right: 8px;
-  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.screen-manager-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.screen-manager-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.screen-manager-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.3);
+  border-radius: 4px;
+}
+
+.screen-manager-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.6);
+}
+
+.screen-config-scroll,
+.screen-config-sections {
+  overflow: visible;
+  padding-right: 0;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-height: 750px) {
+  #modal-screen-manager .modal-content {
+    max-height: 94vh;
+    padding: 16px 20px;
+  }
+  #modal-screen-manager .modal-header {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+  }
 }
 
 .screen-config-section {
@@ -1205,7 +1257,7 @@ body::before {
 /* ── SELETOR DE PREENCHIMENTO DE MÍDIA (BG-FIT-PICKER) ── */
 .bg-fit-picker {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 12px;
   margin-top: 6px;
   margin-bottom: 12px;

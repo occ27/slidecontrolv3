@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SlideControl V3 — A Tela-Globo Tridimensional</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/console.css">
 </head>
+
 <body>
   <!-- Dual 3D Viewports: WebGL Behind, CSS3D in Front -->
   <div id="webgl-container"></div>
@@ -22,11 +26,10 @@
       <div class="topbar-left">
         <div class="brand-section">
           <img src="public/slidecontrol.svg" alt="SlideControl" class="brand-logo" />
-          <span class="brand-tag">TELA-GLOBO</span>
         </div>
         <div class="sys-metric">
           <span class="metric-label">STATUS</span>
-          <span class="metric-val status-live">ONLINE • 60 FPS</span>
+          <span class="metric-val status-live">ONLINE</span>
         </div>
         <div class="sys-metric">
           <span class="metric-label">UPTIME</span>
@@ -41,18 +44,9 @@
       </div>
 
       <div class="topbar-right">
-        <div class="sys-metric">
-          <span class="metric-label">SAÍDA HDMI</span>
-          <span class="metric-val highlight" id="global-throughput">60.0 FPS</span>
-        </div>
-        <button id="btn-toggle-panels" class="hud-btn" title="Exibir / Ocultar Painéis Laterais">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h12A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6zM8.25 3.75v16.5M15.75 3.75v16.5" />
-          </svg>
-          <span>PAINÉIS</span>
-        </button>
         <button id="btn-open-bg-modal" class="hud-btn" title="Mídias de Fundo e Nuvem">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
             <circle cx="9" cy="9" r="2" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" />
@@ -60,15 +54,28 @@
           <span>MÍDIAS</span>
         </button>
         <button id="btn-manage-screens" class="hud-btn" title="Gerenciador de Telas e Monitores (F10)">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <span>TELAS</span>
-          <kbd style="font-size:0.65rem; padding:1px 4px; border:1px solid currentColor; opacity:0.65; border-radius:3px; margin-left:3px;">F10</kbd>
+          <kbd
+            style="font-size:0.65rem; padding:1px 4px; border:1px solid currentColor; opacity:0.65; border-radius:3px; margin-left:3px;">F10</kbd>
         </button>
-        <button id="btn-quit-app" class="hud-btn danger-btn" title="Sair e Encerrar SlideControl" onclick="document.getElementById('modal-quit-confirm')?.classList.remove('hidden')">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        <button id="btn-toggle-panels" class="hud-btn" title="Exibir / Ocultar Painéis Laterais">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3.75 6A2.25 2.25 0 016 3.75h12A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6zM8.25 3.75v16.5M15.75 3.75v16.5" />
+          </svg>
+        </button>
+        <button id="btn-quit-app" class="hud-btn danger-btn" title="Sair e Encerrar SlideControl"
+          onclick="document.getElementById('modal-quit-confirm')?.classList.remove('hidden')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           <span>SAIR</span>
         </button>
@@ -86,7 +93,7 @@
 
       <!-- Left Floating Telemetry & Navigation Controls -->
       <aside class="hud-left-panel hud-interactive" id="hud-left-panel">
-        
+
         <!-- Card 1: Geo Esférica Telemetry -->
         <div class="hud-card mini-telemetry">
           <div class="card-header-bracket">
@@ -160,16 +167,21 @@
       <!-- Right Sliding Contextual Glassmorphic Inspector -->
       <section class="hud-right-inspector hud-interactive" id="process-inspector">
         <div class="inspector-card glass-panel">
-          
+
           <!-- Inspector Header -->
           <div class="inspector-header">
             <div class="node-title-group">
               <span class="node-type-tag" id="node-type-badge">SLIDE_NO_AR</span>
               <h2 class="node-title" id="node-title-display">ESTROFE 1</h2>
-              <p class="node-subtitle" id="node-desc-display">Deus enviou seu Filho amado para morrer em meu lugar...</p>
+              <p class="node-subtitle" id="node-desc-display">Deus enviou seu Filho amado para morrer em meu lugar...
+              </p>
             </div>
-            <button class="close-inspector-btn" id="close-inspector-btn" aria-label="Recolher Painel" title="Recolher Painel">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <button class="close-inspector-btn" id="close-inspector-btn" aria-label="Recolher Painel"
+              title="Recolher Painel">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
           </div>
 
@@ -245,16 +257,20 @@
 
     <!-- Bottom Controls & Zone Bar -->
     <footer style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
-      
+
       <!-- Compass / Directional Navigation (Bottom-Left) -->
       <div class="compass-dock hud-interactive">
         <span class="compass-header">NAVEGAÇÃO DO GLOBO</span>
         <div class="compass-grid">
-          <button class="nav-arrow-btn" id="nav-up" style="grid-column:2; grid-row:1;" title="Subir para Bíblia (Norte)">▲</button>
-          <button class="nav-arrow-btn" id="nav-left" style="grid-column:1; grid-row:2;" title="Girar para Slide Anterior">◀</button>
+          <button class="nav-arrow-btn" id="nav-up" style="grid-column:2; grid-row:1;"
+            title="Subir para Bíblia (Norte)">▲</button>
+          <button class="nav-arrow-btn" id="nav-left" style="grid-column:1; grid-row:2;"
+            title="Girar para Slide Anterior">◀</button>
           <button class="nav-arrow-btn center" id="nav-center" title="Recentralizar">●</button>
-          <button class="nav-arrow-btn" id="nav-right" style="grid-column:3; grid-row:2;" title="Girar para Próximo Slide">▶</button>
-          <button class="nav-arrow-btn" id="nav-down" style="grid-column:2; grid-row:3;" title="Descer para Controles (Sul)">▼</button>
+          <button class="nav-arrow-btn" id="nav-right" style="grid-column:3; grid-row:2;"
+            title="Girar para Próximo Slide">▶</button>
+          <button class="nav-arrow-btn" id="nav-down" style="grid-column:2; grid-row:3;"
+            title="Descer para Controles (Sul)">▼</button>
         </div>
       </div>
 
@@ -289,152 +305,169 @@
         <button class="btn-close-modal" id="btn-close-screen-manager" title="Fechar">&times;</button>
       </div>
 
-      <div id="screen-list">
-        <!-- Monitores populados via js/screen-manager.js -->
-      </div>
+      <div class="screen-manager-body">
+        <div id="screen-list">
+          <!-- Monitores populados via js/screen-manager.js -->
+        </div>
 
-      <div class="screen-config-scroll">
-        <!-- Customizações do Telão -->
-        <details class="screen-config-section" open>
-          <summary>⚙️ Customizar Telão de Projeção</summary>
-          <div class="screen-config-options">
-            <label>
-              <input type="checkbox" id="telao-cfg-text" checked> Mostrar Texto do Slide
-            </label>
-            <label>
-              <input type="checkbox" id="telao-cfg-footer" checked> Mostrar Identificação e Estrofe
-            </label>
-          </div>
+        <div class="screen-config-scroll">
+          <!-- Customizações do Telão -->
+          <details class="screen-config-section" open>
+            <summary>⚙️ Customizar Telão de Projeção</summary>
+            <div class="screen-config-options">
+              <label>
+                <input type="checkbox" id="telao-cfg-text" checked> Mostrar Texto do Slide
+              </label>
+              <label>
+                <input type="checkbox" id="telao-cfg-footer" checked> Mostrar Identificação e Estrofe
+              </label>
+            </div>
 
-          <!-- Ajuste de Mídia do Telão -->
-          <p style="margin: 10px 0 8px 0; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
-            Preenchimento da Mídia de Fundo (Telão)
-          </p>
-          <div class="bg-fit-picker" id="telao-bg-fit-picker" role="group" aria-label="Modo de preenchimento do fundo do Telão">
-            <button class="bg-fit-option" data-value="cover" data-target="telao" title="Preenche a tela inteira, cortando o excesso">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:130%;height:130%;top:-15%;left:-15%;"></div>
+            <!-- Ajuste de Mídia do Telão -->
+            <p
+              style="margin: 10px 0 8px 0; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
+              Preenchimento da Mídia de Fundo (Telão)
+            </p>
+            <div class="bg-fit-picker" id="telao-bg-fit-picker" role="group"
+              aria-label="Modo de preenchimento do fundo do Telão">
+              <button class="bg-fit-option" data-value="cover" data-target="telao"
+                title="Preenche a tela inteira, cortando o excesso">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:130%;height:130%;top:-15%;left:-15%;"></div>
+                  </div>
+                  <div class="bg-fit-preview-corners">
+                    <span class="bg-fit-cut-indicator">✂</span>
+                  </div>
                 </div>
-                <div class="bg-fit-preview-corners">
-                  <span class="bg-fit-cut-indicator">✂</span>
+                <span class="bg-fit-label">Preencher</span>
+                <span class="bg-fit-desc">Sem faixas pretas<br>Pode cortar bordas</span>
+              </button>
+              <button class="bg-fit-option active" data-value="width" data-target="telao"
+                title="Ajusta pela largura, proporção preservada">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:100%;height:70%;top:15%;left:0;"></div>
+                    <div class="bg-fit-preview-bars" style="width:100%;height:15%;top:0;left:0;"></div>
+                    <div class="bg-fit-preview-bars" style="width:100%;height:15%;bottom:0;left:0;"></div>
+                  </div>
                 </div>
-              </div>
-              <span class="bg-fit-label">Preencher</span>
-              <span class="bg-fit-desc">Sem faixas pretas<br>Pode cortar bordas</span>
-            </button>
-            <button class="bg-fit-option active" data-value="width" data-target="telao" title="Ajusta pela largura, proporção preservada">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:100%;height:70%;top:15%;left:0;"></div>
-                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;top:0;left:0;"></div>
-                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;bottom:0;left:0;"></div>
+                <span class="bg-fit-label">Largura</span>
+                <span class="bg-fit-desc">Largura 100%<br>Faixa vertical</span>
+              </button>
+              <button class="bg-fit-option" data-value="contain" data-target="telao"
+                title="Mostra a mídia completa sem cortar, com faixas pretas">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:70%;height:100%;top:0;left:15%;"></div>
+                    <div class="bg-fit-preview-bars" style="width:15%;left:0;height:100%;top:0;"></div>
+                    <div class="bg-fit-preview-bars" style="width:15%;right:0;height:100%;top:0;"></div>
+                  </div>
                 </div>
-              </div>
-              <span class="bg-fit-label">Largura</span>
-              <span class="bg-fit-desc">Largura 100%<br>Faixa vertical</span>
-            </button>
-            <button class="bg-fit-option" data-value="contain" data-target="telao" title="Mostra a mídia completa sem cortar, com faixas pretas">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:70%;height:100%;top:0;left:15%;"></div>
-                  <div class="bg-fit-preview-bars" style="width:15%;left:0;height:100%;top:0;"></div>
-                  <div class="bg-fit-preview-bars" style="width:15%;right:0;height:100%;top:0;"></div>
+                <span class="bg-fit-label">Contido</span>
+                <span class="bg-fit-desc">Sem cortes<br>Faixas nas bordas</span>
+              </button>
+              <button class="bg-fit-option" data-value="stretch" data-target="telao"
+                title="Estica para preencher completamente (pode distorcer)">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:100%;height:100%;top:0;left:0;"></div>
+                    <div class="bg-fit-preview-distort">⤢</div>
+                  </div>
                 </div>
-              </div>
-              <span class="bg-fit-label">Contido</span>
-              <span class="bg-fit-desc">Sem cortes<br>Faixas nas bordas</span>
-            </button>
-            <button class="bg-fit-option" data-value="stretch" data-target="telao" title="Estica para preencher completamente (pode distorcer)">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:100%;height:100%;top:0;left:0;"></div>
-                  <div class="bg-fit-preview-distort">⤢</div>
-                </div>
-              </div>
-              <span class="bg-fit-label">Esticar</span>
-              <span class="bg-fit-desc">Preenche tudo<br>Pode distorcer</span>
-            </button>
-          </div>
-        </details>
+                <span class="bg-fit-label">Esticar</span>
+                <span class="bg-fit-desc">Preenche tudo<br>Pode distorcer</span>
+              </button>
+            </div>
+          </details>
 
-        <!-- Customizações do Retorno de Palco -->
-        <details class="screen-config-section" open>
-          <summary>🎤 Customizar Retorno de Palco (Stage Display)</summary>
-          <div class="screen-config-options">
-            <label>
-              <input type="checkbox" id="retorno-cfg-clock" checked> Mostrar Relógio Digital
-            </label>
-            <label>
-              <input type="checkbox" id="retorno-cfg-current" checked> Mostrar Slide Atual
-            </label>
-            <label>
-              <input type="checkbox" id="retorno-cfg-next" checked> Mostrar Prévia do Próximo Slide
-            </label>
-          </div>
+          <!-- Customizações do Retorno de Palco -->
+          <details class="screen-config-section" open>
+            <summary>🎤 Customizar Retorno de Palco (Stage Display)</summary>
+            <div class="screen-config-options">
+              <label>
+                <input type="checkbox" id="retorno-cfg-clock" checked> Mostrar Relógio Digital
+              </label>
+              <label>
+                <input type="checkbox" id="retorno-cfg-current" checked> Mostrar Slide Atual
+              </label>
+              <label>
+                <input type="checkbox" id="retorno-cfg-next" checked> Mostrar Prévia do Próximo Slide
+              </label>
+            </div>
 
-          <!-- Ajuste de Mídia do Retorno -->
-          <p style="margin: 10px 0 8px 0; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
-            Preenchimento da Mídia de Fundo (Retorno)
-          </p>
-          <div class="bg-fit-picker" id="retorno-bg-fit-picker" role="group" aria-label="Modo de preenchimento do fundo do Retorno">
-            <button class="bg-fit-option" data-value="cover" data-target="retorno" title="Preenche a tela inteira, cortando o excesso">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:130%;height:130%;top:-15%;left:-15%;"></div>
+            <!-- Ajuste de Mídia do Retorno -->
+            <p
+              style="margin: 10px 0 8px 0; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
+              Preenchimento da Mídia de Fundo (Retorno)
+            </p>
+            <div class="bg-fit-picker" id="retorno-bg-fit-picker" role="group"
+              aria-label="Modo de preenchimento do fundo do Retorno">
+              <button class="bg-fit-option" data-value="cover" data-target="retorno"
+                title="Preenche a tela inteira, cortando o excesso">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:130%;height:130%;top:-15%;left:-15%;"></div>
+                  </div>
+                  <div class="bg-fit-preview-corners">
+                    <span class="bg-fit-cut-indicator">✂</span>
+                  </div>
                 </div>
-                <div class="bg-fit-preview-corners">
-                  <span class="bg-fit-cut-indicator">✂</span>
+                <span class="bg-fit-label">Preencher</span>
+                <span class="bg-fit-desc">Sem faixas pretas<br>Pode cortar bordas</span>
+              </button>
+              <button class="bg-fit-option active" data-value="width" data-target="retorno"
+                title="Ajusta pela largura, proporção preservada">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:100%;height:70%;top:15%;left:0;"></div>
+                    <div class="bg-fit-preview-bars" style="width:100%;height:15%;top:0;left:0;"></div>
+                    <div class="bg-fit-preview-bars" style="width:100%;height:15%;bottom:0;left:0;"></div>
+                  </div>
                 </div>
-              </div>
-              <span class="bg-fit-label">Preencher</span>
-              <span class="bg-fit-desc">Sem faixas pretas<br>Pode cortar bordas</span>
-            </button>
-            <button class="bg-fit-option active" data-value="width" data-target="retorno" title="Ajusta pela largura, proporção preservada">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:100%;height:70%;top:15%;left:0;"></div>
-                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;top:0;left:0;"></div>
-                  <div class="bg-fit-preview-bars" style="width:100%;height:15%;bottom:0;left:0;"></div>
+                <span class="bg-fit-label">Largura</span>
+                <span class="bg-fit-desc">Largura 100%<br>Faixa vertical</span>
+              </button>
+              <button class="bg-fit-option" data-value="contain" data-target="retorno"
+                title="Mostra a mídia completa sem cortar, com faixas pretas">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:70%;height:100%;top:0;left:15%;"></div>
+                    <div class="bg-fit-preview-bars" style="width:15%;left:0;height:100%;top:0;"></div>
+                    <div class="bg-fit-preview-bars" style="width:15%;right:0;height:100%;top:0;"></div>
+                  </div>
                 </div>
-              </div>
-              <span class="bg-fit-label">Largura</span>
-              <span class="bg-fit-desc">Largura 100%<br>Faixa vertical</span>
-            </button>
-            <button class="bg-fit-option" data-value="contain" data-target="retorno" title="Mostra a mídia completa sem cortar, com faixas pretas">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:70%;height:100%;top:0;left:15%;"></div>
-                  <div class="bg-fit-preview-bars" style="width:15%;left:0;height:100%;top:0;"></div>
-                  <div class="bg-fit-preview-bars" style="width:15%;right:0;height:100%;top:0;"></div>
+                <span class="bg-fit-label">Contido</span>
+                <span class="bg-fit-desc">Sem cortes<br>Faixas nas bordas</span>
+              </button>
+              <button class="bg-fit-option" data-value="stretch" data-target="retorno"
+                title="Estica para preencher completamente (pode distorcer)">
+                <div class="bg-fit-preview">
+                  <div class="bg-fit-preview-screen">
+                    <div class="bg-fit-preview-media" style="width:100%;height:100%;top:0;left:0;"></div>
+                    <div class="bg-fit-preview-distort">⤢</div>
+                  </div>
                 </div>
-              </div>
-              <span class="bg-fit-label">Contido</span>
-              <span class="bg-fit-desc">Sem cortes<br>Faixas nas bordas</span>
-            </button>
-            <button class="bg-fit-option" data-value="stretch" data-target="retorno" title="Estica para preencher completamente (pode distorcer)">
-              <div class="bg-fit-preview">
-                <div class="bg-fit-preview-screen">
-                  <div class="bg-fit-preview-media" style="width:100%;height:100%;top:0;left:0;"></div>
-                  <div class="bg-fit-preview-distort">⤢</div>
-                </div>
-              </div>
-              <span class="bg-fit-label">Esticar</span>
-              <span class="bg-fit-desc">Preenche tudo<br>Pode distorcer</span>
-            </button>
-          </div>
-        </details>
-      </div>
+                <span class="bg-fit-label">Esticar</span>
+                <span class="bg-fit-desc">Preenche tudo<br>Pode distorcer</span>
+              </button>
+            </div>
+          </details>
+        </div>
+      </div> <!-- .screen-manager-body -->
     </div>
   </div>
 
 
   <!-- MODAL: BACKGROUND PICKER -->
-  <div id="bg-picker-modal" class="modal-overlay hidden" style="background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; z-index: 10001;">
-    <div class="modal-content media-modal-content" style="height: 680px; max-width: 900px; display: flex; flex-direction: column;">
+  <div id="bg-picker-modal" class="modal-overlay hidden"
+    style="background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; z-index: 10001;">
+    <div class="modal-content media-modal-content"
+      style="height: 680px; max-width: 900px; display: flex; flex-direction: column;">
       <div class="modal-header" style="flex-shrink: 0;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--accent);">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+            style="width:20px;height:20px;color:var(--accent);">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
             <circle cx="9" cy="9" r="2" />
             <path d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" />
@@ -442,7 +475,8 @@
           <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-main);">Mídias de Fundo</h3>
         </div>
         <button class="icon-btn" id="btn-close-bg-modal" title="Fechar">
-          <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -451,17 +485,19 @@
       <!-- Alvo: Telão vs Retorno -->
       <div class="modal-target-tabs">
         <button class="bg-target-tab active" data-target="telao">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
           </svg>
           <span>Configurar Telão</span>
         </button>
         <button class="bg-target-tab" data-target="retorno">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
-            <polyline points="17 2 12 7 7 2"/>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+            <polyline points="17 2 12 7 7 2" />
           </svg>
           <span>Configurar Retorno</span>
         </button>
@@ -491,9 +527,12 @@
                 <option value="Todas">Todas</option>
               </select>
             </div>
-            <button class="hud-btn btn-search-cloud" data-type="image" style="font-size:11px; display:flex; align-items:center; gap:6px;">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+            <button class="hud-btn btn-search-cloud" data-type="image"
+              style="font-size:11px; display:flex; align-items:center; gap:6px;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2" style="width:16px;height:16px;">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
               </svg>
               Buscar mais no Servidor
             </button>
@@ -510,9 +549,12 @@
                 <option value="Todas">Todas</option>
               </select>
             </div>
-            <button class="hud-btn btn-search-cloud" data-type="video" style="font-size:11px; display:flex; align-items:center; gap:6px;">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+            <button class="hud-btn btn-search-cloud" data-type="video"
+              style="font-size:11px; display:flex; align-items:center; gap:6px;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2" style="width:16px;height:16px;">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
               </svg>
               Buscar mais no Servidor
             </button>
@@ -522,24 +564,29 @@
 
         <!-- Aba 4: Meus Uploads -->
         <div id="bg-local" class="bg-tab-pane">
-          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:15px; background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+          <div
+            style="display:flex; flex-direction:column; gap:12px; margin-bottom:15px; background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div id="custom-breadcrumbs" style="display:flex; align-items:center; gap:4px; font-size:13px;"></div>
               <div style="display:flex; align-items:center; gap:8px;">
-                <button class="hud-btn" onclick="window.createNewCustomFolder()" title="Nova Pasta" style="padding:6px 10px; font-size:11px;">
+                <button class="hud-btn" onclick="window.createNewCustomFolder()" title="Nova Pasta"
+                  style="padding:6px 10px; font-size:11px;">
                   📁 Nova Pasta
                 </button>
                 <input type="file" id="bg-upload-input" accept="image/*,video/*" style="display:none;" multiple>
-                <button class="hud-btn" onclick="document.getElementById('bg-upload-input').click()" title="Fazer Upload" style="padding:6px 10px; font-size:11px;">
+                <button class="hud-btn" onclick="document.getElementById('bg-upload-input').click()"
+                  title="Fazer Upload" style="padding:6px 10px; font-size:11px;">
                   ⬆️ Upload
                 </button>
-                <button class="hud-btn" onclick="window.openQRMediaModal()" title="Enviar pelo Celular via QR Code" style="padding:6px 10px; font-size:11px;">
+                <button class="hud-btn" onclick="window.openQRMediaModal()" title="Enviar pelo Celular via QR Code"
+                  style="padding:6px 10px; font-size:11px;">
                   📱 Celular (QR)
                 </button>
               </div>
             </div>
             <div style="display:flex; align-items:center;">
-              <input type="text" id="bg-search-input" placeholder="Buscar arquivo ou pasta..." class="hud-input" style="width:100%; font-size:12px; padding:6px 10px;">
+              <input type="text" id="bg-search-input" placeholder="Buscar arquivo ou pasta..." class="hud-input"
+                style="width:100%; font-size:12px; padding:6px 10px;">
             </div>
           </div>
           <div class="bg-grid media-grid" id="bg-custom-grid"></div>
@@ -549,59 +596,81 @@
   </div>
 
   <!-- MODAL: QR CODE PARA UPLOAD MÓVEL -->
-  <div id="modal-qr-media-upload" class="modal-overlay hidden" style="background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; z-index: 10003;">
+  <div id="modal-qr-media-upload" class="modal-overlay hidden"
+    style="background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; z-index: 10003;">
     <div class="modal-content" style="max-width: 420px; text-align: center;">
-      <h3 style="margin: 0 0 8px; color: var(--text-main); font-size: 1.2rem; font-weight: 700;">Receber Mídia do Celular</h3>
+      <h3 style="margin: 0 0 8px; color: var(--text-main); font-size: 1.2rem; font-weight: 700;">Receber Mídia do
+        Celular</h3>
       <p style="color: var(--text-muted); font-size: 13px; line-height: 1.4; margin: 0 0 16px;">
         Aponte a câmera do celular para o QR Code abaixo. O dispositivo deve estar na mesma rede Wi-Fi.
       </p>
-      <div style="background: rgba(0,0,0,0.4); padding: 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px;">
-        <div id="qrcode-media-container" style="margin: 0 auto; display: flex; justify-content: center; background: white; padding: 12px; border-radius: 8px; width: fit-content;"></div>
-        <div id="qr-media-status-text" style="font-size: 12px; color: var(--accent); margin-top: 12px; font-weight: 600;">Aguardando conexão...</div>
+      <div
+        style="background: rgba(0,0,0,0.4); padding: 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px;">
+        <div id="qrcode-media-container"
+          style="margin: 0 auto; display: flex; justify-content: center; background: white; padding: 12px; border-radius: 8px; width: fit-content;">
+        </div>
+        <div id="qr-media-status-text"
+          style="font-size: 12px; color: var(--accent); margin-top: 12px; font-weight: 600;">Aguardando conexão...</div>
       </div>
       <button class="hud-btn secondary-btn" style="width: 100%;" onclick="window.closeQRMediaModal()">Fechar</button>
     </div>
   </div>
 
   <!-- MODAL: NUVEM SELETOR DE MÍDIAS -->
-  <div id="cloud-media-modal" class="modal-overlay hidden" style="background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; z-index: 10002;">
+  <div id="cloud-media-modal" class="modal-overlay hidden"
+    style="background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; z-index: 10002;">
     <div class="modal-content" style="height: 680px; max-width: 920px; display: flex; flex-direction: column;">
       <div class="modal-header" style="flex-shrink: 0;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--accent);">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2" style="color:var(--accent);">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
           </svg>
-          <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-main);">Nuvem — Buscar Planos de Fundo</h3>
+          <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-main);">Nuvem — Buscar Planos de
+            Fundo</h3>
         </div>
         <button class="icon-btn" id="btn-close-cloud-modal" title="Fechar">
-          <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       <div class="modal-body" style="display:flex; flex:1; overflow:hidden; padding:0; min-height:0;">
-        <div class="cloud-sidebar" style="width:220px; border-right:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; background:rgba(0,0,0,0.3);">
-          <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08); font-weight:700; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">
+        <div class="cloud-sidebar"
+          style="width:220px; border-right:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; background:rgba(0,0,0,0.3);">
+          <div
+            style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08); font-weight:700; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">
             Categorias
           </div>
           <div id="cloud-categories-list" style="flex:1; overflow-y:auto;"></div>
         </div>
 
-        <div class="cloud-content" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding:18px; min-height:0;">
+        <div class="cloud-content"
+          style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding:18px; min-height:0;">
           <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
-            <h4 id="cloud-current-category-title" style="margin:0; font-weight:600; font-size:14px; color:var(--text-main);">Categoria: Geral</h4>
-            <span id="cloud-media-type-badge" style="font-size:11px; padding:3px 8px; border-radius:12px; background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.3); color:var(--accent); text-transform:uppercase; font-weight:600;">Vídeos</span>
+            <h4 id="cloud-current-category-title"
+              style="margin:0; font-weight:600; font-size:14px; color:var(--text-main);">Categoria: Geral</h4>
+            <span id="cloud-media-type-badge"
+              style="font-size:11px; padding:3px 8px; border-radius:12px; background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.3); color:var(--accent); text-transform:uppercase; font-weight:600;">Vídeos</span>
           </div>
 
-          <div id="cloud-loading-spinner" class="hidden" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1;">
-            <div class="bg-item-spinner" style="width:32px; height:32px; border:3px solid var(--accent); border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:10px;"></div>
+          <div id="cloud-loading-spinner" class="hidden"
+            style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1;">
+            <div class="bg-item-spinner"
+              style="width:32px; height:32px; border:3px solid var(--accent); border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin-bottom:10px;">
+            </div>
             <span style="font-size:12px; color:var(--text-muted);">Carregando catálogo da nuvem...</span>
           </div>
 
-          <div id="cloud-empty-state" class="hidden" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; color:var(--text-muted); padding:40px 20px;">
-            <svg xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;margin-bottom:12px;opacity:0.4;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <div id="cloud-empty-state" class="hidden"
+            style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; color:var(--text-muted); padding:40px 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;margin-bottom:12px;opacity:0.4;"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
             <span>Nenhuma mídia encontrada nesta categoria.</span>
           </div>
@@ -614,22 +683,33 @@
 
   <!-- MODAL: ENCERRAR SISTEMA -->
   <div id="modal-quit-confirm" class="modal-overlay hidden" style="z-index: 10005;">
-    <div class="modal-content" style="max-width: 440px; text-align: center; border-color: rgba(239, 68, 68, 0.4); border-top: 3px solid #ef4444; box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 35px 90px -10px rgba(0,0,0,0.95), 0 0 50px rgba(239,68,68,0.3);">
-      <div style="width: 56px; height: 56px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ef4444;">
+    <div class="modal-content"
+      style="max-width: 440px; text-align: center; border-color: rgba(239, 68, 68, 0.4); border-top: 3px solid #ef4444; box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 35px 90px -10px rgba(0,0,0,0.95), 0 0 50px rgba(239,68,68,0.3);">
+      <div
+        style="width: 56px; height: 56px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ef4444;">
         <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
       <h3 style="margin: 0 0 8px; color: #ffffff; font-size: 1.25rem; font-weight: 700;">Encerrar SlideControl?</h3>
       <p style="color: rgba(255, 255, 255, 0.7); font-size: 13px; line-height: 1.5; margin: 0 0 24px;">
-        Isso fechará todas as janelas do operador, o telão de projeção, e encerrará todos os serviços internos rodando em segundo plano.
+        Isso fechará todas as janelas do operador, o telão de projeção, e encerrará todos os serviços internos rodando
+        em segundo plano.
       </p>
-      
+
       <div style="display: flex; gap: 12px; justify-content: center;">
-        <button id="btn-cancel-quit" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; cursor: pointer; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" onclick="document.getElementById('modal-quit-confirm').classList.add('hidden')">
+        <button id="btn-cancel-quit"
+          style="flex: 1; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; cursor: pointer; font-weight: 600; transition: background 0.2s;"
+          onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+          onmouseout="this.style.background='rgba(255,255,255,0.06)'"
+          onclick="document.getElementById('modal-quit-confirm').classList.add('hidden')">
           Cancelar
         </button>
-        <button id="btn-confirm-quit" style="flex: 1; padding: 10px; background: #ef4444; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 700; transition: background 0.2s; box-shadow: 0 4px 16px rgba(239,68,68,0.4);" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'" onclick="fetch('http://127.0.0.1:8767/api/system/shutdown').catch(()=>{}); if(window.electronAPI && window.electronAPI.fecharApp) { window.electronAPI.fecharApp(); } else { window.close(); }">
+        <button id="btn-confirm-quit"
+          style="flex: 1; padding: 10px; background: #ef4444; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 700; transition: background 0.2s; box-shadow: 0 4px 16px rgba(239,68,68,0.4);"
+          onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'"
+          onclick="fetch('http://127.0.0.1:8767/api/system/shutdown').catch(()=>{}); if(window.electronAPI && window.electronAPI.fecharApp) { window.electronAPI.fecharApp(); } else { window.close(); }">
           Sim, Encerrar
         </button>
       </div>
@@ -638,14 +718,16 @@
 
   <!-- MODAL: REGISTRO E ATIVAÇÃO DO SISTEMA -->
   <div id="registration-overlay" class="modal-overlay hidden" style="z-index: 10010;">
-    <div class="modal-content" style="max-width: 520px; width: 90%; text-align: center; padding: 32px; border-color: rgba(0, 240, 255, 0.4); box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,240,255,0.2);">
+    <div class="modal-content"
+      style="max-width: 520px; width: 90%; text-align: center; padding: 32px; border-color: rgba(0, 240, 255, 0.4); box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,240,255,0.2);">
 
       <!-- Passo 1: Cadastro -->
       <div id="registration-step-1">
         <img src="public/slidecontrol.svg" alt="SlideControl" style="max-height: 48px; margin-bottom: 16px;">
         <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: #ffffff;">Registro do Sistema</h3>
         <p style="color: rgba(255, 255, 255, 0.65); margin-bottom: 24px; font-size: 13px; line-height: 1.5;">
-          Preencha os dados abaixo para receber seu token de acesso no e-mail e liberar todos os recursos e mídias na nuvem.
+          Preencha os dados abaixo para receber seu token de acesso no e-mail e liberar todos os recursos e mídias na
+          nuvem.
         </p>
 
         <form id="registration-form" style="display: flex; flex-direction: column; gap: 14px;">
@@ -666,14 +748,19 @@
             <input type="text" id="reg-whatsapp" class="reg-input" placeholder="(11) 99999-9999">
           </div>
           <div style="display: flex; align-items: flex-start; gap: 10px; margin-top: 4px; text-align: left;">
-            <input type="checkbox" id="reg-terms" required style="width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: #00f0ff;">
-            <label for="reg-terms" style="font-size: 12px; color: rgba(255, 255, 255, 0.7); cursor: pointer; line-height: 1.4;">
+            <input type="checkbox" id="reg-terms" required
+              style="width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: #00f0ff;">
+            <label for="reg-terms"
+              style="font-size: 12px; color: rgba(255, 255, 255, 0.7); cursor: pointer; line-height: 1.4;">
               Li, compreendi e concordo integralmente com os
-              <a href="#" onclick="document.getElementById('modal-copyright').classList.remove('hidden'); return false;" style="color: #00f0ff; text-decoration: underline; font-weight: 600;">Termos de Uso e Direitos Autorais</a>.
+              <a href="#" onclick="document.getElementById('modal-copyright').classList.remove('hidden'); return false;"
+                style="color: #00f0ff; text-decoration: underline; font-weight: 600;">Termos de Uso e Direitos
+                Autorais</a>.
             </label>
           </div>
 
-          <button type="submit" id="btn-register" class="hud-btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; font-weight: 700; margin-top: 8px;">
+          <button type="submit" id="btn-register" class="hud-btn"
+            style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; font-weight: 700; margin-top: 8px;">
             Registrar Sistema
           </button>
         </form>
@@ -687,22 +774,29 @@
           Enviamos um código de 6 dígitos para o e-mail cadastrado.
         </p>
 
-        <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 14px; margin-bottom: 22px; text-align: left; border-radius: 0 8px 8px 0;">
+        <div
+          style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 14px; margin-bottom: 22px; text-align: left; border-radius: 0 8px 8px 0;">
           <p style="margin: 0; color: #fbbf24; font-size: 12px; font-weight: 700;">⚠️ Atenção:</p>
           <p style="margin: 4px 0 0 0; color: rgba(255, 255, 255, 0.8); font-size: 12px; line-height: 1.4;">
-            Se não encontrar a mensagem na caixa de entrada, por favor <b>verifique a pasta de SPAM (lixo eletrônico)</b> ou a aba de "Promoções".
+            Se não encontrar a mensagem na caixa de entrada, por favor <b>verifique a pasta de SPAM (lixo
+              eletrônico)</b> ou a aba de "Promoções".
           </p>
         </div>
 
         <form id="verify-form" style="display: flex; flex-direction: column; gap: 16px;">
           <div class="reg-field">
             <label style="text-align: center;">Código de Verificação (6 dígitos)</label>
-            <input type="text" id="reg-code" class="reg-input" required placeholder="000000" maxlength="6" style="text-align: center; font-size: 26px; font-weight: 800; letter-spacing: 6px; font-family: var(--font-mono);">
+            <input type="text" id="reg-code" class="reg-input" required placeholder="000000" maxlength="6"
+              style="text-align: center; font-size: 26px; font-weight: 800; letter-spacing: 6px; font-family: var(--font-mono);">
           </div>
-          <button type="submit" id="btn-verify" style="padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+          <button type="submit" id="btn-verify"
+            style="padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);"
+            onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
             Ativar Sistema
           </button>
-          <button type="button" id="btn-resend-code" style="background: transparent; color: rgba(255,255,255,0.55); border: none; font-size: 13px; text-decoration: underline; cursor: pointer;" onmouseover="this.style.color='#00f0ff'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">
+          <button type="button" id="btn-resend-code"
+            style="background: transparent; color: rgba(255,255,255,0.55); border: none; font-size: 13px; text-decoration: underline; cursor: pointer;"
+            onmouseover="this.style.color='#00f0ff'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">
             Reenviar Código por E-mail
           </button>
         </form>
@@ -712,77 +806,83 @@
   </div>
 
   <!-- LOADING OVERLAY -->
-  <div id="loading-overlay" class="modal-overlay hidden" style="z-index: 10020; flex-direction: column; justify-content: center; align-items: center;">
-    <div class="bg-item-spinner" style="width: 44px; height: 44px; border: 4px solid #00f0ff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
+  <div id="loading-overlay" class="modal-overlay hidden"
+    style="z-index: 10020; flex-direction: column; justify-content: center; align-items: center;">
+    <div class="bg-item-spinner"
+      style="width: 44px; height: 44px; border: 4px solid #00f0ff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;">
+    </div>
     <h3 style="color: white; margin: 0; font-weight: 600; font-size: 15px;" id="loading-message">Processando...</h3>
   </div>
 
   <!-- MODAL: DIREITOS AUTORAIS E TERMOS -->
   <div id="modal-copyright" class="modal-overlay hidden" style="z-index: 10030;">
-    <div class="modal-content" style="max-width: 620px; width: 92%; height: 80vh; display: flex; flex-direction: column; border-color: rgba(0,240,255,0.3);">
+    <div class="modal-content"
+      style="max-width: 620px; width: 92%; height: 80vh; display: flex; flex-direction: column; border-color: rgba(0,240,255,0.3);">
       <div class="modal-header" style="flex-shrink: 0;">
-        <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff;">Termos de Uso e Direitos Autorais</h3>
+        <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff;">Termos de Uso e Direitos Autorais
+        </h3>
         <button class="icon-btn" onclick="document.getElementById('modal-copyright').classList.add('hidden')">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-      <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px; font-size: 12.5px; line-height: 1.6; color: rgba(255, 255, 255, 0.75); text-align: left; white-space: pre-wrap; font-family: var(--font-mono); background: rgba(0,0,0,0.35); border-radius: 8px; margin: 0 16px 16px;">
-=======================================================================
-                        AVISO DE DIREITOS AUTORAIS
-                            SLIDECONTROL
-=======================================================================
+      <div class="modal-body"
+        style="flex: 1; overflow-y: auto; padding: 20px; font-size: 12.5px; line-height: 1.6; color: rgba(255, 255, 255, 0.75); text-align: left; white-space: pre-wrap; font-family: var(--font-mono); background: rgba(0,0,0,0.35); border-radius: 8px; margin: 0 16px 16px;">
+        =======================================================================
+        AVISO DE DIREITOS AUTORAIS
+        SLIDECONTROL
+        =======================================================================
 
-Copyright (c) 2023-2026 SlideControl / Brazcom. Todos os direitos reservados.
+        Copyright (c) 2023-2026 SlideControl / Brazcom. Todos os direitos reservados.
 
-O SlideControl é uma propriedade intelectual protegida pelas leis de 
-direitos autorais do Brasil (Lei nº 9.610/98) e por tratados 
-internacionais de proteção à propriedade intelectual.
+        O SlideControl é uma propriedade intelectual protegida pelas leis de
+        direitos autorais do Brasil (Lei nº 9.610/98) e por tratados
+        internacionais de proteção à propriedade intelectual.
 
-ATENÇÃO: TERMOS RESTRITIVOS DE USO E ACESSO AO CÓDIGO-FONTE
+        ATENÇÃO: TERMOS RESTRITIVOS DE USO E ACESSO AO CÓDIGO-FONTE
 
-Ao utilizar, instalar ou armazenar este software, você concorda 
-expressamente com os seguintes termos:
+        Ao utilizar, instalar ou armazenar este software, você concorda
+        expressamente com os seguintes termos:
 
-1. PROIBIÇÃO DE ENGENHARIA REVERSA E DESCOMPILAÇÃO
-É estritamente proibido realizar engenharia reversa, descompilar, 
-desmontar, decodificar, descriptografar ou tentar de qualquer outra 
-forma derivar, acessar ou expor o código-fonte deste software.
+        1. PROIBIÇÃO DE ENGENHARIA REVERSA E DESCOMPILAÇÃO
+        É estritamente proibido realizar engenharia reversa, descompilar,
+        desmontar, decodificar, descriptografar ou tentar de qualquer outra
+        forma derivar, acessar ou expor o código-fonte deste software.
 
-2. PROIBIÇÃO DE MODIFICAÇÃO E DERIVAÇÃO
-Você não tem permissão para modificar, adaptar, traduzir ou criar 
-trabalhos derivados baseados neste software, seus algoritmos, 
-interfaces ou lógicas de funcionamento, sem a autorização prévia, 
-expressa e por escrito do autor original.
+        2. PROIBIÇÃO DE MODIFICAÇÃO E DERIVAÇÃO
+        Você não tem permissão para modificar, adaptar, traduzir ou criar
+        trabalhos derivados baseados neste software, seus algoritmos,
+        interfaces ou lógicas de funcionamento, sem a autorização prévia,
+        expressa e por escrito do autor original.
 
-3. USO DE INTELIGÊNCIA ARTIFICIAL E ROUBO DE PROPRIEDADE
-É expressamente proibido o uso de ferramentas de Inteligência 
-Artificial (IA), scripts ou processos automatizados com a finalidade 
-de extrair, analisar, copiar, reproduzir ou reescrever as lógicas 
-internas deste software para uso em aplicações próprias ou de terceiros.
-A apropriação indevida de lógicas e algoritmos proprietários 
-configura plágio e violação direta de direitos autorais.
+        3. USO DE INTELIGÊNCIA ARTIFICIAL E ROUBO DE PROPRIEDADE
+        É expressamente proibido o uso de ferramentas de Inteligência
+        Artificial (IA), scripts ou processos automatizados com a finalidade
+        de extrair, analisar, copiar, reproduzir ou reescrever as lógicas
+        internas deste software para uso em aplicações próprias ou de terceiros.
+        A apropriação indevida de lógicas e algoritmos proprietários
+        configura plágio e violação direta de direitos autorais.
 
-4. PROTEÇÃO LEGAL
-Qualquer tentativa de burlar as proteções do software (como a 
-compilação ofuscada), extrair arquivos internos do pacote do 
-aplicativo (.app, .dmg, .exe) ou distribuir versões modificadas 
-constituirá crime de violação de direito autoral e concorrência 
-desleal. O autor reserva-se o direito de buscar todas as medidas 
-cíveis e criminais cabíveis contra os infratores, incluindo o 
-ressarcimento por perdas e danos.
+        4. PROTEÇÃO LEGAL
+        Qualquer tentativa de burlar as proteções do software (como a
+        compilação ofuscada), extrair arquivos internos do pacote do
+        aplicativo (.app, .dmg, .exe) ou distribuir versões modificadas
+        constituirá crime de violação de direito autoral e concorrência
+        desleal. O autor reserva-se o direito de buscar todas as medidas
+        cíveis e criminais cabíveis contra os infratores, incluindo o
+        ressarcimento por perdas e danos.
 
-5. ISENÇÃO DE RESPONSABILIDADE
-Este software é fornecido "no estado em que se encontra", sem 
-garantias de qualquer tipo. O autor não será responsabilizado por 
-quaisquer danos diretos ou indiretos decorrentes do uso do software.
+        5. ISENÇÃO DE RESPONSABILIDADE
+        Este software é fornecido "no estado em que se encontra", sem
+        garantias de qualquer tipo. O autor não será responsabilizado por
+        quaisquer danos diretos ou indiretos decorrentes do uso do software.
 
------------------------------------------------------------------------
-Ao prosseguir com o uso deste software, você atesta que leu, 
-compreendeu e aceitou integralmente os termos descritos acima. 
-A ignorância destes termos não o isenta das penalidades legais.
-=======================================================================
+        -----------------------------------------------------------------------
+        Ao prosseguir com o uso deste software, você atesta que leu,
+        compreendeu e aceitou integralmente os termos descritos acima.
+        A ignorância destes termos não o isenta das penalidades legais.
+        =======================================================================
       </div>
       <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: right; flex-shrink: 0;">
         <button class="hud-btn" onclick="document.getElementById('modal-copyright').classList.add('hidden')">
@@ -808,4 +908,5 @@ A ignorância destes termos não o isenta das penalidades legais.
   <script src="js/registration.js"></script>
 
 </body>
+
 </html>

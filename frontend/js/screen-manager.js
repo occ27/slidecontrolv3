@@ -112,7 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
       let CONTAINER_W = availW;
       let CONTAINER_H = Math.round(CONTAINER_W * (totalVH / totalVW));
 
-      const MAX_HEIGHT = 280;
+      const windowH = window.innerHeight;
+      const MAX_HEIGHT = windowH < 720 ? 180 : (windowH < 850 ? 220 : 260);
       if (CONTAINER_H > MAX_HEIGHT) {
         CONTAINER_H = MAX_HEIGHT;
         CONTAINER_W = Math.round(CONTAINER_H * (totalVW / totalVH));
@@ -224,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Zona de Tags Arrastáveis abaixo da área de monitores
       const tagZone = document.createElement('div');
-      tagZone.style.cssText = `display: flex; gap: 14px; justify-content: center; align-items: center; margin: 0 auto 16px; padding: 10px 16px; background: rgba(5, 10, 20, 0.7); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; max-width: ${Math.max(CONTAINER_W, 400)}px; box-sizing: border-box;`;
+      tagZone.style.cssText = `display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; margin: 0 auto 14px; padding: 8px 16px; background: rgba(5, 10, 20, 0.7); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; max-width: ${Math.max(CONTAINER_W, 360)}px; width: 100%; box-sizing: border-box;`;
 
       // Tag Telão
       const telaoTag = document.createElement('div');
