@@ -56,8 +56,37 @@
     const bgImage = document.getElementById('bg-image');
     const bgVideo = document.getElementById('bg-video');
 
+    let currentBg = {
+      kind: null,
+      url: null
+    };
+
+    function normalizeMediaUrl(url) {
+      if (!url) return '';
+      try {
+        return decodeURIComponent(url).trim();
+      } catch (e) {
+        return String(url).trim();
+      }
+    }
+
     function applyBackground(kind, url) {
       if (!kind || !url) return;
+
+      const normNew = normalizeMediaUrl(url);
+      const normCur = normalizeMediaUrl(currentBg.url);
+
+      // Se for a mesma mídia já em reprodução, mantém tocando em loop sem reiniciar
+      if (currentBg.kind === kind && normCur === normNew) {
+        if (kind === "video" && bgVideo && bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
+        return;
+      }
+
+      currentBg.kind = kind;
+      currentBg.url = url;
+
       if (kind === "color") {
         if (bgSolid) {
           bgSolid.style.backgroundColor = url || "#000000";
@@ -82,6 +111,7 @@
       } else if (kind === "video") {
         if (bgVideo) {
           bgVideo.src = url;
+          bgVideo.loop = true;
           bgVideo.style.opacity = "1";
           bgVideo.classList.add("active");
           bgVideo.play().catch(() => {});
@@ -111,15 +141,18 @@
     let alertTimeout = null;
 
     function applyBgFit(fitMode) {
-      if (!bgImage) return;
-      if (fitMode === 'cover') {
-        bgImage.style.backgroundSize = 'cover';
-      } else if (fitMode === 'contain') {
-        bgImage.style.backgroundSize = 'contain';
-      } else if (fitMode === 'stretch') {
-        bgImage.style.backgroundSize = '100% 100%';
-      } else if (fitMode === 'width') {
-        bgImage.style.backgroundSize = '100% auto';
+      if (bgImage) {
+        if (fitMode === 'cover') bgImage.style.backgroundSize = 'cover';
+        else if (fitMode === 'contain') bgImage.style.backgroundSize = 'contain';
+        else if (fitMode === 'stretch') bgImage.style.backgroundSize = '100% 100%';
+        else if (fitMode === 'width') bgImage.style.backgroundSize = '100% auto';
+      }
+
+      if (bgVideo) {
+        if (fitMode === 'cover') bgVideo.style.objectFit = 'cover';
+        else if (fitMode === 'contain') bgVideo.style.objectFit = 'contain';
+        else if (fitMode === 'stretch') bgVideo.style.objectFit = 'fill';
+        else if (fitMode === 'width') bgVideo.style.objectFit = 'cover';
       }
       
       const logoImg = document.getElementById('logo-img');

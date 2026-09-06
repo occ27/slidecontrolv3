@@ -10,6 +10,14 @@
   <link rel="stylesheet" href="css/retorno.css">
 </head>
 <body>
+  <!-- Background Viewport -->
+  <div class="bg-viewport">
+    <div class="bg-solid" id="bg-solid"></div>
+    <div class="bg-image" id="bg-image"></div>
+    <video class="bg-video" id="bg-video" autoplay loop muted playsinline></video>
+  </div>
+  <div class="stage-dim-overlay"></div>
+
   <div class="stage-wrapper">
     <!-- Topbar -->
     <header class="stage-topbar">
@@ -59,25 +67,80 @@
     const currentEl = document.getElementById('stage-current-text');
     const nextEl = document.getElementById('stage-next-text');
 
+    const bgSolid = document.getElementById('bg-solid');
+    const bgImage = document.getElementById('bg-image');
+    const bgVideo = document.getElementById('bg-video');
+
+    let currentRetornoBg = {
+      kind: null,
+      url: null
+    };
+
+    function normalizeMediaUrl(url) {
+      if (!url) return '';
+      try {
+        return decodeURIComponent(url).trim();
+      } catch (e) {
+        return String(url).trim();
+      }
+    }
+
+    function applyRetornoBackground(kind, url) {
+      if (!kind || !url) return;
+
+      const normNew = normalizeMediaUrl(url);
+      const normCur = normalizeMediaUrl(currentRetornoBg.url);
+
+      // Se for a mesma mídia já em reprodução, mantém tocando em loop sem reiniciar
+      if (currentRetornoBg.kind === kind && normCur === normNew) {
+        if (kind === "video" && bgVideo && bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
+        return;
+      }
+
+      currentRetornoBg.kind = kind;
+      currentRetornoBg.url = url;
+
+      if (kind === 'color') {
+        if (bgSolid) {
+          bgSolid.style.backgroundColor = url || '#000000';
+          bgSolid.style.opacity = '1';
+        }
+        if (bgImage) bgImage.style.opacity = '0';
+        if (bgVideo) {
+          bgVideo.style.opacity = '0';
+          bgVideo.classList.remove('active');
+          bgVideo.pause();
+        }
+      } else if (kind === 'image') {
+        if (bgImage) {
+          bgImage.style.backgroundImage = `url("${url}")`;
+          bgImage.style.opacity = '1';
+        }
+        if (bgVideo) {
+          bgVideo.style.opacity = '0';
+          bgVideo.classList.remove('active');
+          bgVideo.pause();
+        }
+      } else if (kind === 'video') {
+        if (bgVideo) {
+          bgVideo.src = url;
+          bgVideo.loop = true;
+          bgVideo.style.opacity = '1';
+          bgVideo.classList.add('active');
+          bgVideo.play().catch(() => {});
+        }
+        if (bgImage) bgImage.style.opacity = '0';
+      }
+    }
+
     // Restaura background inicial das preferências se existir
     if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
       const initKind = window.electronAPI.getPref("slideState_bgKindRetorno");
       const initUrl = window.electronAPI.getPref("slideState_bgUrlRetorno");
       if (initKind && initUrl) {
-        const wrapper = document.querySelector('.stage-wrapper');
-        if (wrapper) {
-          if (initKind === 'color') {
-            wrapper.style.backgroundColor = initUrl || '#000000';
-            wrapper.style.backgroundImage = 'none';
-          } else if (initKind === 'image') {
-            wrapper.style.backgroundImage = `url("${initUrl}")`;
-            wrapper.style.backgroundSize = 'cover';
-            wrapper.style.backgroundPosition = 'center';
-          } else if (initKind === 'video') {
-            // Em retorno geralmente não se toca vídeo como background nativo para não pesar,
-            // ou se quiser, pode ser implementado.
-          }
-        }
+        applyRetornoBackground(initKind, initUrl);
       }
       
       const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
@@ -101,34 +164,26 @@
     let alertTimer = null;
 
     function applyBgFit(fitMode) {
-      const bg = document.querySelector('.stage-wrapper');
-      if (bg) {
-        if (fitMode === 'cover') bg.style.backgroundSize = 'cover';
-        else if (fitMode === 'contain') bg.style.backgroundSize = 'contain';
-        else if (fitMode === 'stretch') bg.style.backgroundSize = '100% 100%';
-        else if (fitMode === 'width') bg.style.backgroundSize = '100% auto';
+      if (bgImage) {
+        if (fitMode === 'cover') bgImage.style.backgroundSize = 'cover';
+        else if (fitMode === 'contain') bgImage.style.backgroundSize = 'contain';
+        else if (fitMode === 'stretch') bgImage.style.backgroundSize = '100% 100%';
+        else if (fitMode === 'width') bgImage.style.backgroundSize = '100% auto';
       }
+
+      if (bgVideo) {
+        if (fitMode === 'cover') bgVideo.style.objectFit = 'cover';
+        else if (fitMode === 'contain') bgVideo.style.objectFit = 'contain';
+        else if (fitMode === 'stretch') bgVideo.style.objectFit = 'fill';
+        else if (fitMode === 'width') bgVideo.style.objectFit = 'cover';
+      }
+
       const logoImg = document.getElementById('logo-img-ret');
       if (logoImg) {
         if (fitMode === 'cover') logoImg.style.objectFit = 'cover';
         else if (fitMode === 'contain') logoImg.style.objectFit = 'contain';
         else if (fitMode === 'stretch') logoImg.style.objectFit = 'fill';
         else if (fitMode === 'width') logoImg.style.objectFit = 'cover';
-      }
-    }
-
-    function applyRetornoBackground(kind, url) {
-      const wrapper = document.querySelector('.stage-wrapper');
-      if (!wrapper || !url) return;
-      if (kind === 'color') {
-        wrapper.style.backgroundColor = url || '#000000';
-        wrapper.style.backgroundImage = 'none';
-      } else if (kind === 'image') {
-        wrapper.style.backgroundImage = `url("${url}")`;
-        wrapper.style.backgroundSize = 'cover';
-        wrapper.style.backgroundPosition = 'center';
-      } else if (kind === 'video') {
-        wrapper.style.backgroundColor = '#0b0f19';
       }
     }
 
@@ -200,18 +255,8 @@
           break;
 
         case 'SET_BACKGROUND':
-          if (msg.target === 'retorno') {
-            const wrapper = document.querySelector('.stage-wrapper');
-            if (wrapper) {
-              if (msg.kind === 'color') {
-                wrapper.style.backgroundColor = msg.url || '#000000';
-                wrapper.style.backgroundImage = 'none';
-              } else if (msg.kind === 'image') {
-                wrapper.style.backgroundImage = `url("${msg.url}")`;
-                wrapper.style.backgroundSize = 'cover';
-                wrapper.style.backgroundPosition = 'center';
-              }
-            }
+          if (!msg.target || msg.target === 'retorno') {
+            applyRetornoBackground(msg.kind, msg.url);
           }
           break;
         case 'SET_BG_FIT':

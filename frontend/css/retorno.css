@@ -15,7 +15,58 @@ html, body {
   user-select: none;
 }
 
+/* ── Background Layers ── */
+.bg-viewport {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.bg-solid {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  transition: opacity 0.4s ease;
+}
+
+.bg-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.bg-video.active {
+  opacity: 1;
+}
+
+/* Dim overlay to ensure stage text is always 100% readable */
+.stage-dim-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2;
+  pointer-events: none;
+}
+
 .stage-wrapper {
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   height: 100vh;
