@@ -196,10 +196,26 @@ body::before {
   transition: all 0.2s;
 }
 
+.hud-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  flex-shrink: 0;
+  transition: stroke 0.2s, transform 0.15s;
+}
+
 .hud-btn:hover {
   background: var(--accent-cyan);
   color: #000000;
   box-shadow: 0 0 14px var(--accent-cyan-glow);
+}
+
+.hud-btn:hover svg {
+  stroke: #000000;
+}
+
+.hud-btn.danger-btn:hover svg {
+  stroke: #ffffff;
 }
 
 /* Center Guidance Hint */

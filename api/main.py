@@ -30,6 +30,14 @@ app.add_middleware(
 app.mount("/frontend/uploads", StaticFiles(directory=UPLOADS_DIR), name="user_uploads")
 app.mount("/frontend/presets", StaticFiles(directory=PRESETS_DIR), name="user_presets")
 app.mount("/frontend", StaticFiles(directory=get_frontend_path()), name="frontend")
+# Monta atalhos de primeiro nível para acesso direto via HTTP (http://localhost:8767/)
+_fe_path = get_frontend_path()
+if os.path.exists(os.path.join(_fe_path, "css")):
+    app.mount("/css", StaticFiles(directory=os.path.join(_fe_path, "css")), name="css")
+if os.path.exists(os.path.join(_fe_path, "js")):
+    app.mount("/js", StaticFiles(directory=os.path.join(_fe_path, "js")), name="js")
+if os.path.exists(os.path.join(_fe_path, "public")):
+    app.mount("/public", StaticFiles(directory=os.path.join(_fe_path, "public")), name="public")
 
 # Registra os roteadores
 app.include_router(system.router)
