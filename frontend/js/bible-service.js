@@ -6,13 +6,15 @@
 
 class BibleService {
   constructor() {
-    this.apiUrl = '/api/bible';
+    const BIBLE_API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8767')) ? 'http://127.0.0.1:8767' : '';
+    this.apiUrl = `${BIBLE_API_BASE}/api/bible`;
     this.versions = [];
     this.books = [];
     this.selectedVersion = 'acf';
     this.selectedBook = null; // Objeto do livro atual
     this.selectedChapter = 1;
     this.selectedVerse = 1;
+    this.selectedTab = 'nt';
     this.currentChapterVerses = [];
     this.history = [];
     this.initialized = false;
@@ -91,12 +93,84 @@ class BibleService {
     };
   }
 
+  getEngine() {
+    return window.orbitalEngine || (window.globeApp && window.globeApp.engine) || null;
+  }
+
+  // ── PERSISTÊNCIA DE PREFERÊNCIAS BÍBLICAS ──
+  getPref(key, defaultValue = null) {
+    try {
+      if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+        const val = window.electronAPI.getPref(key);
+        if (val !== null && val !== undefined) return val;
+      }
+      const local = localStorage.getItem(key);
+      if (local !== null && local !== undefined) {
+        try { return JSON.parse(local); } catch (e) { return local; }
+      }
+    } catch (e) {}
+    return defaultValue;
+  }
+
+  setPref(key, val) {
+    try {
+      if (window.electronAPI && typeof window.electronAPI.setPref === 'function') {
+        window.electronAPI.setPref(key, val);
+      }
+      localStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
+    } catch (e) {}
+  }
+
+  savePreferences() {
+    this.setPref('slideState_bible_version', this.selectedVersion || 'acf');
+    if (this.selectedBook && this.selectedBook.abbrev) {
+      this.setPref('slideState_bible_book', this.selectedBook.abbrev);
+      this.setPref('slideState_bible_book_name', this.selectedBook.name);
+    }
+    this.setPref('slideState_bible_chapter', this.selectedChapter || 1);
+    this.setPref('slideState_bible_verse', this.selectedVerse || 1);
+    this.setPref('slideState_bible_tab', this.selectedTab || 'nt');
+  }
+
+  loadPreferences() {
+    this.selectedVersion = this.getPref('slideState_bible_version', 'acf');
+    this.savedBookAbbrev = this.getPref('slideState_bible_book', 'jo');
+    this.selectedChapter = Number(this.getPref('slideState_bible_chapter', 3)) || 1;
+    this.selectedVerse = Number(this.getPref('slideState_bible_verse', 16)) || 1;
+    this.selectedTab = this.getPref('slideState_bible_tab', 'nt');
+  }
+
   async init() {
     if (this.initialized) return;
     try {
+      this.loadPreferences();
       await Promise.all([this.loadVersions(), this.loadBooks()]);
+
+      // Restaura o livro salvo se existir nos livros carregados
+      if (this.books.length > 0) {
+        const targetAbbrev = (this.savedBookAbbrev || 'jo').toLowerCase();
+        this.selectedBook = this.books.find(b => b.abbrev.toLowerCase() === targetAbbrev) || this.books[0];
+        if (this.selectedBook) {
+          this.selectedTab = this.selectedBook.book_order <= 39 ? 'ot' : 'nt';
+        }
+      }
+
       this.initialized = true;
       console.log('📖 BibleService inicializado com', this.books.length, 'livros e', this.versions.length, 'versões.');
+
+      // Carrega o capítulo inicial salvo na Trilha Norte (substituindo mock estático por dados reais)
+      setTimeout(() => {
+        const engine = this.getEngine();
+        if (this.selectedBook && engine) {
+          this.loadPassageToOrbital(
+            this.selectedBook.abbrev,
+            this.selectedChapter,
+            this.selectedVerse,
+            this.selectedVersion,
+            false // Não projeta na inicialização para não disparar telão sem comando
+          );
+        }
+      }, 300);
     } catch (e) {
       console.error('Erro ao inicializar BibleService:', e);
     }
@@ -123,7 +197,8 @@ class BibleService {
       if (res.ok) {
         this.books = await res.json();
         if (!this.selectedBook && this.books.length > 0) {
-          this.selectedBook = this.books.find(b => b.abbrev === 'jo') || this.books[0];
+          const targetAbbrev = (this.savedBookAbbrev || 'jo').toLowerCase();
+          this.selectedBook = this.books.find(b => b.abbrev.toLowerCase() === targetAbbrev) || this.books[0];
         }
       }
     } catch (e) {
@@ -235,7 +310,7 @@ class BibleService {
     return [];
   }
 
-  async loadPassageToOrbital(bookAbbrev, chapterNum, focusVerseNum = 1, version = null) {
+  async loadPassageToOrbital(bookAbbrev, chapterNum, focusVerseNum = 1, version = null, autoProject = true) {
     await this.init();
     const v = version || this.selectedVersion || 'acf';
     const data = await this.getChapter(bookAbbrev, chapterNum, v);
@@ -245,6 +320,8 @@ class BibleService {
     }
 
     this.selectedVerse = Number(focusVerseNum) || 1;
+    this.savePreferences();
+
     this.addHistory({
       book: data.book,
       abbrev: bookAbbrev,
@@ -254,14 +331,18 @@ class BibleService {
       timestamp: Date.now()
     });
 
-    if (window.orbitalEngine && typeof window.orbitalEngine.loadBibleCards === 'function') {
-      window.orbitalEngine.loadBibleCards(
+    const engine = this.getEngine();
+    if (engine && typeof engine.loadBibleCards === 'function') {
+      engine.loadBibleCards(
         data.verses,
         data.book,
         chapterNum,
         v,
-        this.selectedVerse
+        this.selectedVerse,
+        autoProject
       );
+    } else {
+      console.warn('⚠️ BibleService: Motor orbital não encontrado para carregar versículos!', engine);
     }
 
     if (window.slideTelemetry) {

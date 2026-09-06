@@ -17,6 +17,8 @@ class MediaManager {
     this.qrMediaToken = "";
     this.qrCodeObj = null;
 
+    this.currentBgTarget = "telao"; // "telao" | "retorno"
+    this.currentBgContext = "general"; // "general" | "bible"
     this.cloudMediaType = "video";
     this.cloudCurrentCategory = "Geral";
 
@@ -27,6 +29,7 @@ class MediaManager {
 
   init() {
     this.setupTargets();
+    this.setupTrackContexts();
     this.setupTabs();
     this.setupColorPalette();
     this.setupCloudModal();
@@ -75,6 +78,31 @@ class MediaManager {
         this.currentBgTarget = tab.dataset.target || "telao";
         document.querySelectorAll(".bg-target-tab").forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
+        this.refreshUI();
+      });
+    });
+  }
+
+  setupTrackContexts() {
+    document.querySelectorAll(".bg-track-context-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        this.currentBgContext = btn.dataset.context || "general";
+        document.querySelectorAll(".bg-track-context-btn").forEach(b => {
+          b.classList.remove("active");
+          b.style.background = "rgba(30,41,59,0.5)";
+          b.style.borderColor = "rgba(255,255,255,0.1)";
+          b.style.color = "#94a3b8";
+        });
+        btn.classList.add("active");
+        if (this.currentBgContext === "bible") {
+          btn.style.background = "rgba(168,85,247,0.18)";
+          btn.style.borderColor = "rgba(168,85,247,0.45)";
+          btn.style.color = "#c084fc";
+        } else {
+          btn.style.background = "rgba(0,240,255,0.12)";
+          btn.style.borderColor = "rgba(0,240,255,0.35)";
+          btn.style.color = "#00f0ff";
+        }
         this.refreshUI();
       });
     });
@@ -977,28 +1005,51 @@ class MediaManager {
 
   applyBackground(kind, url) {
     const isRetorno = this.currentBgTarget === "retorno";
+    const isBible = this.currentBgContext === "bible";
 
-    if (window.electronAPI && typeof window.electronAPI.setPref === "function") {
-      if (isRetorno) {
-        window.electronAPI.setPref("slideState_bgKindRetorno", kind);
-        window.electronAPI.setPref("slideState_bgUrlRetorno", url);
-      } else {
-        window.electronAPI.setPref("slideState_bgKind", kind);
-        window.electronAPI.setPref("slideState_bgUrl", url);
+    let prefKindKey = "";
+    let prefUrlKey = "";
+
+    if (isBible) {
+      prefKindKey = isRetorno ? "slideState_bible_bgKindRetorno" : "slideState_bible_bgKind";
+      prefUrlKey = isRetorno ? "slideState_bible_bgUrlRetorno" : "slideState_bible_bgUrl";
+    } else {
+      prefKindKey = isRetorno ? "slideState_songs_bgKindRetorno" : "slideState_songs_bgKind";
+      prefUrlKey = isRetorno ? "slideState_songs_bgUrlRetorno" : "slideState_songs_bgUrl";
+      // Também grava chaves legadas para compatibilidade
+      if (window.electronAPI && typeof window.electronAPI.setPref === "function") {
+        window.electronAPI.setPref(isRetorno ? "slideState_bgKindRetorno" : "slideState_bgKind", kind);
+        window.electronAPI.setPref(isRetorno ? "slideState_bgUrlRetorno" : "slideState_bgUrl", url);
       }
+      localStorage.setItem(isRetorno ? "slideState_bgKindRetorno" : "slideState_bgKind", kind);
+      localStorage.setItem(isRetorno ? "slideState_bgUrlRetorno" : "slideState_bgUrl", url);
     }
 
-    // Notifica Telão e Retorno via BroadcastChannel
-    this.channel.postMessage({
-      action: "SET_BACKGROUND",
-      target: this.currentBgTarget,
-      kind: kind,
-      url: url
-    });
-    
-    // Atualiza o background do card que está projetado (se for o telão)
-    if (!isRetorno && window.updateOnAirCardBg) {
-      window.updateOnAirCardBg();
+    if (window.electronAPI && typeof window.electronAPI.setPref === "function") {
+      window.electronAPI.setPref(prefKindKey, kind);
+      window.electronAPI.setPref(prefUrlKey, url);
+    }
+    localStorage.setItem(prefKindKey, kind);
+    localStorage.setItem(prefUrlKey, url);
+
+    // Se a trilha configurada for a que está ativa no momento, atualiza telas ao vivo
+    const activeTheme = window.projectionSync?.currentState?.currentSlide?.theme || "general";
+    const matchesCurrentSlide = (isBible && activeTheme === "bible") || (!isBible && activeTheme !== "bible");
+
+    if (matchesCurrentSlide) {
+      this.channel.postMessage({
+        action: "SET_BACKGROUND",
+        target: this.currentBgTarget,
+        kind: kind,
+        url: url
+      });
+
+      if (!isRetorno && window.updateOnAirCardBg) {
+        window.updateOnAirCardBg();
+      }
+      if (!isRetorno && window.slideTelemetry && typeof window.slideTelemetry.syncMiniPreviewBg === 'function') {
+        window.slideTelemetry.syncMiniPreviewBg(activeTheme);
+      }
     }
 
     this.highlightActiveSelection();
@@ -1008,14 +1059,23 @@ class MediaManager {
     let currentKind = "";
     let currentUrl = "";
 
-    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
-      if (this.currentBgTarget === "retorno") {
-        currentKind = window.electronAPI.getPref("slideState_bgKindRetorno") || "";
-        currentUrl = window.electronAPI.getPref("slideState_bgUrlRetorno") || "";
-      } else {
-        currentKind = window.electronAPI.getPref("slideState_bgKind") || "";
-        currentUrl = window.electronAPI.getPref("slideState_bgUrl") || "";
+    const isRetorno = this.currentBgTarget === "retorno";
+    const isBible = this.currentBgContext === "bible";
+
+    const getP = (k) => {
+      if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
+        const v = window.electronAPI.getPref(k);
+        if (v !== null && v !== undefined) return v;
       }
+      return localStorage.getItem(k) || "";
+    };
+
+    if (isBible) {
+      currentKind = getP(isRetorno ? "slideState_bible_bgKindRetorno" : "slideState_bible_bgKind") || "video";
+      currentUrl = getP(isRetorno ? "slideState_bible_bgUrlRetorno" : "slideState_bible_bgUrl") || "/frontend/presets/B%C3%ADblia/B%C3%ADblia_207784_medium.mp4";
+    } else {
+      currentKind = getP(isRetorno ? "slideState_songs_bgKindRetorno" : "slideState_songs_bgKind") || getP(isRetorno ? "slideState_bgKindRetorno" : "slideState_bgKind") || "video";
+      currentUrl = getP(isRetorno ? "slideState_songs_bgUrlRetorno" : "slideState_songs_bgUrl") || getP(isRetorno ? "slideState_bgUrlRetorno" : "slideState_bgUrl") || "/frontend/presets/Vertical/Vertical_174033-850286651_medium.mp4";
     }
 
     document.querySelectorAll(".bg-item").forEach(el => {

@@ -167,6 +167,10 @@
             headerEl.style.color = '#10b981';
             headerEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
           }
+
+          if (msg.bgKind && msg.bgUrl) {
+            applyBackground(msg.bgKind, msg.bgUrl);
+          }
           break;
 
         case 'TOGGLE_BLACKOUT':

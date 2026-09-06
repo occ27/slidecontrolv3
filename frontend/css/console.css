@@ -2530,6 +2530,19 @@ body::before {
   transform: translateX(3px);
 }
 
+.bible-verse-item.active {
+  background: rgba(168, 85, 247, 0.22);
+  border-color: #a855f7;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+}
+
+.bible-verse-item.active .bible-verse-num {
+  background: #a855f7;
+  color: #ffffff;
+  border-color: #c084fc;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+}
+
 .bible-verse-num {
   font-size: 0.75rem;
   font-weight: 800;

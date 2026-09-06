@@ -38,6 +38,7 @@ class SphericalSurfaceEngine {
     this.dragStartScroll = 0;
     this.dragStartVertical = 0;
     this.lastWheelTime = 0;
+    window.orbitalEngine = this;
 
     this.initRenderers();
     this.createAtmosphereSphere();
@@ -201,7 +202,7 @@ class SphericalSurfaceEngine {
   }
 
   // ── CARREGAMENTO DINÂMICO DE VERSÍCULOS DA BÍBLIA NA TRILHA NORTE ──
-  loadBibleCards(versesList, bookName, chapterNum, versionAbbrev = 'ACF', focusVerseNum = 1) {
+  loadBibleCards(versesList, bookName, chapterNum, versionAbbrev = 'ACF', focusVerseNum = 1, autoProject = true) {
     if (!versesList || !versesList.length) return;
     const rowIdx = 0; // Trilha Norte
     const row = this.rows[rowIdx];
@@ -238,6 +239,9 @@ class SphericalSurfaceEngine {
       row.cards.push(cardObj);
     });
 
+    row.scrollIndex = focusCardIdx;
+    row.targetScroll = focusCardIdx;
+
     const badge = document.querySelector('#cat-north .cat-badge');
     if (badge) badge.textContent = versesList.length;
 
@@ -245,6 +249,13 @@ class SphericalSurfaceEngine {
     this.setRow(0);
     this.snapToCard(0, focusCardIdx);
     this.updateCardPositions();
+
+    if (autoProject) {
+      const targetCard = row.cards[focusCardIdx];
+      if (targetCard && targetCard.element) {
+        this.onCardClicked(targetCard.data, targetCard.element, 0, focusCardIdx, true);
+      }
+    }
   }
 
   createCardDOM(data, rowIdx, cardIdx) {
@@ -401,8 +412,8 @@ class SphericalSurfaceEngine {
   }
 
   // AÇÃO AO CLICAR EM QUALQUER CARD VISÍVEL NO GLOBO
-  onCardClicked(data, cardEl, rowIdx, cardIdx) {
-    if (this.hasDragged) return; // Ignora clique se o usuário estava arrastando a tela
+  onCardClicked(data, cardEl, rowIdx, cardIdx, force = false) {
+    if (this.hasDragged && !force) return; // Ignora clique se o usuário estava arrastando a tela
 
     // 1. Se o card clicado está em outra linha (ex: na Bíblia acima ou nos Controles abaixo),
     // traz essa linha imediatamente para o centro do Equador!
@@ -432,6 +443,12 @@ class SphericalSurfaceEngine {
 
       const pill = document.getElementById('on-air-pill-text');
       if (pill) pill.textContent = `${data.tag} — ${data.title}`;
+
+      // Se for Bíblia, atualiza o versículo e salva preferências
+      if (data.theme === 'bible' && window.bibleService) {
+        window.bibleService.selectedVerse = Number(data.verseNum) || 1;
+        window.bibleService.savePreferences();
+      }
 
       if (window.slideTelemetry) {
         window.slideTelemetry.updateInspector(data);
@@ -648,10 +665,19 @@ class SphericalSurfaceEngine {
       .start();
   }
 
-  stepRowHorizontal(direction = 1) {
+  stepRowHorizontal(direction = 1, autoProject = false) {
     const activeRowObj = this.rows[this.activeRow];
-    const newIdx = activeRowObj.scrollIndex + direction;
-    this.snapToCard(this.activeRow, Math.round(newIdx));
+    if (!activeRowObj || !activeRowObj.cards || !activeRowObj.cards.length) return;
+    const maxIdx = activeRowObj.cards.length - 1;
+    const newIdx = Math.max(0, Math.min(maxIdx, Math.round(activeRowObj.scrollIndex + direction)));
+    this.snapToCard(this.activeRow, newIdx);
+
+    if (autoProject) {
+      const targetCard = activeRowObj.cards[newIdx];
+      if (targetCard && targetCard.element) {
+        this.onCardClicked(targetCard.data, targetCard.element, this.activeRow, newIdx, true);
+      }
+    }
   }
 
   onWindowResize() {

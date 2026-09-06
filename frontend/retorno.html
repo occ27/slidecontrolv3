@@ -113,6 +113,21 @@
       }
     }
 
+    function applyRetornoBackground(kind, url) {
+      const wrapper = document.querySelector('.stage-wrapper');
+      if (!wrapper || !url) return;
+      if (kind === 'color') {
+        wrapper.style.backgroundColor = url || '#000000';
+        wrapper.style.backgroundImage = 'none';
+      } else if (kind === 'image') {
+        wrapper.style.backgroundImage = `url("${url}")`;
+        wrapper.style.backgroundSize = 'cover';
+        wrapper.style.backgroundPosition = 'center';
+      } else if (kind === 'video') {
+        wrapper.style.backgroundColor = '#0b0f19';
+      }
+    }
+
     channel.onmessage = (event) => {
       const msg = event.data;
       if (!msg) return;
@@ -128,6 +143,9 @@
             nextEl.textContent = msg.nextText;
           } else {
             nextEl.textContent = '—';
+          }
+          if (msg.bgKindRetorno && msg.bgUrlRetorno) {
+            applyRetornoBackground(msg.bgKindRetorno, msg.bgUrlRetorno);
           }
           break;
 

@@ -11,6 +11,23 @@ class GlobeApp {
 
   init() {
     this.engine = new SphericalSurfaceEngine('webgl-container', 'css3d-container');
+    window.orbitalEngine = this.engine;
+
+    // Inicializa a Bíblia e popula a Trilha Norte com o capítulo salvo
+    if (window.bibleService) {
+      window.bibleService.init().then(async () => {
+        const b = window.bibleService.selectedBook;
+        if (b) {
+          await window.bibleService.loadPassageToOrbital(
+            b.abbrev,
+            window.bibleService.selectedChapter || 1,
+            window.bibleService.selectedVerse || 1,
+            window.bibleService.selectedVersion || 'acf',
+            false // Não projeta na inicialização
+          );
+        }
+      }).catch(err => console.warn('Erro ao carregar versículos iniciais da Bíblia:', err));
+    }
 
     // Transmite o primeiro slide padrão e marca o cartão com borda pulsante
     setTimeout(() => {
@@ -322,10 +339,10 @@ class GlobeApp {
       // Navegação horizontal na linha ativa (Passar slides daquela categoria)
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        this.engine.stepRowHorizontal(-1);
+        this.engine.stepRowHorizontal(-1, true);
       } else if (e.key === 'ArrowRight' || e.code === 'Space') {
         e.preventDefault();
-        this.engine.stepRowHorizontal(1);
+        this.engine.stepRowHorizontal(1, true);
       }
 
       // Teclas de Emergência Globais
@@ -385,6 +402,17 @@ class GlobeApp {
       modal.classList.remove('hidden');
       if (window.bibleService) {
         await window.bibleService.init();
+        currentTab = window.bibleService.selectedTab || 'nt';
+        if (currentTab === 'ot') {
+          if (tabOt) tabOt.classList.add('active');
+          if (tabNt) tabNt.classList.remove('active');
+        } else {
+          if (tabNt) tabNt.classList.add('active');
+          if (tabOt) tabOt.classList.remove('active');
+        }
+        selectedBookObj = window.bibleService.selectedBook;
+        selectedChapterNum = window.bibleService.selectedChapter || 1;
+
         populateVersions();
         renderBooks();
         renderHistory();
@@ -443,7 +471,7 @@ class GlobeApp {
           if (!val || !window.bibleService) return;
           const ref = window.bibleService.parseReference(val);
           if (ref) {
-            await window.bibleService.loadPassageToOrbital(ref.abbrev, ref.chapter, ref.verse);
+            await window.bibleService.loadPassageToOrbital(ref.abbrev, ref.chapter, ref.verse, null, true);
             quickInput.blur();
           } else {
             openModal();
@@ -481,6 +509,7 @@ class GlobeApp {
       versionSelect.addEventListener('change', async () => {
         if (!window.bibleService) return;
         window.bibleService.selectedVersion = versionSelect.value;
+        window.bibleService.savePreferences();
         if (selectedBookObj) {
           loadChapterVerses(selectedBookObj.abbrev, selectedChapterNum);
         }
@@ -492,6 +521,10 @@ class GlobeApp {
       currentTab = 'ot';
       tabOt.classList.add('active');
       if (tabNt) tabNt.classList.remove('active');
+      if (window.bibleService) {
+        window.bibleService.selectedTab = 'ot';
+        window.bibleService.savePreferences();
+      }
       renderBooks();
     });
 
@@ -499,6 +532,10 @@ class GlobeApp {
       currentTab = 'nt';
       tabNt.classList.add('active');
       if (tabOt) tabOt.classList.remove('active');
+      if (window.bibleService) {
+        window.bibleService.selectedTab = 'nt';
+        window.bibleService.savePreferences();
+      }
       renderBooks();
     });
 
@@ -520,6 +557,7 @@ class GlobeApp {
         btn.className = 'bible-book-btn';
         if (selectedBookObj && selectedBookObj.abbrev === b.abbrev) {
           btn.classList.add('active');
+          setTimeout(() => btn.scrollIntoView({ block: 'nearest' }), 40);
         }
         btn.innerHTML = `
           <span>${b.name}</span>
@@ -528,6 +566,11 @@ class GlobeApp {
         btn.addEventListener('click', () => {
           selectedBookObj = b;
           selectedChapterNum = 1;
+          if (window.bibleService) {
+            window.bibleService.selectedBook = b;
+            window.bibleService.selectedChapter = 1;
+            window.bibleService.savePreferences();
+          }
           Array.from(booksGrid.children).forEach(c => c.classList.remove('active'));
           btn.classList.add('active');
           renderChapters(b);
@@ -555,10 +598,17 @@ class GlobeApp {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'bible-chapter-btn';
-        if (Number(selectedChapterNum) === i) btn.classList.add('active');
+        if (Number(selectedChapterNum) === i) {
+          btn.classList.add('active');
+          setTimeout(() => btn.scrollIntoView({ block: 'nearest' }), 40);
+        }
         btn.textContent = i;
         btn.addEventListener('click', () => {
           selectedChapterNum = i;
+          if (window.bibleService) {
+            window.bibleService.selectedChapter = i;
+            window.bibleService.savePreferences();
+          }
           Array.from(chaptersGrid.children).forEach(c => c.classList.remove('active'));
           btn.classList.add('active');
           loadChapterVerses(book.abbrev, i);
@@ -587,9 +637,15 @@ class GlobeApp {
       if (badge) badge.textContent = refStr;
 
       versesList.innerHTML = '';
+      const savedVerse = window.bibleService ? window.bibleService.selectedVerse : 1;
+
       data.verses.forEach(v => {
         const item = document.createElement('div');
-        item.className = 'bible-verse-item';
+        const isCurrentVerse = Number(v.verse) === Number(savedVerse);
+        item.className = `bible-verse-item${isCurrentVerse ? ' active' : ''}`;
+        if (isCurrentVerse) {
+          setTimeout(() => item.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60);
+        }
         item.innerHTML = `
           <div class="bible-verse-num">${v.verse}</div>
           <div class="bible-verse-text">${v.text}</div>
@@ -600,16 +656,12 @@ class GlobeApp {
           </div>
         `;
         item.addEventListener('click', async () => {
-          await window.bibleService.loadPassageToOrbital(bookAbbrev, chapterNum, v.verse);
+          if (window.bibleService) {
+            window.bibleService.selectedVerse = Number(v.verse);
+            window.bibleService.savePreferences();
+          }
+          await window.bibleService.loadPassageToOrbital(bookAbbrev, chapterNum, v.verse, null, true);
           closeModal();
-          window.projectionSync.projectSlide({
-            header: `${data.book.toUpperCase()} ${chapterNum}:${v.verse}`,
-            text: v.text,
-            subtitle: `${data.book} ${chapterNum} (${window.bibleService.selectedVersion.toUpperCase()})`,
-            theme: 'bible'
-          });
-          const pill = document.getElementById('on-air-pill-text');
-          if (pill) pill.textContent = `${data.book} ${chapterNum}:${v.verse}`;
         });
         versesList.appendChild(item);
       });
@@ -741,10 +793,28 @@ window.updateOnAirCardBg = function() {
   const existingLayer = onAirCard.querySelector('.on-air-bg-layer');
   if (existingLayer) existingLayer.remove();
 
-  if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
-    const kind = window.electronAPI.getPref("slideState_bgKind");
-    const url = window.electronAPI.getPref("slideState_bgUrl");
-    if (kind && url) {
+  const isBible = onAirCard.classList.contains('theme-bible') || onAirCard.dataset.rowIdx === '0';
+  const theme = isBible ? 'bible' : 'general';
+
+  let kind = null;
+  let url = null;
+
+  if (window.projectionSync && typeof window.projectionSync.getBackgroundForTheme === 'function') {
+    const bg = window.projectionSync.getBackgroundForTheme(theme);
+    if (bg && bg.telao) {
+      kind = bg.telao.kind;
+      url = bg.telao.url;
+    }
+  }
+
+  if (!kind || !url) {
+    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
+      kind = window.electronAPI.getPref("slideState_bgKind");
+      url = window.electronAPI.getPref("slideState_bgUrl");
+    }
+  }
+
+  if (kind && url) {
       const fitMode = window.electronAPI.getPref('slideState_bgFit_telao') || 'cover';
       let bgSize = 'cover';
       let objFit = 'cover';
@@ -785,11 +855,11 @@ window.updateOnAirCardBg = function() {
       
       onAirCard.insertBefore(bgLayer, onAirCard.firstChild);
     }
-  }
-  if (window.slideTelemetry && typeof window.slideTelemetry.syncMiniPreviewBg === 'function') {
-    window.slideTelemetry.syncMiniPreviewBg();
-  }
-};
+
+    if (window.slideTelemetry && typeof window.slideTelemetry.syncMiniPreviewBg === 'function') {
+      window.slideTelemetry.syncMiniPreviewBg();
+    }
+  };
 
 document.addEventListener('DOMContentLoaded', () => {
   const pill = document.getElementById('on-air-pill');

@@ -174,27 +174,43 @@ class SlideControlTelemetry {
     }
   }
 
-  syncMiniPreviewBg() {
+  syncMiniPreviewBg(theme = null) {
     const miniBg = document.getElementById('live-preview-bg-layer');
     if (!miniBg) return;
 
-    if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
-      const kind = window.electronAPI.getPref('slideState_bgKind');
-      const url = window.electronAPI.getPref('slideState_bgUrl');
-      if (kind && url) {
-        if (kind === 'color') {
-          miniBg.style.backgroundImage = 'none';
-          miniBg.style.backgroundColor = url;
-        } else if (kind === 'image') {
-          miniBg.style.backgroundColor = 'transparent';
-          miniBg.style.backgroundImage = `url("${url}")`;
-          miniBg.style.backgroundSize = 'cover';
-        } else if (kind === 'video') {
-          miniBg.style.backgroundColor = 'rgba(0, 240, 255, 0.15)';
-          miniBg.style.backgroundImage = 'none';
-        }
-        return;
+    let kind = null;
+    let url = null;
+    const activeTheme = theme || window.projectionSync?.currentState?.currentSlide?.theme || 'general';
+
+    if (window.projectionSync && typeof window.projectionSync.getBackgroundForTheme === 'function') {
+      const bg = window.projectionSync.getBackgroundForTheme(activeTheme);
+      if (bg && bg.telao) {
+        kind = bg.telao.kind;
+        url = bg.telao.url;
       }
+    }
+
+    if (!kind || !url) {
+      if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+        kind = window.electronAPI.getPref('slideState_bgKind');
+        url = window.electronAPI.getPref('slideState_bgUrl');
+      }
+    }
+
+    if (kind && url) {
+      if (kind === 'color') {
+        miniBg.style.backgroundImage = 'none';
+        miniBg.style.backgroundColor = url;
+      } else if (kind === 'image') {
+        miniBg.style.backgroundColor = 'transparent';
+        miniBg.style.backgroundImage = `url("${url}")`;
+        miniBg.style.backgroundSize = 'cover';
+        miniBg.style.backgroundPosition = 'center';
+      } else if (kind === 'video') {
+        miniBg.style.backgroundColor = activeTheme === 'bible' ? 'rgba(168, 85, 247, 0.22)' : 'rgba(0, 240, 255, 0.18)';
+        miniBg.style.backgroundImage = 'none';
+      }
+      return;
     }
     // Fallback padrão elegante
     miniBg.style.background = 'radial-gradient(circle at center, rgba(14, 28, 56, 0.9) 0%, rgba(3, 7, 18, 0.95) 100%)';

@@ -93,17 +93,61 @@ class ProjectionSyncService {
     }
   }
 
+  getPref(key, defaultValue = null) {
+    try {
+      if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+        const val = window.electronAPI.getPref(key);
+        if (val !== null && val !== undefined) return val;
+      }
+      const local = localStorage.getItem(key);
+      if (local !== null && local !== undefined) {
+        try { return JSON.parse(local); } catch (e) { return local; }
+      }
+    } catch (e) {}
+    return defaultValue;
+  }
+
+  getBackgroundForTheme(theme = 'general') {
+    if (theme === 'bible') {
+      const bTelaoKind = this.getPref('slideState_bible_bgKind') || 'video';
+      const bTelaoUrl = this.getPref('slideState_bible_bgUrl') || '/frontend/presets/B%C3%ADblia/B%C3%ADblia_207784_medium.mp4';
+      const bRetornoKind = this.getPref('slideState_bible_bgKindRetorno') || 'video';
+      const bRetornoUrl = this.getPref('slideState_bible_bgUrlRetorno') || '/frontend/presets/B%C3%ADblia/B%C3%ADblia_207784_medium.mp4';
+      return {
+        telao: { kind: bTelaoKind, url: bTelaoUrl },
+        retorno: { kind: bRetornoKind, url: bRetornoUrl }
+      };
+    } else {
+      // Louvor ou Geral
+      const sTelaoKind = this.getPref('slideState_songs_bgKind') || this.getPref('slideState_bgKind') || 'video';
+      const sTelaoUrl = this.getPref('slideState_songs_bgUrl') || this.getPref('slideState_bgUrl') || '/frontend/presets/Vertical/Vertical_174033-850286651_medium.mp4';
+      const sRetornoKind = this.getPref('slideState_songs_bgKindRetorno') || this.getPref('slideState_bgKindRetorno') || 'video';
+      const sRetornoUrl = this.getPref('slideState_songs_bgUrlRetorno') || this.getPref('slideState_bgUrlRetorno') || '/frontend/presets/Vertical/Vertical_174033-850286651_medium.mp4';
+      return {
+        telao: { kind: sTelaoKind, url: sTelaoUrl },
+        retorno: { kind: sRetornoKind, url: sRetornoUrl }
+      };
+    }
+  }
+
   projectSlide(slideData) {
     this.currentState.currentSlide = slideData;
     this.currentState.isBlackout = false;
     this.currentState.isLogo = false;
+
+    const theme = slideData.theme || 'general';
+    const bg = this.getBackgroundForTheme(theme);
 
     this.channel.postMessage({
       action: 'PROJECT_SLIDE',
       header: slideData.header,
       text: slideData.text,
       subtitle: slideData.subtitle,
-      theme: slideData.theme || 'general'
+      theme: theme,
+      bgKind: bg.telao.kind,
+      bgUrl: bg.telao.url,
+      bgKindRetorno: bg.retorno.kind,
+      bgUrlRetorno: bg.retorno.url
     });
 
     this.updateMiniPreview(slideData);
@@ -121,12 +165,18 @@ class ProjectionSyncService {
 
   sendCurrentSlide() {
     if (this.currentState.currentSlide) {
+      const theme = this.currentState.currentSlide.theme || 'general';
+      const bg = this.getBackgroundForTheme(theme);
       this.channel.postMessage({
         action: 'PROJECT_SLIDE',
         header: this.currentState.currentSlide.header,
         text: this.currentState.currentSlide.text,
         subtitle: this.currentState.currentSlide.subtitle,
-        theme: this.currentState.currentSlide.theme || 'general'
+        theme: theme,
+        bgKind: bg.telao.kind,
+        bgUrl: bg.telao.url,
+        bgKindRetorno: bg.retorno.kind,
+        bgUrlRetorno: bg.retorno.url
       });
     }
   }
