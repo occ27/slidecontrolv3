@@ -120,10 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const scaleFactor = CONTAINER_W / totalVW;
 
+      function getAspectLabel(w, h) {
+        const r = w / h;
+        if (Math.abs(r - 16 / 9) < 0.04) return "16:9";
+        if (Math.abs(r - 16 / 10) < 0.07) return "16:10";
+        if (Math.abs(r - 4 / 3) < 0.04) return "4:3";
+        if (Math.abs(r - 21 / 9) < 0.08) return "21:9";
+        if (Math.abs(r - 3 / 2) < 0.04) return "3:2";
+        return `${r.toFixed(2)}:1`;
+      }
+
       const visualContainer = document.createElement('div');
       visualContainer.style.cssText = `
-        position: relative; width: ${CONTAINER_W}px; height: ${CONTAINER_H + 50}px;
-        margin: 0 auto 20px; background: rgba(5, 10, 20, 0.6); border-radius: 12px;
+        position: relative; width: ${CONTAINER_W}px; height: ${CONTAINER_H}px;
+        margin: 0 auto 16px; background: rgba(5, 10, 20, 0.6); border-radius: 12px;
         border: 1px solid rgba(0, 240, 255, 0.2); box-sizing: border-box; overflow: hidden;
       `;
 
@@ -134,20 +144,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const thumbW = Math.round(m.bounds.width * scaleFactor);
         const thumbH = Math.round(m.bounds.height * scaleFactor);
 
+        const monAspect = getAspectLabel(m.bounds.width, m.bounds.height);
         const monDiv = document.createElement('div');
         monDiv.style.cssText = `
           position: absolute; left: ${thumbX}px; top: ${thumbY}px;
           width: ${thumbW}px; height: ${thumbH}px;
-          border: 2px dashed rgba(255, 255, 255, 0.25); border-radius: 8px; background: #070d18;
+          border: 2px solid rgba(0, 240, 255, 0.35); border-radius: 8px;
+          background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
           box-sizing: border-box; display: flex; align-items: center; justify-content: center;
-          color: rgba(255, 255, 255, 0.3); font-size: 20px; font-weight: bold; overflow: hidden;
-          transition: border-color 0.2s, background 0.2s;
+          overflow: hidden; transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         `;
 
         monDiv.innerHTML = `
-          <span style="position:absolute; top:6px; left:8px; background: rgba(0, 240, 255, 0.2); color:#00f0ff; border: 1px solid rgba(0,240,255,0.4); padding:2px 8px; border-radius:4px; font-size:11px; z-index:10; font-weight: 700;">
-            Monitor ${i + 1} (${m.bounds.width}x${m.bounds.height})
-          </span>
+          <div style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:6px; z-index:10;">
+            <span style="background: rgba(0, 240, 255, 0.2); color:#00f0ff; border: 1px solid rgba(0,240,255,0.4); padding:2px 8px; border-radius:4px; font-size:11px; font-weight: 700;">
+              Monitor ${i + 1} (${m.bounds.width}×${m.bounds.height})
+            </span>
+            <span style="background: rgba(255, 255, 255, 0.08); color:rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; font-size:10px; font-weight: 600;">
+              ${monAspect}
+            </span>
+          </div>
         `;
 
         if (m.isOperador) {
@@ -206,9 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
         visualContainer.appendChild(monDiv);
       });
 
-      // Zona de Tags Arrastáveis na base do container
+      // Zona de Tags Arrastáveis abaixo da área de monitores
       const tagZone = document.createElement('div');
-      tagZone.style.cssText = `position: absolute; bottom: 0; width: 100%; height: 46px; display: flex; gap: 14px; justify-content: center; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.4);`;
+      tagZone.style.cssText = `display: flex; gap: 14px; justify-content: center; align-items: center; margin: 0 auto 16px; padding: 10px 16px; background: rgba(5, 10, 20, 0.7); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; max-width: ${Math.max(CONTAINER_W, 400)}px; box-sizing: border-box;`;
 
       // Tag Telão
       const telaoTag = document.createElement('div');
@@ -295,8 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tagZone.appendChild(retornoTag);
       }
 
-      visualContainer.appendChild(tagZone);
       screenList.appendChild(visualContainer);
+      screenList.appendChild(tagZone);
 
       // Vincular preferências de checkboxes
       setupConfigPreferences();

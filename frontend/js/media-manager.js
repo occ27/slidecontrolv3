@@ -3,6 +3,8 @@
  * Gerenciador de Planos de Fundo (Presets, Nuvem, Uploads e QR Code Móvel)
  */
 
+const MEDIA_API_BASE = window.location.protocol === "file:" ? "http://127.0.0.1:8767" : "";
+
 class MediaManager {
   constructor() {
     this.currentBgTarget = "telao"; // "telao" ou "retorno"
@@ -135,7 +137,7 @@ class MediaManager {
 
   async loadLocalCategories(mediaType) {
     try {
-      const res = await fetch(`/api/backgrounds/presets/categories?media_type=${mediaType}`);
+      const res = await fetch(`${MEDIA_API_BASE}/api/backgrounds/presets/categories?media_type=${mediaType}`);
       if (!res.ok) return;
       const cats = await res.json();
       const selectId = mediaType === "image" ? "local-image-category-select" : "local-video-category-select";
@@ -162,7 +164,7 @@ class MediaManager {
     grid.innerHTML = "";
 
     try {
-      const res = await fetch(`/api/backgrounds/presets?media_type=${mediaType}&category=${encodeURIComponent(category)}&limit=120`);
+      const res = await fetch(`${MEDIA_API_BASE}/api/backgrounds/presets?media_type=${mediaType}&category=${encodeURIComponent(category)}&limit=120`);
       if (!res.ok) return;
       const data = await res.json();
 
@@ -189,7 +191,7 @@ class MediaManager {
         } else {
           // Thumbnail do vídeo
           const img = document.createElement("img");
-          img.src = `/api/backgrounds/presets/thumbnail/${encodeURIComponent(item.name)}`;
+          img.src = `${MEDIA_API_BASE}/api/backgrounds/presets/thumbnail/${encodeURIComponent(item.name)}`;
           img.loading = "lazy";
           img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:opacity 0.2s;";
           img.onerror = () => { img.style.display = "none"; };
@@ -270,7 +272,7 @@ class MediaManager {
     list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px;">Carregando...</div>';
 
     try {
-      const res = await fetch(`/api/backgrounds/cloud/categories?media_type=${this.cloudMediaType}`);
+      const res = await fetch(`${MEDIA_API_BASE}/api/backgrounds/cloud/categories?media_type=${this.cloudMediaType}`);
       if (!res.ok) throw new Error("Falha ao buscar categorias da nuvem");
       const cats = await res.json();
 
@@ -317,7 +319,7 @@ class MediaManager {
     if (loadingSpinner) loadingSpinner.classList.remove("hidden");
 
     try {
-      const res = await fetch(`/api/backgrounds/cloud/category/${encodeURIComponent(this.cloudCurrentCategory)}?media_type=${this.cloudMediaType}`);
+      const res = await fetch(`${MEDIA_API_BASE}/api/backgrounds/cloud/category/${encodeURIComponent(this.cloudCurrentCategory)}?media_type=${this.cloudMediaType}`);
       if (loadingSpinner) loadingSpinner.classList.add("hidden");
       if (!res.ok) throw new Error();
       const items = await res.json();
@@ -362,7 +364,7 @@ class MediaManager {
         el.addEventListener("click", async () => {
           dlOverlay.innerHTML = '<div class="bg-item-spinner" style="width:24px;height:24px;border:3px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>';
           try {
-            const dlRes = await fetch("/api/backgrounds/presets/download", {
+            const dlRes = await fetch(`${MEDIA_API_BASE}/api/backgrounds/presets/download`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -407,7 +409,7 @@ class MediaManager {
           formData.append("path", this.currentCustomPath || "");
 
           try {
-            await fetch("/api/media/upload", {
+            await fetch(`${MEDIA_API_BASE}/api/media/upload`, {
               method: "POST",
               body: formData
             });
@@ -451,9 +453,9 @@ class MediaManager {
 
     const qInput = document.getElementById("bg-search-input");
     const q = qInput ? qInput.value.trim() : "";
-    let url = `/api/media/custom?path=${encodeURIComponent(this.currentCustomPath)}`;
+    let url = `${MEDIA_API_BASE}/api/media/custom?path=${encodeURIComponent(this.currentCustomPath)}`;
     if (q) {
-      url = `/api/media/custom?query=${encodeURIComponent(q)}`;
+      url = `${MEDIA_API_BASE}/api/media/custom?query=${encodeURIComponent(q)}`;
     }
 
     try {
@@ -493,7 +495,7 @@ class MediaManager {
 
           if (isVideo) {
             const img = document.createElement("img");
-            img.src = `/api/media/custom/thumbnail/${encodeURIComponent(targetPath)}`;
+            img.src = `${MEDIA_API_BASE}/api/media/custom/thumbnail/${encodeURIComponent(targetPath)}`;
             img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;inset:0;";
             img.onerror = () => { img.style.display = "none"; };
             el.appendChild(img);
@@ -537,7 +539,7 @@ class MediaManager {
     formData.append("folder_name", name.trim());
 
     try {
-      const res = await fetch("/api/media/custom/folder", {
+      const res = await fetch(`${MEDIA_API_BASE}/api/media/custom/folder`, {
         method: "POST",
         body: formData
       });
@@ -558,11 +560,11 @@ class MediaManager {
     try {
       if (typeof QRCode === "undefined") throw new Error("Biblioteca QRCode indisponível");
 
-      const ipResponse = await fetch("/api/desktop/local-ip");
+      const ipResponse = await fetch(`${MEDIA_API_BASE}/api/desktop/local-ip`);
       const ipData = await ipResponse.json();
       const ip = ipData.ip || "127.0.0.1";
 
-      const tokenResponse = await fetch("/api/media/qr-media-status", {
+      const tokenResponse = await fetch(`${MEDIA_API_BASE}/api/media/qr-media-status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: true })
@@ -590,7 +592,7 @@ class MediaManager {
       let lastReceivedCount = 0;
       this.qrStatusInterval = setInterval(async () => {
         try {
-          const resp = await fetch(`/api/media/qr-media-status?token=${encodeURIComponent(this.qrMediaToken)}`);
+          const resp = await fetch(`${MEDIA_API_BASE}/api/media/qr-media-status?token=${encodeURIComponent(this.qrMediaToken)}`);
           if (!resp.ok) return;
           const data = await resp.json();
           if (data.received_count !== lastReceivedCount) {

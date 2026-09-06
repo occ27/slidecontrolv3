@@ -170,7 +170,7 @@ function createMainWindow() {
     mainWindow.maximize();
   }
 
-  mainWindow.loadFile(path.join(__dirname, 'frontend', 'index.html'));
+  mainWindow.loadURL(`http://127.0.0.1:${PORT}/`);
 
   // Salva dimensões sempre que a janela for movida, redimensionada ou maximizada
   mainWindow.on('resized', saveState);
@@ -257,7 +257,7 @@ function openTelao(targetDisplay = null, isStartup = false) {
     }
   });
 
-  telaoWindow.loadFile(path.join(__dirname, 'frontend', 'display.html'));
+  telaoWindow.loadURL(`http://127.0.0.1:${PORT}/display`);
 
   telaoWindow.on('closed', () => {
     telaoWindow = null;
@@ -334,7 +334,7 @@ function openRetorno(targetDisplay = null, isStartup = false) {
     }
   });
 
-  retornoWindow.loadFile(path.join(__dirname, 'frontend', 'retorno.html'));
+  retornoWindow.loadURL(`http://127.0.0.1:${PORT}/retorno`);
 
   retornoWindow.on('closed', () => {
     retornoWindow = null;

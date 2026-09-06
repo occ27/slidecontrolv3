@@ -55,6 +55,22 @@ async def get_root():
             return HTMLResponse(f.read())
     return {"message": "SlideControl V3 API running"}
 
+@app.get("/display")
+async def get_display():
+    display_file = os.path.join(get_frontend_path(), "display.html")
+    if os.path.exists(display_file):
+        with open(display_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(f.read())
+    return HTMLResponse("Display not found", status_code=404)
+
+@app.get("/retorno")
+async def get_retorno():
+    retorno_file = os.path.join(get_frontend_path(), "retorno.html")
+    if os.path.exists(retorno_file):
+        with open(retorno_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(f.read())
+    return HTMLResponse("Retorno not found", status_code=404)
+
 @app.get("/api/system/shutdown")
 async def shutdown():
     print("[Shutdown] Recebido pedido de encerramento do Electron.")

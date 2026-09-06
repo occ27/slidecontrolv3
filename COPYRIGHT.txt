@@ -1,0 +1,54 @@
+=======================================================================
+                        AVISO DE DIREITOS AUTORAIS
+                            SLIDECONTROL
+=======================================================================
+
+Copyright (c) 2023-2026 SlideControl / Brazcom. Todos os direitos reservados.
+
+O SlideControl é uma propriedade intelectual protegida pelas leis de 
+direitos autorais do Brasil (Lei nº 9.610/98) e por tratados 
+internacionais de proteção à propriedade intelectual.
+
+ATENÇÃO: TERMOS RESTRITIVOS DE USO E ACESSO AO CÓDIGO-FONTE
+
+Ao utilizar, instalar ou armazenar este software, você concorda 
+expressamente com os seguintes termos:
+
+1. PROIBIÇÃO DE ENGENHARIA REVERSA E DESCOMPILAÇÃO
+É estritamente proibido realizar engenharia reversa, descompilar, 
+desmontar, decodificar, descriptografar ou tentar de qualquer outra 
+forma derivar, acessar ou expor o código-fonte deste software.
+
+2. PROIBIÇÃO DE MODIFICAÇÃO E DERIVAÇÃO
+Você não tem permissão para modificar, adaptar, traduzir ou criar 
+trabalhos derivados baseados neste software, seus algoritmos, 
+interfaces ou lógicas de funcionamento, sem a autorização prévia, 
+expressa e por escrito do autor original.
+
+3. USO DE INTELIGÊNCIA ARTIFICIAL E ROUBO DE PROPRIEDADE
+É expressamente proibido o uso de ferramentas de Inteligência 
+Artificial (IA), scripts ou processos automatizados com a finalidade 
+de extrair, analisar, copiar, reproduzir ou reescrever as lógicas 
+internas deste software para uso em aplicações próprias ou de terceiros.
+A apropriação indevida de lógicas e algoritmos proprietários 
+configura plágio e violação direta de direitos autorais.
+
+4. PROTEÇÃO LEGAL
+Qualquer tentativa de burlar as proteções do software (como a 
+compilação ofuscada), extrair arquivos internos do pacote do 
+aplicativo (.app, .dmg, .exe) ou distribuir versões modificadas 
+constituirá crime de violação de direito autoral e concorrência 
+desleal. O autor reserva-se o direito de buscar todas as medidas 
+cíveis e criminais cabíveis contra os infratores, incluindo o 
+ressarcimento por perdas e danos.
+
+5. ISENÇÃO DE RESPONSABILIDADE
+Este software é fornecido "no estado em que se encontra", sem 
+garantias de qualquer tipo. O autor não será responsabilizado por 
+quaisquer danos diretos ou indiretos decorrentes do uso do software.
+
+-----------------------------------------------------------------------
+Ao prosseguir com o uso deste software, você atesta que leu, 
+compreendeu e aceitou integralmente os termos descritos acima. 
+A ignorância destes termos não o isenta das penalidades legais.
+=======================================================================

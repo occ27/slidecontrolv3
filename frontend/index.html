@@ -636,6 +636,162 @@
     </div>
   </div>
 
+  <!-- MODAL: REGISTRO E ATIVAÇÃO DO SISTEMA -->
+  <div id="registration-overlay" class="modal-overlay hidden" style="z-index: 10010;">
+    <div class="modal-content" style="max-width: 520px; width: 90%; text-align: center; padding: 32px; border-color: rgba(0, 240, 255, 0.4); box-shadow: 0 25px 80px rgba(0,0,0,0.9), 0 0 40px rgba(0,240,255,0.2);">
+
+      <!-- Passo 1: Cadastro -->
+      <div id="registration-step-1">
+        <img src="public/slidecontrol.svg" alt="SlideControl" style="max-height: 48px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: #ffffff;">Registro do Sistema</h3>
+        <p style="color: rgba(255, 255, 255, 0.65); margin-bottom: 24px; font-size: 13px; line-height: 1.5;">
+          Preencha os dados abaixo para receber seu token de acesso no e-mail e liberar todos os recursos e mídias na nuvem.
+        </p>
+
+        <form id="registration-form" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="reg-field">
+            <label>E-mail *</label>
+            <input type="email" id="reg-email" class="reg-input" required placeholder="seu@email.com">
+          </div>
+          <div class="reg-field">
+            <label>Nome da Igreja *</label>
+            <input type="text" id="reg-church" class="reg-input" required placeholder="Ex: Igreja Batista">
+          </div>
+          <div class="reg-field">
+            <label>Cidade *</label>
+            <input type="text" id="reg-city" class="reg-input" required placeholder="Ex: São Paulo">
+          </div>
+          <div class="reg-field">
+            <label>WhatsApp</label>
+            <input type="text" id="reg-whatsapp" class="reg-input" placeholder="(11) 99999-9999">
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 10px; margin-top: 4px; text-align: left;">
+            <input type="checkbox" id="reg-terms" required style="width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: #00f0ff;">
+            <label for="reg-terms" style="font-size: 12px; color: rgba(255, 255, 255, 0.7); cursor: pointer; line-height: 1.4;">
+              Li, compreendi e concordo integralmente com os
+              <a href="#" onclick="document.getElementById('modal-copyright').classList.remove('hidden'); return false;" style="color: #00f0ff; text-decoration: underline; font-weight: 600;">Termos de Uso e Direitos Autorais</a>.
+            </label>
+          </div>
+
+          <button type="submit" id="btn-register" class="hud-btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px; font-weight: 700; margin-top: 8px;">
+            Registrar Sistema
+          </button>
+        </form>
+      </div>
+
+      <!-- Passo 2: Validação do Código -->
+      <div id="registration-step-2" class="hidden">
+        <img src="public/slidecontrol.svg" alt="SlideControl" style="max-height: 48px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: #ffffff;">Verifique seu E-mail</h3>
+        <p style="color: rgba(255, 255, 255, 0.65); margin-bottom: 18px; font-size: 13px;">
+          Enviamos um código de 6 dígitos para o e-mail cadastrado.
+        </p>
+
+        <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; padding: 10px 14px; margin-bottom: 22px; text-align: left; border-radius: 0 8px 8px 0;">
+          <p style="margin: 0; color: #fbbf24; font-size: 12px; font-weight: 700;">⚠️ Atenção:</p>
+          <p style="margin: 4px 0 0 0; color: rgba(255, 255, 255, 0.8); font-size: 12px; line-height: 1.4;">
+            Se não encontrar a mensagem na caixa de entrada, por favor <b>verifique a pasta de SPAM (lixo eletrônico)</b> ou a aba de "Promoções".
+          </p>
+        </div>
+
+        <form id="verify-form" style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="reg-field">
+            <label style="text-align: center;">Código de Verificação (6 dígitos)</label>
+            <input type="text" id="reg-code" class="reg-input" required placeholder="000000" maxlength="6" style="text-align: center; font-size: 26px; font-weight: 800; letter-spacing: 6px; font-family: var(--font-mono);">
+          </div>
+          <button type="submit" id="btn-verify" style="padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+            Ativar Sistema
+          </button>
+          <button type="button" id="btn-resend-code" style="background: transparent; color: rgba(255,255,255,0.55); border: none; font-size: 13px; text-decoration: underline; cursor: pointer;" onmouseover="this.style.color='#00f0ff'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">
+            Reenviar Código por E-mail
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay" class="modal-overlay hidden" style="z-index: 10020; flex-direction: column; justify-content: center; align-items: center;">
+    <div class="bg-item-spinner" style="width: 44px; height: 44px; border: 4px solid #00f0ff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
+    <h3 style="color: white; margin: 0; font-weight: 600; font-size: 15px;" id="loading-message">Processando...</h3>
+  </div>
+
+  <!-- MODAL: DIREITOS AUTORAIS E TERMOS -->
+  <div id="modal-copyright" class="modal-overlay hidden" style="z-index: 10030;">
+    <div class="modal-content" style="max-width: 620px; width: 92%; height: 80vh; display: flex; flex-direction: column; border-color: rgba(0,240,255,0.3);">
+      <div class="modal-header" style="flex-shrink: 0;">
+        <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff;">Termos de Uso e Direitos Autorais</h3>
+        <button class="icon-btn" onclick="document.getElementById('modal-copyright').classList.add('hidden')">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px; font-size: 12.5px; line-height: 1.6; color: rgba(255, 255, 255, 0.75); text-align: left; white-space: pre-wrap; font-family: var(--font-mono); background: rgba(0,0,0,0.35); border-radius: 8px; margin: 0 16px 16px;">
+=======================================================================
+                        AVISO DE DIREITOS AUTORAIS
+                            SLIDECONTROL
+=======================================================================
+
+Copyright (c) 2023-2026 SlideControl / Brazcom. Todos os direitos reservados.
+
+O SlideControl é uma propriedade intelectual protegida pelas leis de 
+direitos autorais do Brasil (Lei nº 9.610/98) e por tratados 
+internacionais de proteção à propriedade intelectual.
+
+ATENÇÃO: TERMOS RESTRITIVOS DE USO E ACESSO AO CÓDIGO-FONTE
+
+Ao utilizar, instalar ou armazenar este software, você concorda 
+expressamente com os seguintes termos:
+
+1. PROIBIÇÃO DE ENGENHARIA REVERSA E DESCOMPILAÇÃO
+É estritamente proibido realizar engenharia reversa, descompilar, 
+desmontar, decodificar, descriptografar ou tentar de qualquer outra 
+forma derivar, acessar ou expor o código-fonte deste software.
+
+2. PROIBIÇÃO DE MODIFICAÇÃO E DERIVAÇÃO
+Você não tem permissão para modificar, adaptar, traduzir ou criar 
+trabalhos derivados baseados neste software, seus algoritmos, 
+interfaces ou lógicas de funcionamento, sem a autorização prévia, 
+expressa e por escrito do autor original.
+
+3. USO DE INTELIGÊNCIA ARTIFICIAL E ROUBO DE PROPRIEDADE
+É expressamente proibido o uso de ferramentas de Inteligência 
+Artificial (IA), scripts ou processos automatizados com a finalidade 
+de extrair, analisar, copiar, reproduzir ou reescrever as lógicas 
+internas deste software para uso em aplicações próprias ou de terceiros.
+A apropriação indevida de lógicas e algoritmos proprietários 
+configura plágio e violação direta de direitos autorais.
+
+4. PROTEÇÃO LEGAL
+Qualquer tentativa de burlar as proteções do software (como a 
+compilação ofuscada), extrair arquivos internos do pacote do 
+aplicativo (.app, .dmg, .exe) ou distribuir versões modificadas 
+constituirá crime de violação de direito autoral e concorrência 
+desleal. O autor reserva-se o direito de buscar todas as medidas 
+cíveis e criminais cabíveis contra os infratores, incluindo o 
+ressarcimento por perdas e danos.
+
+5. ISENÇÃO DE RESPONSABILIDADE
+Este software é fornecido "no estado em que se encontra", sem 
+garantias de qualquer tipo. O autor não será responsabilizado por 
+quaisquer danos diretos ou indiretos decorrentes do uso do software.
+
+-----------------------------------------------------------------------
+Ao prosseguir com o uso deste software, você atesta que leu, 
+compreendeu e aceitou integralmente os termos descritos acima. 
+A ignorância destes termos não o isenta das penalidades legais.
+=======================================================================
+      </div>
+      <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: right; flex-shrink: 0;">
+        <button class="hud-btn" onclick="document.getElementById('modal-copyright').classList.add('hidden')">
+          <span>Fechar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
@@ -649,6 +805,7 @@
   <script src="js/app.js"></script>
   <script src="public/qrcode.min.js"></script>
   <script src="js/media-manager.js"></script>
+  <script src="js/registration.js"></script>
 
 </body>
 </html>
