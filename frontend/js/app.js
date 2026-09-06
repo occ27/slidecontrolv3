@@ -650,7 +650,7 @@ class GlobeApp {
           <div class="bible-verse-num">${v.verse}</div>
           <div class="bible-verse-text">${v.text}</div>
           <div class="bible-verse-actions">
-            <button class="hud-btn-sm" style="background:#a855f7; border-color:#c084fc; color:#fff; padding:3px 8px; font-size:0.75rem;" title="Projetar este versículo imediatamente">
+            <button class="btn-verse-project" title="Projetar este versículo imediatamente">
               PROJETAR
             </button>
           </div>

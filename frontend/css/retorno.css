@@ -81,6 +81,7 @@ html, body {
   max-width: 90vw;
   white-space: pre-wrap;
   word-break: break-word;
+  transition: opacity 0.25s ease;
 }
 
 /* ── Bottom: Next Slide Preview ── */
@@ -127,6 +128,24 @@ html, body {
 }
 
 .stage-blackout.active {
+  opacity: 1;
+}
+
+/* ── Logo Layer ── */
+.stage-logo {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 105;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.stage-logo.active {
   opacity: 1;
 }
 

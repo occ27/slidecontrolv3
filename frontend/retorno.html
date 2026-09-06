@@ -33,6 +33,9 @@
   <!-- Camada de Blackout -->
   <div class="stage-blackout" id="stage-blackout"></div>
 
+  <!-- Camada de Logo -->
+  <div class="stage-logo" id="logo-layer"></div>
+
   <!-- Aviso de Palco -->
   <aside class="stage-alert-toast" id="stage-alert">
     <span id="stage-alert-text">Mensagem de Palco</span>
@@ -91,6 +94,7 @@
     }
 
     const blackoutEl = document.getElementById('stage-blackout');
+    const logoEl = document.getElementById('logo-layer');
     const alertEl = document.getElementById('stage-alert');
     const alertTextEl = document.getElementById('stage-alert-text');
 
@@ -134,7 +138,18 @@
 
       switch (msg.action) {
         case 'PROJECT_SLIDE':
-          blackoutEl.classList.remove('active');
+          if (typeof msg.isBlackout !== 'undefined') {
+            blackoutEl.classList.toggle('active', !!msg.isBlackout);
+          }
+          if (typeof msg.isLogo !== 'undefined') {
+            if (logoEl) {
+              logoEl.classList.toggle('active', !!msg.isLogo);
+            }
+          }
+          if (typeof msg.isClearText !== 'undefined') {
+            currentEl.style.opacity = msg.isClearText ? '0' : '1';
+          }
+
           if (msg.header) {
             headerEl.textContent = msg.header;
           }
@@ -150,14 +165,18 @@
           break;
 
         case 'TOGGLE_LOGO':
-          document.getElementById('logo-layer').style.opacity = msg.active ? '1' : '0';
+          if (logoEl) {
+            logoEl.classList.toggle('active', !!msg.active);
+          }
           break;
         case 'SET_LOGO':
           const fitModeRet = window.electronAPI ? window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover' : 'cover';
           let objectFitRet = 'cover';
           if (fitModeRet === 'contain') objectFitRet = 'contain';
           else if (fitModeRet === 'stretch') objectFitRet = 'fill';
-          document.getElementById('logo-layer').innerHTML = `<img id="logo-img-ret" src="${msg.url}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+          if (logoEl) {
+            logoEl.innerHTML = `<img id="logo-img-ret" src="${msg.url}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+          }
           break;
         case 'TOGGLE_BLACKOUT':
           blackoutEl.classList.toggle('active', msg.active);

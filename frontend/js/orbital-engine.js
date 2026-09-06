@@ -89,9 +89,11 @@ class SphericalSurfaceEngine {
       positions[i * 3 + 2] = this.radius * Math.sin(phi) * Math.sin(theta);
 
       const latRatio = Math.abs(positions[i * 3 + 1] / this.radius);
+      const isNorth = positions[i * 3 + 1] > 0;
+      const targetColor = isNorth ? new THREE.Color(0x8b5cf6) : new THREE.Color(0xf59e0b);
       const c = new THREE.Color().lerpColors(
         new THREE.Color(0x00f0ff),
-        new THREE.Color(0xa855f7),
+        targetColor,
         latRatio
       );
 
@@ -130,17 +132,29 @@ class SphericalSurfaceEngine {
     const rParallel = this.radius * Math.cos(latAngle) * 1.006;
     const yParallel = this.radius * Math.sin(latAngle);
 
-    // Anel Norte (Bíblia)
-    const northRingGeo = new THREE.TorusGeometry(rParallel, 1.4, 8, 120);
+    // Anel Norte (Bíblia) — Tom de ametista suave com halo celestial
+    const northRingGeo = new THREE.TorusGeometry(rParallel, 1.3, 8, 120);
     const northRingMat = new THREE.MeshBasicMaterial({
-      color: 0xa855f7,
+      color: 0x8b5cf6,
       transparent: true,
-      opacity: 0.22
+      opacity: 0.32
     });
     const northRing = new THREE.Mesh(northRingGeo, northRingMat);
     northRing.position.y = yParallel;
     northRing.rotation.x = Math.PI / 2;
     this.sceneWebGL.add(northRing);
+
+    // Halo difuso para suavizar visualmente o Polo Norte
+    const northHaloGeo = new THREE.TorusGeometry(rParallel, 3.2, 8, 120);
+    const northHaloMat = new THREE.MeshBasicMaterial({
+      color: 0xa78bfa,
+      transparent: true,
+      opacity: 0.12
+    });
+    const northHalo = new THREE.Mesh(northHaloGeo, northHaloMat);
+    northHalo.position.y = yParallel;
+    northHalo.rotation.x = Math.PI / 2;
+    this.sceneWebGL.add(northHalo);
 
     // Anel Sul (Controles)
     const southRingGeo = new THREE.TorusGeometry(rParallel, 1.4, 8, 120);
@@ -434,11 +448,18 @@ class SphericalSurfaceEngine {
       cardEl.classList.add('on-air');
       if (window.updateOnAirCardBg) window.updateOnAirCardBg();
 
+      const row = this.rows && this.rows[rowIdx];
+      let nextText = '';
+      if (row && row.cards && row.cards[cardIdx + 1] && row.cards[cardIdx + 1].data) {
+        nextText = row.cards[cardIdx + 1].data.text || '';
+      }
+
       window.projectionSync.projectSlide({
         header: data.tag,
         text: data.text,
         subtitle: data.title,
-        theme: data.theme
+        theme: data.theme,
+        nextText: nextText
       });
 
       const pill = document.getElementById('on-air-pill-text');

@@ -343,26 +343,26 @@ Mas o sepulcro vazio está porque Ele vive</div>
   <!-- MODAL: NAVEGADOR BÍBLICO ORBITAL -->
   <div id="modal-bible-navigator" class="modal-overlay hidden">
     <div class="modal-content bible-modal-content">
-      <div class="modal-header" style="border-bottom: 1px solid rgba(168, 85, 247, 0.25);">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div class="modal-header-icon" style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.4); border-radius:8px; padding:6px; display:flex;">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;color:#c084fc;">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="modal-header-icon" style="background:linear-gradient(135deg, rgba(124,58,237,0.22), rgba(99,102,241,0.15)); border:1px solid rgba(167,139,250,0.35); border-radius:9px; padding:7px; display:flex; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;color:#c4b5fd;">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
           <div>
-            <h3 style="margin:0; font-size:1.15rem; color:#ffffff; display:flex; align-items:center; gap:8px;">
+            <h3 style="margin:0; font-size:1.18rem; color:#f8fafc; font-weight:700; display:flex; align-items:center; gap:10px;">
               <span>Bíblia Sagrada</span>
               <span class="hud-badge-purple" id="bible-current-ref-badge">Carregando...</span>
             </h3>
-            <span style="font-size:0.75rem; color:#a855f7; letter-spacing:0.05em; text-transform:uppercase;">Navegador & Pesquisa de Passagens</span>
+            <span style="font-size:0.72rem; color:#a5b4fc; letter-spacing:0.06em; text-transform:uppercase; font-weight:600;">Navegador & Pesquisa de Passagens</span>
           </div>
         </div>
 
         <div style="display:flex; align-items:center; gap:12px;">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-size:0.75rem; color:#94a3b8;">Versão:</span>
-            <select id="bible-version-select" class="hud-select-sm" style="background:#0f172a; border:1px solid rgba(168,85,247,0.35); color:#e2e8f0; padding:4px 8px; border-radius:4px; font-size:0.8rem;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:0.75rem; color:#94a3b8; font-weight:500;">Versão:</span>
+            <select id="bible-version-select" class="hud-select-sm" style="background:rgba(20,26,48,0.85); border:1px solid rgba(167,139,250,0.3); color:#f1f5f9; padding:5px 10px; border-radius:7px; font-size:0.82rem; outline:none;">
               <!-- Populado via BibleService -->
             </select>
           </div>
@@ -371,15 +371,14 @@ Mas o sepulcro vazio está porque Ele vive</div>
       </div>
 
       <!-- Barra de Busca Rápida com auto-sugestão -->
-      <div class="bible-modal-search-bar" style="padding:12px 20px; background:rgba(15,23,42,0.5); border-bottom:1px solid rgba(255,255,255,0.06); display:flex; gap:10px; align-items:center;">
+      <div class="bible-modal-search-bar">
         <div style="flex:1; position:relative;">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#a855f7;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#a78bfa;">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
-          <input type="text" id="bible-modal-search-input" placeholder="Digite uma referência (ex: Jo 3:16, Sl 23, 1Co 13) ou palavra para buscar..."
-            style="width:100%; padding:9px 12px 9px 36px; background:rgba(30,41,59,0.7); border:1px solid rgba(168,85,247,0.3); border-radius:6px; color:#ffffff; font-size:13px; outline:none;" />
+          <input type="text" id="bible-modal-search-input" placeholder="Digite uma referência (ex: Jo 3:16, Sl 23, 1Co 13) ou palavra para buscar..." />
         </div>
-        <button id="btn-bible-search-exec" class="hud-btn" style="background:rgba(168,85,247,0.2); border-color:#a855f7; color:#f3e8ff;">
+        <button id="btn-bible-search-exec" class="hud-btn">
           <span>BUSCAR</span>
         </button>
       </div>
@@ -415,8 +414,8 @@ Mas o sepulcro vazio está porque Ele vive</div>
               <span id="bible-verses-header-title">VERSÍCULOS</span>
               <span class="bible-col-subtitle" id="bible-verses-header-sub">Clique para projetar ou carregar no globo</span>
             </div>
-            <button id="btn-load-chapter-to-globe" class="hud-btn-sm" style="background:rgba(168,85,247,0.25); border:1px solid #a855f7; color:#fff;" title="Carrega todos os versículos deste capítulo na esfera 3D">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:#c084fc;"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            <button id="btn-load-chapter-to-globe" class="hud-btn-sm" style="background:linear-gradient(135deg, rgba(124,58,237,0.3), rgba(99,102,241,0.2)); border:1px solid rgba(167,139,250,0.35); color:#f3e8ff; border-radius:7px; font-weight:600; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Carrega todos os versículos deste capítulo na esfera 3D">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:#c4b5fd;"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
               <span>CARREGAR NO GLOBO 3D</span>
             </button>
           </div>

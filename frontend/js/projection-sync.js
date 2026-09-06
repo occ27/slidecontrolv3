@@ -74,6 +74,7 @@ class ProjectionSyncService {
 
     // Ping display
     this.channel.postMessage({ action: 'CONSOLE_PING', timestamp: Date.now() });
+    setTimeout(() => this.updateMasterButtonsUI(), 200);
   }
 
   updateDisplayStatusUI(online) {
@@ -130,10 +131,25 @@ class ProjectionSyncService {
     }
   }
 
+  updateMasterButtonsUI() {
+    const bBlackout = document.getElementById('btn-blackout');
+    const qBlackout = document.getElementById('btn-quick-blackout');
+    if (bBlackout) bBlackout.classList.toggle('active', !!this.currentState.isBlackout);
+    if (qBlackout) qBlackout.classList.toggle('active', !!this.currentState.isBlackout);
+
+    const bClear = document.getElementById('btn-clear-text');
+    const qClear = document.getElementById('btn-quick-clear');
+    if (bClear) bClear.classList.toggle('active', !!this.currentState.isClearText);
+    if (qClear) qClear.classList.toggle('active', !!this.currentState.isClearText);
+
+    const bLogo = document.getElementById('btn-logo');
+    const qLogo = document.getElementById('btn-quick-logo');
+    if (bLogo) bLogo.classList.toggle('active', !!this.currentState.isLogo);
+    if (qLogo) qLogo.classList.toggle('active', !!this.currentState.isLogo);
+  }
+
   projectSlide(slideData) {
     this.currentState.currentSlide = slideData;
-    this.currentState.isBlackout = false;
-    this.currentState.isLogo = false;
 
     const theme = slideData.theme || 'general';
     const bg = this.getBackgroundForTheme(theme);
@@ -147,20 +163,15 @@ class ProjectionSyncService {
       bgKind: bg.telao.kind,
       bgUrl: bg.telao.url,
       bgKindRetorno: bg.retorno.kind,
-      bgUrlRetorno: bg.retorno.url
+      bgUrlRetorno: bg.retorno.url,
+      nextText: slideData.nextText || '',
+      isBlackout: this.currentState.isBlackout,
+      isClearText: this.currentState.isClearText,
+      isLogo: this.currentState.isLogo
     });
 
     this.updateMiniPreview(slideData);
-
-    // Reset emergency button states in UI
-    const blackoutBtn = document.getElementById('btn-blackout');
-    const logoBtn = document.getElementById('btn-logo');
-    const qBlackout = document.getElementById('btn-quick-blackout');
-    const qLogo = document.getElementById('btn-quick-logo');
-    if (blackoutBtn) blackoutBtn.classList.remove('active');
-    if (logoBtn) logoBtn.classList.remove('active');
-    if (qBlackout) qBlackout.classList.remove('active');
-    if (qLogo) qLogo.classList.remove('active');
+    this.updateMasterButtonsUI();
   }
 
   sendCurrentSlide() {
@@ -176,7 +187,11 @@ class ProjectionSyncService {
         bgKind: bg.telao.kind,
         bgUrl: bg.telao.url,
         bgKindRetorno: bg.retorno.kind,
-        bgUrlRetorno: bg.retorno.url
+        bgUrlRetorno: bg.retorno.url,
+        nextText: this.currentState.currentSlide.nextText || '',
+        isBlackout: this.currentState.isBlackout,
+        isClearText: this.currentState.isClearText,
+        isLogo: this.currentState.isLogo
       });
     }
   }
@@ -188,11 +203,7 @@ class ProjectionSyncService {
       active: this.currentState.isBlackout
     });
 
-    const btn = document.getElementById('btn-blackout');
-    if (btn) btn.classList.toggle('active', this.currentState.isBlackout);
-    const qbtn = document.getElementById('btn-quick-blackout');
-    if (qbtn) qbtn.classList.toggle('active', this.currentState.isBlackout);
-
+    this.updateMasterButtonsUI();
     this.updatePreviewTags();
     return this.currentState.isBlackout;
   }
@@ -204,11 +215,7 @@ class ProjectionSyncService {
       active: this.currentState.isClearText
     });
 
-    const btn = document.getElementById('btn-clear-text');
-    if (btn) btn.classList.toggle('active', this.currentState.isClearText);
-    const qbtn = document.getElementById('btn-quick-clear');
-    if (qbtn) qbtn.classList.toggle('active', this.currentState.isClearText);
-
+    this.updateMasterButtonsUI();
     this.updatePreviewTags();
     return this.currentState.isClearText;
   }
@@ -231,11 +238,7 @@ class ProjectionSyncService {
       active: this.currentState.isLogo
     });
 
-    const btn = document.getElementById('btn-logo');
-    if (btn) btn.classList.toggle('active', this.currentState.isLogo);
-    const qbtn = document.getElementById('btn-quick-logo');
-    if (qbtn) qbtn.classList.toggle('active', this.currentState.isLogo);
-
+    this.updateMasterButtonsUI();
     this.updatePreviewTags();
     return this.currentState.isLogo;
   }
@@ -298,14 +301,16 @@ class ProjectionSyncService {
       if (overlayStatus) {
         overlayStatus.style.display = 'none';
       }
-      if (previewText) previewText.style.visibility = 'hidden';
     } else {
       if (tagEl) {
         tagEl.innerHTML = '<span class="signal-dot"></span><span>AO VIVO NO TELÃO</span>';
         tagEl.style.color = 'var(--accent-emerald)';
       }
       if (overlayStatus) overlayStatus.style.display = 'none';
-      if (previewText) previewText.style.visibility = 'visible';
+    }
+
+    if (previewText) {
+      previewText.style.visibility = this.currentState.isClearText ? 'hidden' : 'visible';
     }
   }
 

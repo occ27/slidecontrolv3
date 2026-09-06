@@ -140,9 +140,15 @@
 
       switch (msg.action) {
         case 'PROJECT_SLIDE':
-          blackoutEl.classList.remove('active');
-          logoEl.classList.remove('active');
-          contentLayer.classList.remove('text-hidden');
+          if (typeof msg.isBlackout !== 'undefined') {
+            blackoutEl.classList.toggle('active', !!msg.isBlackout);
+          }
+          if (typeof msg.isLogo !== 'undefined') {
+            logoEl.classList.toggle('active', !!msg.isLogo);
+          }
+          if (typeof msg.isClearText !== 'undefined') {
+            contentLayer.classList.toggle('text-hidden', !!msg.isClearText);
+          }
 
           if (msg.header) {
             headerEl.textContent = msg.header;
