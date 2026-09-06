@@ -203,6 +203,8 @@ class SphericalSurfaceEngine {
   createCardDOM(data, rowIdx, cardIdx) {
     const el = document.createElement('div');
     el.className = `globe-card theme-${data.theme}`;
+    el.dataset.rowIdx = rowIdx;
+    el.dataset.cardIdx = cardIdx;
 
     if (data.isControlCard) {
       el.innerHTML = `

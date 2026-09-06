@@ -83,6 +83,16 @@ class GlobeApp {
     });
 
     if (centerBtn) centerBtn.addEventListener('click', () => {
+      const onAirCard = document.querySelector('.globe-card.on-air');
+      if (onAirCard) {
+        const row = parseInt(onAirCard.dataset.rowIdx, 10);
+        const card = parseInt(onAirCard.dataset.cardIdx, 10);
+        if (!isNaN(row) && !isNaN(card)) {
+          this.engine.setRow(row);
+          this.engine.snapToCard(row, card);
+          return;
+        }
+      }
       this.engine.setRow(1);
       this.engine.snapToCard(1, 0);
     });
@@ -118,10 +128,23 @@ class GlobeApp {
     if (preEq) preEq.addEventListener('click', () => this.engine.setRow(1));
     if (preSouth) preSouth.addEventListener('click', () => this.engine.setRow(2));
     if (resetBtn) resetBtn.addEventListener('click', () => {
-      this.engine.setRow(1);
-      this.engine.snapToCard(1, 0);
+      let centered = false;
+      const onAirCard = document.querySelector('.globe-card.on-air');
+      if (onAirCard) {
+        const row = parseInt(onAirCard.dataset.rowIdx, 10);
+        const card = parseInt(onAirCard.dataset.cardIdx, 10);
+        if (!isNaN(row) && !isNaN(card)) {
+          this.engine.setRow(row);
+          this.engine.snapToCard(row, card);
+          centered = true;
+        }
+      }
+      if (!centered) {
+        this.engine.setRow(1);
+        this.engine.snapToCard(1, 0);
+      }
       if (window.slideTelemetry) {
-        window.slideTelemetry.appendLog('SISTEMA', 'Globo recentralizado no Equador', 'info');
+        window.slideTelemetry.appendLog('SISTEMA', centered ? 'Foco retornado ao slide atual' : 'Globo recentralizado no Equador', 'info');
       }
     });
 
@@ -298,3 +321,32 @@ window.updateOnAirCardBg = function() {
     }
   }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pill = document.getElementById('on-air-pill');
+  if (pill) {
+    pill.style.cursor = 'pointer';
+    pill.title = 'Clique para centralizar o slide atual';
+    pill.addEventListener('click', () => {
+      const onAirCard = document.querySelector('.globe-card.on-air');
+      if (onAirCard && window.globeApp && window.globeApp.engine) {
+        const row = parseInt(onAirCard.dataset.rowIdx, 10);
+        const card = parseInt(onAirCard.dataset.cardIdx, 10);
+        if (!isNaN(row) && !isNaN(card)) {
+          window.globeApp.engine.setRow(row);
+          window.globeApp.engine.snapToCard(row, card);
+        }
+      }
+    });
+    
+    // Add hover effect via JS to not mess with CSS files right now
+    pill.addEventListener('mouseenter', () => {
+      pill.style.background = 'rgba(0, 240, 255, 0.15)';
+      pill.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+    });
+    pill.addEventListener('mouseleave', () => {
+      pill.style.background = '';
+      pill.style.borderColor = '';
+    });
+  }
+});
