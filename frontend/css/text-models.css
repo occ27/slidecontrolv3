@@ -1,0 +1,325 @@
+/* =========================================================
+   SLIDECONTROL V3 — MODELOS DE TEXTO & ESTILOS VISUAIS
+   Compatível com Telão (#content-layer), Retorno (.stage-wrapper)
+   e Prévia do Operador (.ts-preview / #active-preview-layer)
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Caveat:wght@600;700&family=Montserrat:wght@400;700;900&family=Roboto:wght@400;700;900&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Great+Vibes&family=Alex+Brush&family=Pacifico&family=Permanent+Marker&family=Londrina+Sketch&family=Cabin+Sketch:wght@400;700&family=Bungee+Shade&display=swap');
+
+/* =========================================================
+   1. MODELOS ALTAMENTE LEGÍVEIS
+   ========================================================= */
+
+/* 1.1 Holyrics Padrão */
+#content-layer.ts-holy-default #slide-text,
+.stage-wrapper.ts-holy-default #stage-current-text,
+#active-preview-layer.ts-holy-default #active-preview-text {
+  font-family: 'Arial Black', sans-serif;
+  color: #FFFFFF;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* 1.2 Holyrics Sombra de Contorno */
+#content-layer.ts-holy-contour #slide-text,
+.stage-wrapper.ts-holy-contour #stage-current-text,
+#active-preview-layer.ts-holy-contour #active-preview-text {
+  font-family: 'Arial Black', sans-serif;
+  color: #FFFFFF;
+  text-shadow:
+    2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+    2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000,
+    0 0 10px rgba(0, 0, 0, 1), 0 0 20px rgba(0, 0, 0, 1), 0 0 30px rgba(0, 0, 0, 1);
+}
+
+/* 1.3 Holyrics Fundo Escuro */
+#content-layer.ts-holy-dark-bg #slide-text,
+.stage-wrapper.ts-holy-dark-bg #stage-current-text,
+#active-preview-layer.ts-holy-dark-bg #active-preview-text {
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: rgba(0, 0, 0, 0.72);
+  border-radius: 12px;
+  padding: 16px 36px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* 1.4 Holyrics Destaque Amarelo */
+#content-layer.ts-holy-yellow #slide-text,
+.stage-wrapper.ts-holy-yellow #stage-current-text,
+#active-preview-layer.ts-holy-yellow #active-preview-text {
+  font-family: 'Arial Black', sans-serif;
+  color: #FFD700;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* 1.5 Holyrics Elegante */
+#content-layer.ts-holy-elegant #slide-text,
+.stage-wrapper.ts-holy-elegant #stage-current-text,
+#active-preview-layer.ts-holy-elegant #active-preview-text {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9), 0 0 5px rgba(0, 0, 0, 0.9);
+}
+
+/* 1.6 Holyrics Contorno Grosso */
+#content-layer.ts-holy-thick-stroke #slide-text,
+.stage-wrapper.ts-holy-thick-stroke #stage-current-text,
+#active-preview-layer.ts-holy-thick-stroke #active-preview-text {
+  font-family: 'Arial Black', sans-serif;
+  color: #FFFFFF;
+  text-shadow: 4px 4px 0 #000, -4px -4px 0 #000, 4px -4px 0 #000, -4px 4px 0 #000, 0 4px 15px rgba(0, 0, 0, 0.9);
+}
+
+/* 1.7 Holyrics Sombra Suave */
+#content-layer.ts-holy-glow #slide-text,
+.stage-wrapper.ts-holy-glow #stage-current-text,
+#active-preview-layer.ts-holy-glow #active-preview-text {
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.8);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 75%);
+  padding: 12px 28px;
+  border-radius: 12px;
+}
+
+/* 1.8 Holyrics Triplo Contorno (Alto Contraste) */
+#content-layer.ts-holy-triple-outline #slide-text,
+.stage-wrapper.ts-holy-triple-outline #stage-current-text,
+#active-preview-layer.ts-holy-triple-outline #active-preview-text {
+  font-family: 'Arial Black', sans-serif;
+  color: #FFFFFF;
+  text-shadow:
+    1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #e2e8f0, -3px -3px 0 #e2e8f0, 3px -3px 0 #e2e8f0, -3px 3px 0 #e2e8f0,
+    5px 5px 0 #000, -5px -5px 0 #000, 5px -5px 0 #000, -5px 5px 0 #000,
+    0 8px 20px rgba(0, 0, 0, 1);
+}
+
+/* =========================================================
+   2. MODELOS WORSHIP / CINEMATOGRÁFICOS
+   ========================================================= */
+
+/* 2.1 Cinematic (Bottom-Aligned + Lora Italic) */
+#content-layer.ts-worship-cinematic {
+  justify-content: flex-end;
+  padding-bottom: 10vh;
+}
+#content-layer.ts-worship-cinematic #slide-text,
+.stage-wrapper.ts-worship-cinematic #stage-current-text,
+#active-preview-layer.ts-worship-cinematic #active-preview-text {
+  font-family: 'Lora', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.95), 0 1px 5px rgba(0, 0, 0, 1);
+}
+
+/* 2.2 Moderno (Right-Aligned + Bold) */
+#content-layer.ts-worship-dynamic {
+  align-items: flex-end;
+  text-align: right;
+  padding-right: 8vw;
+}
+#content-layer.ts-worship-dynamic #slide-text,
+.stage-wrapper.ts-worship-dynamic #stage-current-text,
+#active-preview-layer.ts-worship-dynamic #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  color: #f8fafc;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 8px 25px rgba(0, 0, 0, 0.85);
+}
+
+/* 2.3 Lyric Video (Center + Glow Animado) */
+#content-layer.ts-worship-lyric-video #slide-text,
+.stage-wrapper.ts-worship-lyric-video #stage-current-text,
+#active-preview-layer.ts-worship-lyric-video #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 2px 2px 5px rgba(0, 0, 0, 1);
+}
+
+/* 2.4 Artístico Misto (Manuscrito + Sans) */
+#content-layer.ts-worship-handwritten #slide-text,
+.stage-wrapper.ts-worship-handwritten #stage-current-text,
+#active-preview-layer.ts-worship-handwritten #active-preview-text {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3em;
+  color: #ffecd1;
+  font-weight: 700;
+  line-height: 1.25;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.95), 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* 2.5 Destaque de Palavra Aleatória */
+#content-layer.ts-worship-highlight-word #slide-text,
+.stage-wrapper.ts-worship-highlight-word #stage-current-text,
+#active-preview-layer.ts-worship-highlight-word #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 8px 18px rgba(0, 0, 0, 0.9);
+}
+
+/* 2.6 Destaque Animado em Cascata */
+#content-layer.ts-worship-highlight-animated #slide-text,
+.stage-wrapper.ts-worship-highlight-animated #stage-current-text,
+#active-preview-layer.ts-worship-highlight-animated #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 8px 18px rgba(0, 0, 0, 0.9);
+}
+
+/* =========================================================
+   3. MODELOS ESPECIAIS
+   ========================================================= */
+
+/* 3.1 Citação (Quote) */
+#content-layer.ts-quote #slide-text,
+.stage-wrapper.ts-quote #stage-current-text,
+#active-preview-layer.ts-quote #active-preview-text {
+  position: relative;
+  font-family: 'Lora', Georgia, serif;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.45;
+  margin-top: 1.8em;
+}
+
+#content-layer.ts-quote #slide-text::before,
+.stage-wrapper.ts-quote #stage-current-text::before {
+  content: '❝';
+  position: absolute;
+  top: -0.75em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.2em;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Lora', Georgia, serif;
+  line-height: 1;
+}
+
+/* 3.2 Minimalista (Borda Amarela) */
+#content-layer.ts-minimal {
+  align-items: flex-start;
+  text-align: left;
+  padding-left: 8vw;
+}
+#content-layer.ts-minimal #slide-text,
+.stage-wrapper.ts-minimal #stage-current-text,
+#active-preview-layer.ts-minimal #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+  text-align: left;
+  border-left: 10px solid #facc15;
+  padding-left: 28px;
+  line-height: 1.4;
+}
+
+/* 3.3 Telejornal (News Lower Third) */
+#content-layer.ts-news-lower-third {
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: left;
+  padding-bottom: 6vh;
+  padding-left: 5vw;
+}
+#content-layer.ts-news-lower-third #slide-text,
+.stage-wrapper.ts-news-lower-third #stage-current-text,
+#active-preview-layer.ts-news-lower-third #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.85) 100%);
+  border-left: 12px solid #ef4444;
+  padding: 18px 36px;
+  font-weight: 700;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+  max-width: 85vw;
+  border-radius: 0 10px 10px 0;
+}
+
+/* 3.4 Vidro Premium (Glass Reveal) */
+#content-layer.ts-glass-reveal #slide-text,
+.stage-wrapper.ts-glass-reveal #stage-current-text,
+#active-preview-layer.ts-glass-reveal #active-preview-text {
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  background: rgba(10, 10, 18, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 2px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px 48px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  max-width: 85vw;
+  border-radius: 16px;
+}
+
+/* 3.5 Surgimento Mágico (Magic Reveal) */
+#content-layer.ts-magic-reveal #slide-text,
+.stage-wrapper.ts-magic-reveal #stage-current-text,
+#active-preview-layer.ts-magic-reveal #active-preview-text {
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  background: transparent;
+  border-left: 5px solid #fbbf24;
+  padding: 12px 36px 12px 28px;
+  font-weight: 600;
+  text-align: left;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
+  max-width: 85vw;
+}
+
+/* =========================================================
+   4. ANIMAÇÕES EXCLUSIVAS DE TRANSIÇÃO
+   ========================================================= */
+
+@keyframes newsSlideIn {
+  0% { transform: translateX(-100vw); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes glassRise {
+  0% { transform: translateY(60px) scale(0.96); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes magicWipe {
+  0% { clip-path: inset(0 100% 0 0); transform: translateX(-25px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { clip-path: inset(0 0% 0 0); transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes zoomInGlow {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes textFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/retorno.css">
+  <link rel="stylesheet" href="css/text-models.css">
 </head>
 <body>
   <!-- Background Viewport -->
@@ -135,24 +136,69 @@
       }
     }
 
+    const stageWrapper = document.querySelector('.stage-wrapper');
+
+    function applyRetornoTextStyle(data) {
+      if (!data) return;
+
+      if (data.textStyle !== undefined && data.textStyle && stageWrapper) {
+        const classes = Array.from(stageWrapper.classList);
+        classes.forEach(c => {
+          if (c.startsWith('ts-')) stageWrapper.classList.remove(c);
+        });
+        stageWrapper.classList.add(data.textStyle);
+      }
+
+      if (data.fontFamily !== undefined && currentEl) {
+        currentEl.style.fontFamily = data.fontFamily || '';
+        if (nextEl) nextEl.style.fontFamily = data.fontFamily || '';
+      }
+
+      if (data.fontWeight !== undefined && currentEl) {
+        currentEl.style.fontWeight = data.fontWeight || '';
+      }
+
+      if (data.fontSize !== undefined && currentEl) {
+        currentEl.style.fontSize = data.fontSize ? `${data.fontSize}px` : '';
+      }
+
+      if (data.captionFontSize !== undefined && data.captionFontSize) {
+        if (headerEl) headerEl.style.fontSize = data.captionFontSize;
+        if (nextEl) nextEl.style.fontSize = data.captionFontSize;
+      }
+    }
+
     // Restaura background inicial das preferências se existir
     if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
-      const initKind = window.electronAPI.getPref("slideState_bgKindRetorno");
-      const initUrl = window.electronAPI.getPref("slideState_bgUrlRetorno");
-      if (initKind && initUrl) {
-        applyRetornoBackground(initKind, initUrl);
-      }
-      
-      const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
-      if (initLogoUrl) {
-        const fitModeRet = window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover';
-        let objectFitRet = 'cover';
-        if (fitModeRet === 'contain') objectFitRet = 'contain';
-        else if (fitModeRet === 'stretch') objectFitRet = 'fill';
-        const logoLayerRet = document.getElementById('logo-layer');
-        if (logoLayerRet) {
-            logoLayerRet.innerHTML = `<img id="logo-img-ret" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+      try {
+        const initKind = window.electronAPI.getPref("slideState_bgKindRetorno");
+        const initUrl = window.electronAPI.getPref("slideState_bgUrlRetorno");
+        if (initKind && initUrl) {
+          applyRetornoBackground(initKind, initUrl);
         }
+        
+        const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
+        if (initLogoUrl) {
+          const fitModeRet = window.electronAPI.getPref('slideState_bgFit_retorno') || 'cover';
+          let objectFitRet = 'cover';
+          if (fitModeRet === 'contain') objectFitRet = 'contain';
+          else if (fitModeRet === 'stretch') objectFitRet = 'fill';
+          const logoLayerRet = document.getElementById('logo-layer');
+          if (logoLayerRet) {
+              logoLayerRet.innerHTML = `<img id="logo-img-ret" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFitRet}; max-width: none; max-height: none; filter: none;">`;
+          }
+        }
+
+        // Restaura estilos iniciais do retorno das preferências
+        applyRetornoTextStyle({
+          textStyle: window.electronAPI.getPref('slideState_textStyleRetorno') || 'ts-holy-default',
+          fontFamily: window.electronAPI.getPref('slideState_fontFamilyRetorno') || '',
+          fontWeight: window.electronAPI.getPref('slideState_fontWeightRetorno') || '',
+          fontSize: parseInt(window.electronAPI.getPref('slideState_fontSizeRetorno')) || 52,
+          captionFontSize: window.electronAPI.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)'
+        });
+      } catch (err) {
+        console.warn('Erro ao restaurar preferências do retorno:', err);
       }
     }
 
@@ -217,6 +263,16 @@
           if (msg.bgKindRetorno && msg.bgUrlRetorno) {
             applyRetornoBackground(msg.bgKindRetorno, msg.bgUrlRetorno);
           }
+
+          if (msg.textStyleRetorno) {
+            applyRetornoTextStyle({
+              textStyle: msg.textStyleRetorno,
+              fontFamily: msg.fontFamilyRetorno,
+              fontWeight: msg.fontWeightRetorno,
+              fontSize: msg.fontSizeRetorno,
+              captionFontSize: msg.captionFontSizeRetorno
+            });
+          }
           break;
 
         case 'TOGGLE_LOGO':
@@ -262,6 +318,11 @@
         case 'SET_BG_FIT':
           if (!msg.target || msg.target === 'retorno') {
             applyBgFit(msg.value);
+          }
+          break;
+        case 'SET_TEXT_STYLE':
+          if (msg.target === 'retorno') {
+            applyRetornoTextStyle(msg);
           }
           break;
       }

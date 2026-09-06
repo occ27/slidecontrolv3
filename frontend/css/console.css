@@ -1556,7 +1556,8 @@ body::before {
 }
 
 #bg-picker-modal .modal-content,
-#cloud-media-modal .modal-content {
+#cloud-media-modal .modal-content,
+#text-style-modal .modal-content {
   width: 95vw;
   max-width: 1260px;
   height: 86vh;
@@ -1570,7 +1571,8 @@ body::before {
 
 @media (max-width: 900px) {
   #bg-picker-modal .modal-content,
-  #cloud-media-modal .modal-content {
+  #cloud-media-modal .modal-content,
+  #text-style-modal .modal-content {
     width: 96vw;
     padding: 14px;
   }
@@ -2682,4 +2684,280 @@ body::before {
   color: #ffffff;
   transform: translateY(-1px);
 }
+
+/* =========================================================
+   MODAL: MODELOS DE TEXTO & ESTILOS (V3 ORBITAL)
+   ========================================================= */
+
+.ts-target-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  letter-spacing: 0.3px;
+}
+
+.ts-target-tab svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.ts-target-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* Aba Telão Ativo: Laranja vibrante */
+.ts-target-tab.active[data-target="telao"] {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+/* Aba Retorno Ativo: Azul/Ciano vibrante */
+.ts-target-tab.active[data-target="retorno"] {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+.ts-target-tab.active svg {
+  transform: scale(1.1);
+}
+
+/* ── Barra de Controles Tipográficos ── */
+.ts-font-size-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ts-select {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--text-main, #ffffff);
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ts-select:hover, .ts-select:focus {
+  border-color: var(--accent, #00f0ff);
+  background: rgba(15, 23, 42, 1);
+}
+
+/* ── Font Picker Custom Dropdown ── */
+#font-picker-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+#ts-font-picker-trigger {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--text-main, #ffffff);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+#ts-font-picker-trigger:hover {
+  border-color: var(--accent, #00f0ff);
+}
+
+#ts-font-picker-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  z-index: 10000;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(16px);
+}
+
+.ts-font-option-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-main, #ffffff);
+  transition: background 0.12s;
+}
+
+.ts-font-option-item:hover {
+  background: rgba(0, 240, 255, 0.15);
+  color: #00f0ff;
+}
+
+/* ── Slider de Tamanho de Fonte ── */
+.ts-font-size-icon {
+  font-family: Georgia, serif;
+  font-weight: 700;
+  color: var(--text-muted, #aaa);
+  user-select: none;
+  font-size: 13px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.ts-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #00f0ff 0%, rgba(255, 255, 255, 0.15) 0%);
+  outline: none;
+  cursor: pointer;
+}
+
+.ts-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent, #00f0ff);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.ts-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.7);
+}
+
+.ts-font-size-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main, #eee);
+  min-width: 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Botão Reset Tamanho de Fonte ── */
+.ts-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--text-muted, #aaa);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.ts-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* ── Corpo do Modal de Estilos ── */
+.ts-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.ts-category {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ts-cat-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted, #94a3b8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 6px;
+}
+
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.ts-card {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.ts-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ts-card.active {
+  border-color: var(--accent, #00f0ff);
+  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.ts-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 76px;
+  padding: 10px 12px;
+  text-align: center;
+  line-height: 1.25;
+}
+
 

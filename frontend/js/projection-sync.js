@@ -154,6 +154,19 @@ class ProjectionSyncService {
     const theme = slideData.theme || 'general';
     const bg = this.getBackgroundForTheme(theme);
 
+    const textStyle = this.getPref('slideState_textStyle') || 'ts-holy-default';
+    const fontFamily = this.getPref('slideState_fontFamily') || '';
+    const fontWeight = this.getPref('slideState_fontWeight') || '';
+    const fontSize = parseInt(this.getPref('slideState_fontSize')) || 52;
+    const captionFontSize = this.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)';
+    const linesLimit = this.getPref('slideState_linesLimit') || '0';
+
+    const textStyleRetorno = this.getPref('slideState_textStyleRetorno') || 'ts-holy-default';
+    const fontFamilyRetorno = this.getPref('slideState_fontFamilyRetorno') || '';
+    const fontWeightRetorno = this.getPref('slideState_fontWeightRetorno') || '';
+    const fontSizeRetorno = parseInt(this.getPref('slideState_fontSizeRetorno')) || 52;
+    const captionFontSizeRetorno = this.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)';
+
     this.channel.postMessage({
       action: 'PROJECT_SLIDE',
       header: slideData.header,
@@ -167,7 +180,18 @@ class ProjectionSyncService {
       nextText: slideData.nextText || '',
       isBlackout: this.currentState.isBlackout,
       isClearText: this.currentState.isClearText,
-      isLogo: this.currentState.isLogo
+      isLogo: this.currentState.isLogo,
+      textStyle,
+      fontFamily,
+      fontWeight,
+      fontSize,
+      captionFontSize,
+      linesLimit,
+      textStyleRetorno,
+      fontFamilyRetorno,
+      fontWeightRetorno,
+      fontSizeRetorno,
+      captionFontSizeRetorno
     });
 
     this.updateMiniPreview(slideData);
@@ -178,6 +202,20 @@ class ProjectionSyncService {
     if (this.currentState.currentSlide) {
       const theme = this.currentState.currentSlide.theme || 'general';
       const bg = this.getBackgroundForTheme(theme);
+
+      const textStyle = this.getPref('slideState_textStyle') || 'ts-holy-default';
+      const fontFamily = this.getPref('slideState_fontFamily') || '';
+      const fontWeight = this.getPref('slideState_fontWeight') || '';
+      const fontSize = parseInt(this.getPref('slideState_fontSize')) || 52;
+      const captionFontSize = this.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)';
+      const linesLimit = this.getPref('slideState_linesLimit') || '0';
+
+      const textStyleRetorno = this.getPref('slideState_textStyleRetorno') || 'ts-holy-default';
+      const fontFamilyRetorno = this.getPref('slideState_fontFamilyRetorno') || '';
+      const fontWeightRetorno = this.getPref('slideState_fontWeightRetorno') || '';
+      const fontSizeRetorno = parseInt(this.getPref('slideState_fontSizeRetorno')) || 52;
+      const captionFontSizeRetorno = this.getPref('slideState_captionFontSizeRetorno') || 'clamp(13px, 1.4vw, 22px)';
+
       this.channel.postMessage({
         action: 'PROJECT_SLIDE',
         header: this.currentState.currentSlide.header,
@@ -191,7 +229,18 @@ class ProjectionSyncService {
         nextText: this.currentState.currentSlide.nextText || '',
         isBlackout: this.currentState.isBlackout,
         isClearText: this.currentState.isClearText,
-        isLogo: this.currentState.isLogo
+        isLogo: this.currentState.isLogo,
+        textStyle,
+        fontFamily,
+        fontWeight,
+        fontSize,
+        captionFontSize,
+        linesLimit,
+        textStyleRetorno,
+        fontFamilyRetorno,
+        fontWeightRetorno,
+        fontSizeRetorno,
+        captionFontSizeRetorno
       });
     }
   }

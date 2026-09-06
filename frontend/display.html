@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/display.css">
+  <link rel="stylesheet" href="css/text-models.css">
 </head>
 <body>
   <!-- Background Viewport -->
@@ -60,6 +61,8 @@
       kind: null,
       url: null
     };
+    let currentTextStyle = 'ts-holy-default';
+    let alertTimeout = null;
 
     function normalizeMediaUrl(url) {
       if (!url) return '';
@@ -120,25 +123,70 @@
       }
     }
 
-    // Restaura background inicial das preferências se existir
-    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
-      const initKind = window.electronAPI.getPref("slideState_bgKind");
-      const initUrl = window.electronAPI.getPref("slideState_bgUrl");
-      if (initKind && initUrl) {
-        applyBackground(initKind, initUrl);
+    function applyTextStyle(data) {
+      if (!data) return;
+
+      if (data.textStyle !== undefined && data.textStyle) {
+        currentTextStyle = data.textStyle;
+        const classes = Array.from(contentLayer.classList);
+        classes.forEach(c => {
+          if (c.startsWith('ts-')) contentLayer.classList.remove(c);
+        });
+        contentLayer.classList.add(data.textStyle);
       }
-      
-      const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
-      if (initLogoUrl) {
-        const fitMode = window.electronAPI.getPref('slideState_bgFit_telao') || 'cover';
-        let objectFit = 'cover';
-        if (fitMode === 'contain') objectFit = 'contain';
-        else if (fitMode === 'stretch') objectFit = 'fill';
-        logoEl.innerHTML = `<img id="logo-img" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFit}; max-width: none; max-height: none; filter: none;">`;
+
+      if (data.fontFamily !== undefined) {
+        textEl.style.fontFamily = data.fontFamily || '';
+      }
+
+      if (data.fontWeight !== undefined) {
+        textEl.style.fontWeight = data.fontWeight || '';
+      }
+
+      if (data.fontSize !== undefined) {
+        textEl.style.fontSize = data.fontSize ? `${data.fontSize}px` : '';
+      }
+
+      if (data.captionFontSize !== undefined && data.captionFontSize) {
+        headerEl.style.fontSize = data.captionFontSize;
+        subtitleEl.style.fontSize = data.captionFontSize;
+      }
+
+      if (data.linesLimit !== undefined) {
+        const limit = parseInt(data.linesLimit) || 0;
+        if (limit > 0) {
+          textEl.style.display = '-webkit-box';
+          textEl.style.webkitLineClamp = limit;
+          textEl.style.webkitBoxOrient = 'vertical';
+          textEl.style.overflow = 'hidden';
+        } else {
+          textEl.style.display = '';
+          textEl.style.webkitLineClamp = '';
+          textEl.style.webkitBoxOrient = '';
+          textEl.style.overflow = '';
+        }
       }
     }
 
-    let alertTimeout = null;
+    function triggerTextAnimation() {
+      if (currentTextStyle === 'ts-news-lower-third') {
+        contentLayer.style.animation = 'none';
+        contentLayer.offsetHeight;
+        contentLayer.style.animation = 'newsSlideIn 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards';
+      } else if (currentTextStyle === 'ts-glass-reveal') {
+        contentLayer.style.animation = 'none';
+        contentLayer.offsetHeight;
+        contentLayer.style.animation = 'glassRise 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+      } else if (currentTextStyle === 'ts-magic-reveal') {
+        contentLayer.style.animation = 'none';
+        contentLayer.offsetHeight;
+        contentLayer.style.animation = 'magicWipe 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards';
+      } else {
+        contentLayer.style.animation = 'none';
+        contentLayer.offsetHeight;
+        contentLayer.style.animation = 'textFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+      }
+    }
 
     function applyBgFit(fitMode) {
       if (bgImage) {
@@ -161,6 +209,38 @@
         else if (fitMode === 'contain') logoImg.style.objectFit = 'contain';
         else if (fitMode === 'stretch') logoImg.style.objectFit = 'fill';
         else if (fitMode === 'width') logoImg.style.objectFit = 'cover';
+      }
+    }
+
+    // Restaura background inicial das preferências se existir
+    if (window.electronAPI && typeof window.electronAPI.getPref === "function") {
+      try {
+        const initKind = window.electronAPI.getPref("slideState_bgKind");
+        const initUrl = window.electronAPI.getPref("slideState_bgUrl");
+        if (initKind && initUrl) {
+          applyBackground(initKind, initUrl);
+        }
+        
+        const initLogoUrl = window.electronAPI.getPref("slideState_logoUrl");
+        if (initLogoUrl) {
+          const fitMode = window.electronAPI.getPref('slideState_bgFit_telao') || 'cover';
+          let objectFit = 'cover';
+          if (fitMode === 'contain') objectFit = 'contain';
+          else if (fitMode === 'stretch') objectFit = 'fill';
+          logoEl.innerHTML = `<img id="logo-img" src="${initLogoUrl}" style="width: 100vw; height: 100vh; object-fit: ${objectFit}; max-width: none; max-height: none; filter: none;">`;
+        }
+
+        // Restaura estilo de texto inicial das preferências
+        applyTextStyle({
+          textStyle: window.electronAPI.getPref('slideState_textStyle') || 'ts-holy-default',
+          fontFamily: window.electronAPI.getPref('slideState_fontFamily') || '',
+          fontWeight: window.electronAPI.getPref('slideState_fontWeight') || '',
+          fontSize: parseInt(window.electronAPI.getPref('slideState_fontSize')) || 52,
+          captionFontSize: window.electronAPI.getPref('slideState_captionFontSize') || 'clamp(13px, 1.4vw, 22px)',
+          linesLimit: window.electronAPI.getPref('slideState_linesLimit') || '0'
+        });
+      } catch (err) {
+        console.warn('Erro ao restaurar preferências do telão:', err);
       }
     }
 
@@ -210,6 +290,19 @@
           if (msg.bgKind && msg.bgUrl) {
             applyBackground(msg.bgKind, msg.bgUrl);
           }
+
+          if (msg.textStyle) {
+            applyTextStyle({
+              textStyle: msg.textStyle,
+              fontFamily: msg.fontFamily,
+              fontWeight: msg.fontWeight,
+              fontSize: msg.fontSize,
+              captionFontSize: msg.captionFontSize,
+              linesLimit: msg.linesLimit
+            });
+          }
+
+          triggerTextAnimation();
           break;
 
         case 'TOGGLE_BLACKOUT':
@@ -255,6 +348,11 @@
         case 'SET_BG_FIT':
           if (!msg.target || msg.target === 'telao') {
             applyBgFit(msg.value);
+          }
+          break;
+        case 'SET_TEXT_STYLE':
+          if (!msg.target || msg.target === 'telao') {
+            applyTextStyle(msg);
           }
           break;
       }

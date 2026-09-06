@@ -49,6 +49,7 @@ async def health_check():
     return {"status": "ok", "app": "SlideControl V3", "port": 8767}
 
 @app.get("/")
+@app.get("/index.html")
 async def get_root():
     index_file = os.path.join(get_frontend_path(), "index.html")
     if os.path.exists(index_file):
@@ -57,6 +58,7 @@ async def get_root():
     return {"message": "SlideControl V3 API running"}
 
 @app.get("/display")
+@app.get("/display.html")
 async def get_display():
     display_file = os.path.join(get_frontend_path(), "display.html")
     if os.path.exists(display_file):
@@ -65,6 +67,7 @@ async def get_display():
     return HTMLResponse("Display not found", status_code=404)
 
 @app.get("/retorno")
+@app.get("/retorno.html")
 async def get_retorno():
     retorno_file = os.path.join(get_frontend_path(), "retorno.html")
     if os.path.exists(retorno_file):
