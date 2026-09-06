@@ -1197,6 +1197,27 @@ body::before {
   background: rgba(255, 255, 255, 0.1);
 }
 
+#bg-picker-modal .modal-content,
+#cloud-media-modal .modal-content {
+  width: 95vw;
+  max-width: 1260px;
+  height: 86vh;
+  max-height: 820px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s ease, max-width 0.2s ease;
+}
+
+@media (max-width: 900px) {
+  #bg-picker-modal .modal-content,
+  #cloud-media-modal .modal-content {
+    width: 96vw;
+    padding: 14px;
+  }
+}
+
 #modal-screen-manager .modal-content {
   width: 95vw;
   max-width: 1240px;
@@ -1554,7 +1575,7 @@ body::before {
 .bg-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
   align-content: start;
 }
 
