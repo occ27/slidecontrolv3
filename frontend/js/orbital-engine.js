@@ -211,10 +211,22 @@ class SphericalSurfaceEngine {
           <span class="card-status-badge">PRONTO</span>
         </div>
         <div class="control-buttons-grid">
-          <button class="ctrl-btn danger" onclick="window.projectionSync.toggleBlackout()">⚫ BLACKOUT [F2]</button>
-          <button class="ctrl-btn warning" onclick="window.projectionSync.toggleClearText()">🔲 LIMPAR TEXTO [F3]</button>
-          <button class="ctrl-btn" onclick="window.projectionSync.toggleLogo()">🔷 LOGO OFICIAL [F4]</button>
-          <button class="ctrl-btn highlight" onclick="document.getElementById('btn-manage-screens')?.click()">🖥️ GERENCIAR TELAS [F10]</button>
+          <button class="ctrl-btn danger" onclick="window.projectionSync.toggleBlackout()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><rect x="4" y="4" width="16" height="16" rx="2" ry="2" /></svg>
+            <span>BLACKOUT [F2]</span>
+          </button>
+          <button class="ctrl-btn warning" onclick="window.projectionSync.toggleClearText()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+            <span>LIMPAR TEXTO [F3]</span>
+          </button>
+          <button class="ctrl-btn" onclick="window.projectionSync.toggleLogo()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-3.086-3.086a2 2 0 00-2.828 0L6 21" /></svg>
+            <span>LOGO OFICIAL [F4]</span>
+          </button>
+          <button class="ctrl-btn highlight" onclick="document.getElementById('btn-manage-screens')?.click()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <span>GERENCIAR TELAS [F10]</span>
+          </button>
         </div>
         <div class="card-footer">
           <span class="card-subtext">Teclas de atalho ativas</span>
@@ -227,9 +239,18 @@ class SphericalSurfaceEngine {
           <span class="card-status-badge">OVERLAY</span>
         </div>
         <div style="display:flex; flex-direction:column; gap:6px;">
-          <button class="ctrl-btn" onclick="window.projectionSync.showAlert('Veículo placa ABC-1234 com farol aceso')">🚗 Farol Aceso</button>
-          <button class="ctrl-btn" onclick="window.projectionSync.showAlert('Mãe do berçário, favor comparecer')">👶 Berçário</button>
-          <button class="ctrl-btn" onclick="window.projectionSync.showAlert('Por favor, desliguem os alarmes de carro')">⚠️ Alarme Disparado</button>
+          <button class="ctrl-btn" style="justify-content:flex-start;" onclick="window.projectionSync.showAlert('Veículo placa ABC-1234 com farol aceso')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 17a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4zM5 11l1.5-4.5A2 2 0 018.4 5h7.2a2 2 0 011.9 1.5L19 11M3 11h18v5H3v-5z" /></svg>
+            <span>Farol Aceso</span>
+          </button>
+          <button class="ctrl-btn" style="justify-content:flex-start;" onclick="window.projectionSync.showAlert('Mãe do berçário, favor comparecer')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+            <span>Berçário</span>
+          </button>
+          <button class="ctrl-btn" style="justify-content:flex-start;" onclick="window.projectionSync.showAlert('Por favor, desliguem os alarmes de carro')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            <span>Alarme Disparado</span>
+          </button>
         </div>
         <div class="card-footer">
           <span class="card-subtext">Dispara banner de 10s no rodapé</span>
@@ -246,7 +267,10 @@ class SphericalSurfaceEngine {
           <span style="font-size:0.75rem; color:#94a3b8;">Previsão Término da Mensagem: 21h15</span>
         </div>
         <div class="card-footer">
-          <button class="ctrl-btn" style="width:100%;" onclick="window.projectionSync.showAlert('Pastores: 5 minutos restantes')">✉️ Avisar 5 min Restantes</button>
+          <button class="ctrl-btn" style="width:100%; justify-content:center;" onclick="window.projectionSync.showAlert('Pastores: 5 minutos restantes')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Avisar 5 min Restantes</span>
+          </button>
         </div>
       `;
     } else if (data.isHardwareCard) {
@@ -259,8 +283,14 @@ class SphericalSurfaceEngine {
           • Detectando telas do sistema...
         </div>
         <div class="card-footer" style="display:flex; gap:6px;">
-          <button class="ctrl-btn" style="flex:1;" onclick="if(window.electronAPI) window.electronAPI.identifyScreens()">🔍 Identificar Telas</button>
-          <button class="btn-project-card" style="flex:1;" onclick="window.projectionSync.openDisplayWindow()">🖥️ Abrir Telão</button>
+          <button class="ctrl-btn" style="flex:1; justify-content:center;" onclick="if(window.electronAPI) window.electronAPI.identifyScreens()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <span>Identificar</span>
+          </button>
+          <button class="btn-project-card" style="flex:1; justify-content:center;" onclick="window.projectionSync.openDisplayWindow()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <span>Abrir Telão</span>
+          </button>
         </div>
       `;
 
@@ -286,7 +316,10 @@ class SphericalSurfaceEngine {
         <div class="card-main-text">${data.text}</div>
         <div class="card-footer">
           <span class="card-subtext">${data.title}</span>
-          <button class="btn-project-card">🔴 PROJETAR</button>
+          <button class="btn-project-card">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /></svg>
+            <span>PROJETAR</span>
+          </button>
         </div>
       `;
     }

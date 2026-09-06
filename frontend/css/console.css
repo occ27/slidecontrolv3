@@ -323,7 +323,7 @@ body::before {
 .zone-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -334,6 +334,13 @@ body::before {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.zone-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .zone-btn:hover {
@@ -490,6 +497,20 @@ body::before {
   transition: all 0.2s;
 }
 
+.btn-project-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-project-card svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
 .btn-project-card:hover {
   background: var(--accent-cyan);
   color: #000000;
@@ -516,16 +537,27 @@ body::before {
 }
 
 .ctrl-btn {
-  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 10px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.ctrl-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .ctrl-btn:hover {
@@ -535,12 +567,17 @@ body::before {
 .ctrl-btn.danger:hover {
   background: #ef4444;
   border-color: #ef4444;
+  color: #ffffff;
 }
 
 .ctrl-btn.warning:hover {
   background: #f59e0b;
   border-color: #f59e0b;
   color: #000;
+}
+
+.ctrl-btn.warning:hover svg {
+  stroke: #000000;
 }
 
 /* ==========================================================================
@@ -1038,7 +1075,7 @@ body::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   background: rgba(19, 27, 48, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
@@ -1049,6 +1086,13 @@ body::before {
   padding: 7px 6px;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.action-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .action-btn:hover {

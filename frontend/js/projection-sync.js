@@ -152,17 +152,17 @@ class ProjectionSyncService {
     if (!tagEl) return;
 
     if (this.currentState.isBlackout) {
-      tagEl.textContent = '⚫ BLACKOUT NO AR';
+      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>BLACKOUT NO AR';
       tagEl.style.color = '#ef4444';
     } else if (this.currentState.isLogo) {
-      tagEl.textContent = '🔷 LOGO NO AR';
+      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f0ff;margin-right:6px;"></span>LOGO NO AR';
       tagEl.style.color = '#00f0ff';
     } else if (this.currentState.isClearText) {
-      tagEl.textContent = '🔲 TEXTO OCULTO (FUNDO ATIVO)';
+      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;margin-right:6px;"></span>TEXTO OCULTO';
       tagEl.style.color = '#f59e0b';
     } else {
-      tagEl.textContent = '🔴 AO VIVO NO TELÃO';
-      tagEl.style.color = '#ef4444';
+      tagEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-right:6px;"></span>AO VIVO NO TELÃO';
+      tagEl.style.color = '#10b981';
     }
   }
 
