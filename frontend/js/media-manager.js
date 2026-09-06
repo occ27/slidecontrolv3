@@ -396,6 +396,9 @@ class MediaManager {
   }
 
   setupUploadsControls() {
+    this.osInfo = { os: "mac", fileManager: "Finder" };
+    this.detectSystemInfo();
+
     const inputUpload = document.getElementById("bg-upload-input");
     if (inputUpload) {
       inputUpload.addEventListener("change", async (e) => {
@@ -426,26 +429,239 @@ class MediaManager {
     if (searchInput) {
       searchInput.addEventListener("input", () => this.loadCustomBackgrounds());
     }
+
+    this.setupDragAndDrop();
+    this.setupWindowFocusSync();
+  }
+
+  async detectSystemInfo() {
+    try {
+      const res = await fetch(`${MEDIA_API_BASE}/api/media/custom/system-info`);
+      if (res.ok) {
+        const data = await res.json();
+        this.osInfo = {
+          os: data.os || "mac",
+          fileManager: data.file_manager || "Finder"
+        };
+        this.updateOSButtonLabels();
+      }
+    } catch (e) {
+      const isMac = navigator.platform?.toUpperCase().indexOf("MAC") >= 0 || navigator.userAgent.indexOf("Mac") >= 0;
+      this.osInfo = {
+        os: isMac ? "mac" : "win",
+        fileManager: isMac ? "Finder" : "Explorador de Arquivos"
+      };
+      this.updateOSButtonLabels();
+    }
+  }
+
+  updateOSButtonLabels() {
+    const label = document.getElementById("label-open-folder-os");
+    const tipName = document.getElementById("custom-os-name-tip");
+    const fmName = this.osInfo?.fileManager || "Finder";
+
+    if (tipName) tipName.textContent = fmName;
+    if (label) {
+      if (this.currentCustomPath) {
+        const folderName = this.currentCustomPath.split("/").filter(Boolean).pop() || "";
+        label.textContent = `📂 Abrir "${folderName}" no ${fmName}`;
+      } else {
+        label.textContent = `📂 Abrir no ${fmName}`;
+      }
+    }
+  }
+
+  setupDragAndDrop() {
+    const dropZone = document.getElementById("bg-local");
+    const overlay = document.getElementById("bg-custom-drop-overlay");
+    if (!dropZone) return;
+
+    let dragCounter = 0;
+
+    dropZone.addEventListener("dragenter", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter++;
+      if (overlay) {
+        overlay.classList.remove("hidden");
+        overlay.classList.add("active");
+      }
+    });
+
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (overlay) {
+        overlay.classList.remove("hidden");
+        overlay.classList.add("active");
+      }
+    });
+
+    dropZone.addEventListener("dragleave", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter--;
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        if (overlay) {
+          overlay.classList.add("hidden");
+          overlay.classList.remove("active");
+        }
+      }
+    });
+
+    dropZone.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter = 0;
+      if (overlay) {
+        overlay.classList.add("hidden");
+        overlay.classList.remove("active");
+      }
+
+      const files = e.dataTransfer?.files;
+      if (!files || files.length === 0) return;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("path", this.currentCustomPath || "");
+
+        try {
+          await fetch(`${MEDIA_API_BASE}/api/media/upload`, {
+            method: "POST",
+            body: formData
+          });
+        } catch (err) {
+          console.error("Erro no upload do arquivo arrastado:", file.name, err);
+        }
+      }
+      this.loadCustomBackgrounds();
+    });
+  }
+
+  setupWindowFocusSync() {
+    window.addEventListener("focus", () => {
+      const modal = document.getElementById("bg-picker-modal");
+      const pane = document.getElementById("bg-local");
+      if (modal && !modal.classList.contains("hidden") && pane && pane.classList.contains("active")) {
+        this.loadCustomBackgrounds();
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        const modal = document.getElementById("bg-picker-modal");
+        const pane = document.getElementById("bg-local");
+        if (modal && !modal.classList.contains("hidden") && pane && pane.classList.contains("active")) {
+          this.loadCustomBackgrounds();
+        }
+      }
+    });
+  }
+
+  async openCustomFolderInOS(subPath = null) {
+    const target = subPath !== null ? subPath : (this.currentCustomPath || "");
+
+    if (window.electronAPI && typeof window.electronAPI.openUploadsFolder === "function") {
+      try {
+        const res = await window.electronAPI.openUploadsFolder(target);
+        if (res?.success) return;
+      } catch (err) {
+        console.warn("Electron openUploadsFolder falhou, usando fallback FastAPI:", err);
+      }
+    }
+
+    try {
+      const fd = new FormData();
+      fd.append("path", target);
+      await fetch(`${MEDIA_API_BASE}/api/media/custom/open-folder`, {
+        method: "POST",
+        body: fd
+      });
+    } catch (e) {
+      console.error("Erro ao abrir pasta no SO:", e);
+    }
+  }
+
+  async revealCustomItemInOS(subPath) {
+    if (!subPath) return;
+
+    if (window.electronAPI && typeof window.electronAPI.revealItemInFolder === "function") {
+      try {
+        const res = await window.electronAPI.revealItemInFolder(subPath);
+        if (res?.success) return;
+      } catch (err) {
+        console.warn("Electron revealItemInFolder falhou, usando fallback FastAPI:", err);
+      }
+    }
+
+    try {
+      const fd = new FormData();
+      fd.append("path", subPath);
+      await fetch(`${MEDIA_API_BASE}/api/media/custom/reveal-item`, {
+        method: "POST",
+        body: fd
+      });
+    } catch (e) {
+      console.error("Erro ao revelar item no SO:", e);
+    }
+  }
+
+  async deleteCustomItem(subPath, name) {
+    const itemName = name || subPath.split("/").filter(Boolean).pop() || subPath;
+    if (!confirm(`Deseja realmente excluir "${itemName}"?`)) return;
+
+    if (window.electronAPI && typeof window.electronAPI.trashItem === "function") {
+      try {
+        const res = await window.electronAPI.trashItem(subPath);
+        if (res?.success) {
+          this.loadCustomBackgrounds();
+          return;
+        }
+      } catch (err) {
+        console.warn("Electron trashItem falhou, usando API delete:", err);
+      }
+    }
+
+    try {
+      const res = await fetch(`${MEDIA_API_BASE}/api/media/custom/item?path=${encodeURIComponent(subPath)}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        this.loadCustomBackgrounds();
+      } else {
+        alert("Erro ao excluir item.");
+      }
+    } catch (e) {
+      console.error("Erro ao excluir item:", e);
+      alert("Erro ao excluir item.");
+    }
   }
 
   async loadCustomBackgrounds() {
     const customGrid = document.getElementById("bg-custom-grid");
     const breadcrumbsEl = document.getElementById("custom-breadcrumbs");
+    const statsEl = document.getElementById("custom-folder-stats");
     if (!customGrid) return;
 
+    this.updateOSButtonLabels();
+
     if (breadcrumbsEl) {
-      let breadcrumbHTML = `<button class="icon-btn" title="Raiz" onclick="window.mediaManager.navigateToCustomFolder('')" style="cursor:pointer; background:none; border:none; padding:4px; color:var(--text-main);">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      let breadcrumbHTML = `<button class="icon-btn" title="Ir para início (Raiz)" onclick="window.mediaManager.navigateToCustomFolder('')" style="cursor:pointer; background:none; border:none; padding:4px 6px; color:var(--text-main); display:inline-flex; align-items:center; gap:4px; font-weight:600; border-radius:4px;">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span>Raiz</span>
       </button>`;
 
       if (this.currentCustomPath) {
-        const parts = this.currentCustomPath.split("/");
+        const parts = this.currentCustomPath.split("/").filter(Boolean);
         let accumPath = "";
-        parts.forEach(part => {
-          if (!part) return;
+        parts.forEach((part, index) => {
           accumPath += (accumPath ? "/" : "") + part;
           const currentAccum = accumPath;
-          breadcrumbHTML += `<span style="color:var(--text-muted); padding:0 4px;">/</span> <button class="icon-btn" onclick="window.mediaManager.navigateToCustomFolder('${currentAccum}')" style="cursor:pointer; background:none; border:none; padding:4px; font-size:13px; font-weight:500; color:var(--text-main); border-radius:4px;">${part}</button>`;
+          const isLast = index === parts.length - 1;
+          breadcrumbHTML += `<span style="color:var(--text-muted); padding:0 2px;">/</span> <button class="icon-btn" onclick="window.mediaManager.navigateToCustomFolder('${currentAccum}')" style="cursor:pointer; background:${isLast ? "rgba(0,240,255,0.12)" : "none"}; border:none; padding:3px 6px; font-size:12px; font-weight:${isLast ? "700" : "500"}; color:${isLast ? "var(--accent)" : "var(--text-main)"}; border-radius:4px;">${part}</button>`;
         });
       }
       breadcrumbsEl.innerHTML = breadcrumbHTML;
@@ -453,7 +669,7 @@ class MediaManager {
 
     const qInput = document.getElementById("bg-search-input");
     const q = qInput ? qInput.value.trim() : "";
-    let url = `${MEDIA_API_BASE}/api/media/custom?path=${encodeURIComponent(this.currentCustomPath)}`;
+    let url = `${MEDIA_API_BASE}/api/media/custom?path=${encodeURIComponent(this.currentCustomPath || "")}`;
     if (q) {
       url = `${MEDIA_API_BASE}/api/media/custom?query=${encodeURIComponent(q)}`;
     }
@@ -464,10 +680,39 @@ class MediaManager {
       const items = await res.json();
 
       customGrid.innerHTML = "";
-      if (items.length === 0) {
-        customGrid.innerHTML = '<div style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 20px; font-size: 13px;">Nenhum arquivo ou pasta encontrado nesta pasta.</div>';
+
+      if (statsEl) {
+        const count = items.length;
+        statsEl.textContent = `${count} ${count === 1 ? "item" : "itens"}`;
+      }
+
+      // Se estiver em subpasta e sem busca, adiciona card "Voltar" (..)
+      if (this.currentCustomPath && !q) {
+        const backCard = document.createElement("div");
+        backCard.className = "bg-item custom-folder-card";
+        backCard.title = "Voltar para pasta anterior";
+        backCard.innerHTML = `
+          <svg style="width:34px; height:34px; color:var(--accent); margin-bottom:4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+          <span style="font-size:12px; font-weight:700; color:var(--text-main);">.. (Voltar)</span>
+        `;
+        const parentParts = this.currentCustomPath.split("/").filter(Boolean).slice(0, -1);
+        const parentPath = parentParts.join("/");
+        backCard.addEventListener("click", () => this.navigateToCustomFolder(parentPath));
+        customGrid.appendChild(backCard);
+      }
+
+      if (items.length === 0 && !this.currentCustomPath) {
+        customGrid.innerHTML = `
+          <div style="grid-column: 1/-1; color: var(--text-muted); text-align: center; padding: 35px 20px; font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <svg style="width:48px; height:48px; color:rgba(255,255,255,0.2);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+            <div>Nenhum arquivo ou pasta encontrado.</div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.5);">Clique em <b>"Abrir no Finder"</b> para adicionar pastas e vídeos diretamente pelo seu computador, ou arraste arquivos para esta tela.</div>
+          </div>
+        `;
         return;
       }
+
+      const fmLabel = this.osInfo?.fileManager || "Finder";
 
       items.forEach(item => {
         const el = document.createElement("div");
@@ -476,22 +721,46 @@ class MediaManager {
         el.dataset.path = targetPath;
         el.dataset.isdir = item.is_dir ? "true" : "false";
 
+        // Ações contextuais rápidas no hover (Abrir/Revelar no SO + Excluir)
+        const actionsEl = document.createElement("div");
+        actionsEl.className = "custom-item-actions";
+
         if (item.is_dir) {
-          el.style.display = "flex";
-          el.style.flexDirection = "column";
-          el.style.alignItems = "center";
-          el.style.justifyContent = "center";
-          el.style.background = "rgba(255,255,255,0.02)";
-          el.style.border = "1px solid var(--border)";
-          el.style.cursor = "pointer";
+          el.classList.add("custom-folder-card");
           el.innerHTML = `
-            <svg style="width:44px; height:44px; color:var(--accent); margin-bottom:8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-            <span style="font-size:12px; font-weight:600; color:var(--text-main); width:90%; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</span>
+            <svg style="width:44px; height:44px; color:var(--accent); margin-bottom:6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+            </svg>
+            <span style="font-size:12px; font-weight:600; color:var(--text-main); width:85%; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</span>
           `;
+
+          // Botão abrir no SO
+          const btnReveal = document.createElement("button");
+          btnReveal.className = "custom-item-btn";
+          btnReveal.title = `Abrir pasta "${item.name}" no ${fmLabel}`;
+          btnReveal.innerHTML = `📂`;
+          btnReveal.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.openCustomFolderInOS(targetPath);
+          });
+          actionsEl.appendChild(btnReveal);
+
+          // Botão excluir pasta
+          const btnDel = document.createElement("button");
+          btnDel.className = "custom-item-btn btn-delete";
+          btnDel.title = `Excluir pasta "${item.name}"`;
+          btnDel.innerHTML = `🗑️`;
+          btnDel.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.deleteCustomItem(targetPath, item.name);
+          });
+          actionsEl.appendChild(btnDel);
+
+          el.appendChild(actionsEl);
           el.addEventListener("click", () => this.navigateToCustomFolder(targetPath));
         } else {
           const ext = item.name.split(".").pop().toLowerCase();
-          const isVideo = ["mp4", "webm", "mov", "mkv"].includes(ext);
+          const isVideo = ["mp4", "webm", "mov", "mkv", "avi"].includes(ext);
 
           if (isVideo) {
             const img = document.createElement("img");
@@ -514,6 +783,37 @@ class MediaManager {
 
             el.addEventListener("click", () => this.applyBackground("image", item.url));
           }
+
+          // Nome do arquivo
+          const labelEl = document.createElement("div");
+          labelEl.className = "custom-item-label";
+          labelEl.textContent = item.name;
+          labelEl.title = item.name;
+          el.appendChild(labelEl);
+
+          // Botão revelar no SO
+          const btnReveal = document.createElement("button");
+          btnReveal.className = "custom-item-btn";
+          btnReveal.title = `Revelar "${item.name}" no ${fmLabel}`;
+          btnReveal.innerHTML = `👁️`;
+          btnReveal.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.revealCustomItemInOS(targetPath);
+          });
+          actionsEl.appendChild(btnReveal);
+
+          // Botão excluir arquivo
+          const btnDel = document.createElement("button");
+          btnDel.className = "custom-item-btn btn-delete";
+          btnDel.title = `Excluir "${item.name}"`;
+          btnDel.innerHTML = `🗑️`;
+          btnDel.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.deleteCustomItem(targetPath, item.name);
+          });
+          actionsEl.appendChild(btnDel);
+
+          el.appendChild(actionsEl);
         }
 
         customGrid.appendChild(el);
@@ -678,6 +978,9 @@ class MediaManager {
 window.openQRMediaModal = () => window.mediaManager?.openQRMediaModal();
 window.closeQRMediaModal = () => window.mediaManager?.closeQRMediaModal();
 window.createNewCustomFolder = () => window.mediaManager?.createNewCustomFolder();
+window.openCustomFolderInOS = (path) => window.mediaManager?.openCustomFolderInOS(path);
+window.revealCustomItemInOS = (path) => window.mediaManager?.revealCustomItemInOS(path);
+window.deleteCustomItem = (path, name) => window.mediaManager?.deleteCustomItem(path, name);
 
 window.addEventListener("DOMContentLoaded", () => {
   window.mediaManager = new MediaManager();

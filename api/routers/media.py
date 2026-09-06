@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 qr_media_token = ""
 qr_media_state = {
     "received_count": 0,
@@ -510,7 +512,66 @@ async def get_custom_backgrounds(path: Optional[str] = "", query: Optional[str] 
 
 
 
+
+@router.post("/media/custom/open-folder")
+async def open_custom_folder_os(path: str = Form("")):
+    """Abre a pasta no gerenciador de arquivos nativo do SO (Finder no macOS, Explorer no Windows)."""
+    import sys, subprocess
+    safe_path = os.path.normpath(path).strip("/")
+    if safe_path.startswith("..") or safe_path.startswith("/"):
+        safe_path = ""
+    target_dir = os.path.join(CUSTOM_DIR, safe_path)
+    os.makedirs(target_dir, exist_ok=True)
+
+    try:
+        if sys.platform == "darwin":
+            subprocess.Popen(["open", target_dir])
+        elif sys.platform == "win32":
+            subprocess.Popen(["explorer", os.path.normpath(target_dir)])
+        else:
+            subprocess.Popen(["xdg-open", target_dir])
+        return {"status": "success", "target_dir": target_dir}
+    except Exception as e:
+        logger.error(f"Erro ao abrir pasta no SO: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/media/custom/reveal-item")
+async def reveal_custom_item_os(path: str = Form(...)):
+    """Revela um arquivo ou pasta selecionado no Finder/Explorer do SO."""
+    import sys, subprocess
+    safe_path = os.path.normpath(path).strip("/")
+    if safe_path.startswith("..") or safe_path.startswith("/"):
+        raise HTTPException(status_code=400, detail="Caminho inválido")
+    target_item = os.path.join(CUSTOM_DIR, safe_path)
+    if not os.path.exists(target_item):
+        raise HTTPException(status_code=404, detail="Item não encontrado")
+
+    try:
+        if sys.platform == "darwin":
+            subprocess.Popen(["open", "-R", target_item])
+        elif sys.platform == "win32":
+            subprocess.Popen(["explorer", f"/select,{os.path.normpath(target_item)}"])
+        else:
+            subprocess.Popen(["xdg-open", os.path.dirname(target_item)])
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Erro ao revelar item no SO: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/media/custom/system-info")
+async def get_custom_system_info():
+    """Retorna informações do sistema para a interface nativa (SO, caminho base)."""
+    import sys
+    os_name = "mac" if sys.platform == "darwin" else ("win" if sys.platform == "win32" else "linux")
+    file_manager_name = "Finder" if os_name == "mac" else ("Explorador de Arquivos" if os_name == "win" else "Gerenciador de Arquivos")
+    return {
+        "os": os_name,
+        "file_manager": file_manager_name,
+        "base_dir": CUSTOM_DIR
+    }
+
 @router.post("/media/custom/folder")
+
 async def create_custom_folder(path: str = Form(""), folder_name: str = Form(...)):
     safe_path = os.path.normpath(path).strip('/')
     if safe_path.startswith('..') or safe_path.startswith('/'):

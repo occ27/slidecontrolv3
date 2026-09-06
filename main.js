@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, screen, ipcMain, dialog, shell } = require('electron');
 const { spawn } = require('child_process');
 const http = require('http');
 const path = require('path');
@@ -514,6 +514,69 @@ ipcMain.on('fechar-app', () => {
     mainWindow.setClosable(true);
   }
   app.quit();
+});
+
+// ── GERENCIAMENTO NATIVO DE ARQUIVOS E PASTAS DO SO (FINDER / EXPLORER) ──
+function getCustomUploadsDir() {
+  const localDevPath = path.join(__dirname, 'frontend', 'uploads', 'custom');
+  if (fs.existsSync(localDevPath)) {
+    return localDevPath;
+  }
+  const userPath = path.join(app.getPath('userData'), 'frontend', 'uploads', 'custom');
+  if (!fs.existsSync(userPath)) {
+    fs.mkdirSync(userPath, { recursive: true });
+  }
+  return userPath;
+}
+
+ipcMain.handle('open-uploads-folder', async (event, relPath = '') => {
+  try {
+    const baseDir = getCustomUploadsDir();
+    const safeRel = path.normalize(relPath || '').replace(/^(\.\.[\/\\])+/, '');
+    const targetDir = path.join(baseDir, safeRel);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    const errMsg = await shell.openPath(targetDir);
+    if (errMsg) {
+      console.warn('[open-uploads-folder] shell.openPath error:', errMsg);
+      return { success: false, error: errMsg };
+    }
+    return { success: true, targetDir };
+  } catch (err) {
+    console.error('[open-uploads-folder] error:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('reveal-item-in-folder', async (event, relPath = '') => {
+  try {
+    const baseDir = getCustomUploadsDir();
+    const safeRel = path.normalize(relPath || '').replace(/^(\.\.[\/\\])+/, '');
+    const targetFile = path.join(baseDir, safeRel);
+    if (fs.existsSync(targetFile)) {
+      shell.showItemInFolder(targetFile);
+      return { success: true };
+    }
+    return { success: false, error: 'Arquivo não encontrado' };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('trash-item', async (event, relPath = '') => {
+  try {
+    const baseDir = getCustomUploadsDir();
+    const safeRel = path.normalize(relPath || '').replace(/^(\.\.[\/\\])+/, '');
+    const targetFile = path.join(baseDir, safeRel);
+    if (fs.existsSync(targetFile)) {
+      await shell.trashItem(targetFile);
+      return { success: true };
+    }
+    return { success: false, error: 'Arquivo não encontrado' };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
 });
 
 // ── INICIALIZAÇÃO DA APLICAÇÃO ELECTRON ──

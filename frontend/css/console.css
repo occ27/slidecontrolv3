@@ -1740,3 +1740,137 @@ body::before {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+/* ═══════════════════════════════════════════════════════════════════════
+   GERENCIADOR DE ARQUIVOS NATIVO (MEUS UPLOADS / FINDER / EXPLORER)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.hud-btn-os {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.16) 0%, rgba(37, 99, 235, 0.28) 100%) !important;
+  border: 1px solid rgba(0, 240, 255, 0.55) !important;
+  color: #00F0FF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hud-btn-os:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.3) 0%, rgba(37, 99, 235, 0.45) 100%) !important;
+  border-color: #00F0FF !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.custom-drop-overlay {
+  display: none !important;
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 16, 30, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px dashed #00F0FF;
+  border-radius: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  color: #00F0FF;
+  pointer-events: none;
+  animation: pulse-drop-border 1.5s infinite alternate;
+}
+
+.custom-drop-overlay.active,
+#bg-local.drag-active .custom-drop-overlay {
+  display: flex !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes pulse-drop-border {
+  from { box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.2), 0 0 15px rgba(0, 240, 255, 0.2); }
+  to { box-shadow: inset 0 0 35px rgba(0, 240, 255, 0.45), 0 0 30px rgba(0, 240, 255, 0.45); }
+}
+
+.custom-item-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 10;
+}
+
+.bg-item:hover .custom-item-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.custom-item-btn {
+  background: rgba(10, 15, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.15s;
+}
+
+.custom-item-btn:hover {
+  background: rgba(0, 240, 255, 0.3);
+  border-color: #00F0FF;
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.custom-item-btn.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.5);
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.custom-item-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.5) 75%, transparent 100%);
+  padding: 16px 8px 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  pointer-events: none;
+}
+
+.custom-folder-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  cursor: pointer !important;
+  position: relative;
+  transition: all 0.2s ease !important;
+}
+
+.custom-folder-card:hover {
+  background: rgba(0, 240, 255, 0.08) !important;
+  border-color: rgba(0, 240, 255, 0.4) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0, 240, 255, 0.15) !important;
+}

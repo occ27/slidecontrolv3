@@ -164,7 +164,7 @@ class GlobeApp {
       quickLogo.addEventListener('click', () => {
         window.projectionSync.toggleLogo();
         if (window.slideTelemetry) {
-          window.slideTelemetry.appendLog('CABINE', 'Logo Oficial alternada (F4)', 'info');
+          window.slideTelemetry.appendLog('CABINE', 'Logo alternada (ESC)', 'info');
         }
       });
     }
@@ -252,7 +252,7 @@ class GlobeApp {
         e.preventDefault();
         window.projectionSync.toggleLogo();
         if (window.slideTelemetry) {
-          window.slideTelemetry.appendLog('CABINE', 'Logo Oficial alternada (F4)', 'info');
+          window.slideTelemetry.appendLog('CABINE', 'Logo alternada (ESC)', 'info');
         }
       }
       if (e.key === 'F11') {
