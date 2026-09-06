@@ -52,6 +52,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Re-adaptar dinamicamente as dimensões do modal e monitores ao redimensionar a janela
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    if (modalScreenManager && !modalScreenManager.classList.contains('hidden')) {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        loadScreens();
+      }, 100);
+    }
+  });
+
   async function loadScreens() {
     if (!screenList) return;
     screenList.innerHTML = '<div style="color: rgba(255,255,255,0.6); text-align: center; padding: 20px;">Detectando monitores conectados...</div>';
@@ -108,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const totalVH = Math.max(1, maxY - minY);
 
       const modalWidth = modalScreenManager.querySelector('.modal-content')?.clientWidth || 760;
-      let availW = Math.min(modalWidth - 48, 860);
+      let availW = Math.max(300, Math.min(modalWidth - 48, 1200));
       let CONTAINER_W = availW;
       let CONTAINER_H = Math.round(CONTAINER_W * (totalVH / totalVW));
 

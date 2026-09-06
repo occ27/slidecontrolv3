@@ -19,13 +19,16 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -40,7 +43,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
+  background:
     radial-gradient(circle at 50% 50%, rgba(14, 22, 40, 0.8) 0%, transparent 70%),
     radial-gradient(circle at 80% 20%, rgba(88, 28, 135, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 20% 80%, rgba(6, 78, 59, 0.12) 0%, transparent 50%);
@@ -55,7 +58,8 @@ body::before {
   width: 100%;
   height: 100%;
   z-index: 1;
-  pointer-events: none; /* Let CSS3D receive pointer events */
+  pointer-events: none;
+  /* Let CSS3D receive pointer events */
 }
 
 #css3d-container {
@@ -119,8 +123,17 @@ body::before {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.3); opacity: 1; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
 }
 
 .brand-text {
@@ -221,7 +234,7 @@ body::before {
 /* Center Guidance Hint */
 .center-hint {
   position: fixed;
-  bottom: 852px;
+  bottom: 140px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(10, 16, 30, 0.85);
@@ -360,8 +373,9 @@ body::before {
 
 .globe-card:hover {
   border-color: var(--accent-cyan);
-  box-shadow: 0 20px 60px rgba(0, 240, 255, 0.45); filter: brightness(1.22);
-  
+  box-shadow: 0 20px 60px rgba(0, 240, 255, 0.45);
+  filter: brightness(1.22);
+
 }
 
 /* Active On-Air Slide Highlighting */
@@ -533,7 +547,8 @@ body::before {
    RESGATADOS: PAINÉIS LATERAIS ESQUERDO E DIREITO (FUTURISTIC SCI-FI HUD)
    ========================================================================== */
 
-.topbar-left, .topbar-right {
+.topbar-left,
+.topbar-right {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -731,9 +746,20 @@ body::before {
   flex-shrink: 0;
 }
 
-.cat-dot.bible { background: var(--accent-violet); box-shadow: 0 0 8px var(--accent-violet); }
-.cat-dot.song { background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); }
-.cat-dot.ctrl { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
+.cat-dot.bible {
+  background: var(--accent-violet);
+  box-shadow: 0 0 8px var(--accent-violet);
+}
+
+.cat-dot.song {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.cat-dot.ctrl {
+  background: var(--accent-amber);
+  box-shadow: 0 0 8px var(--accent-amber);
+}
 
 .cat-text {
   flex: 1;
@@ -785,7 +811,8 @@ body::before {
   text-align: center;
 }
 
-.preset-btn:hover, .preset-btn.active {
+.preset-btn:hover,
+.preset-btn.active {
   background: rgba(0, 240, 255, 0.15);
   color: var(--accent-cyan);
   border-color: var(--accent-cyan);
@@ -1070,16 +1097,28 @@ body::before {
   scrollbar-width: thin;
 }
 
-.log-line.info { color: #94a3b8; }
-.log-line.success { color: var(--accent-emerald); }
-.log-line.warning { color: var(--accent-amber); }
-.log-line.danger { color: var(--accent-rose); }
+.log-line.info {
+  color: #94a3b8;
+}
+
+.log-line.success {
+  color: var(--accent-emerald);
+}
+
+.log-line.warning {
+  color: var(--accent-amber);
+}
+
+.log-line.danger {
+  color: var(--accent-rose);
+}
 
 /* ── MODAL: GERENCIADOR DE TELAS ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: transparent; /* Fundo transparente: usuario enxerga o que acontece atras */
+  background: transparent;
+  /* Fundo transparente: usuario enxerga o que acontece atras */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   display: flex;
@@ -1087,7 +1126,8 @@ body::before {
   justify-content: center;
   z-index: 10000;
   transition: opacity 0.2s ease, visibility 0.2s ease;
-  pointer-events: auto; /* Permite fechar ao clicar fora */
+  pointer-events: auto;
+  /* Permite fechar ao clicar fora */
 }
 
 .modal-overlay.hidden {
@@ -1099,7 +1139,8 @@ body::before {
 .modal-content {
   background: rgba(11, 19, 35, 0.98);
   border: 1px solid rgba(0, 240, 255, 0.4);
-  border-top: 3px solid #00f0ff; /* Linha de destaque para separar do fundo */
+  border-top: 3px solid #00f0ff;
+  /* Linha de destaque para separar do fundo */
   border-radius: 16px;
   box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.25), 0 35px 90px -10px rgba(0, 0, 0, 0.95), 0 0 50px rgba(0, 0, 0, 0.7);
   width: 92vw;
@@ -1157,10 +1198,20 @@ body::before {
 }
 
 #modal-screen-manager .modal-content {
+  width: 95vw;
+  max-width: 1240px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: width 0.2s ease, max-width 0.2s ease;
+}
+
+@media (max-width: 900px) {
+  #modal-screen-manager .modal-content {
+    width: 96vw;
+    padding: 16px;
+  }
 }
 
 #modal-screen-manager .modal-header {
@@ -1210,6 +1261,7 @@ body::before {
     max-height: 94vh;
     padding: 16px 20px;
   }
+
   #modal-screen-manager .modal-header {
     margin-bottom: 10px;
     padding-bottom: 8px;
@@ -1329,13 +1381,11 @@ body::before {
 
 .bg-fit-preview-bars {
   position: absolute;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 4px,
-    rgba(255, 255, 255, 0.06) 4px,
-    rgba(255, 255, 255, 0.06) 8px
-  );
+  background: repeating-linear-gradient(45deg,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0) 4px,
+      rgba(255, 255, 255, 0.06) 4px,
+      rgba(255, 255, 255, 0.06) 8px);
   background-color: #050810;
 }
 
