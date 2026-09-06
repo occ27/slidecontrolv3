@@ -64,6 +64,12 @@ class ProjectionSyncService {
           active: this.currentState.isClearText
         });
       }
+      
+      if (msg.action === 'SET_BG_FIT' && (!msg.target || msg.target === 'telao')) {
+        if (window.updateOnAirCardBg) {
+          window.updateOnAirCardBg();
+        }
+      }
     };
 
     // Ping display

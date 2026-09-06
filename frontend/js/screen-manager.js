@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.electronAPI.setPref('slideState_monitor_telao', m.id);
             await window.electronAPI.assignScreen('telao', m.id);
             loadScreens();
+            if (window.updateCardAspectRatio) window.updateCardAspectRatio();
           } else if (tagId === 'retorno') {
             window.electronAPI.setPref('slideState_monitor_retorno', m.id);
             await window.electronAPI.assignScreen('retorno', m.id);

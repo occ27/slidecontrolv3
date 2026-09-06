@@ -360,7 +360,7 @@ body::before {
    ========================================================================== */
 .globe-card {
   width: 420px;
-  min-height: 250px;
+  aspect-ratio: var(--card-aspect-ratio, 16/9);
   background: rgba(10, 16, 30, 0.82);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);

@@ -287,6 +287,13 @@ window.updateOnAirCardBg = function() {
     const kind = window.electronAPI.getPref("slideState_bgKind");
     const url = window.electronAPI.getPref("slideState_bgUrl");
     if (kind && url) {
+      const fitMode = window.electronAPI.getPref('slideState_bgFit_telao') || 'cover';
+      let bgSize = 'cover';
+      let objFit = 'cover';
+      if (fitMode === 'contain') { bgSize = 'contain'; objFit = 'contain'; }
+      else if (fitMode === 'stretch') { bgSize = '100% 100%'; objFit = 'fill'; }
+      else if (fitMode === 'width') { bgSize = '100% auto'; objFit = 'cover'; }
+
       const bgLayer = document.createElement("div");
       bgLayer.className = "on-air-bg-layer";
       bgLayer.style.cssText = "position:absolute; inset:0; z-index:0; border-radius:inherit; overflow:hidden; opacity:1; pointer-events:none; transition: opacity 0.3s ease;";
@@ -295,8 +302,9 @@ window.updateOnAirCardBg = function() {
         bgLayer.style.backgroundColor = url;
       } else if (kind === "image") {
         bgLayer.style.backgroundImage = `url("${url}")`;
-        bgLayer.style.backgroundSize = "cover";
+        bgLayer.style.backgroundSize = bgSize;
         bgLayer.style.backgroundPosition = "center";
+        bgLayer.style.backgroundRepeat = "no-repeat";
       } else if (kind === "video") {
         const vid = document.createElement("video");
         vid.src = url;
@@ -304,7 +312,7 @@ window.updateOnAirCardBg = function() {
         vid.loop = true;
         vid.muted = true;
         vid.playsInline = true;
-        vid.style.cssText = "width:100%; height:100%; object-fit:cover;";
+        vid.style.cssText = `width:100%; height:100%; object-fit:${objFit};`;
         bgLayer.appendChild(vid);
       }
       
@@ -348,5 +356,24 @@ document.addEventListener('DOMContentLoaded', () => {
       pill.style.background = '';
       pill.style.borderColor = '';
     });
+  }
+});
+
+window.updateCardAspectRatio = async function() {
+  if (window.electronAPI && typeof window.electronAPI.getScreens === 'function') {
+    const telaoMonitorId = window.electronAPI.getPref('slideState_monitor_telao');
+    if (!telaoMonitorId) return;
+    const screens = await window.electronAPI.getScreens();
+    const telaoScreen = screens.find(s => String(s.id) === String(telaoMonitorId));
+    if (telaoScreen) {
+      const ratio = telaoScreen.bounds.width / telaoScreen.bounds.height;
+      document.documentElement.style.setProperty('--card-aspect-ratio', ratio);
+    }
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.updateCardAspectRatio) {
+    window.updateCardAspectRatio();
   }
 });
