@@ -341,6 +341,10 @@ class TextStyleManager {
     this.savePreferences();
     this.refreshTsModalUI();
     this.broadcastStyle(this.currentTarget);
+
+    if (prop === 'linesLimit' && window.orbitalEngine && typeof window.orbitalEngine.onLinesLimitChanged === 'function') {
+      window.orbitalEngine.onLinesLimitChanged();
+    }
   }
 
   broadcastStyle(target) {

@@ -21,6 +21,9 @@ class SphericalSurfaceEngine {
     this.activeRow = 1;
     this.verticalOffset = 1.0; // Posição vertical contínua (0, 1 ou 2)
 
+    this.activeChunkIndex = 0;
+    this.activeCardObj = null;
+
     this.rows = [
       { id: 'bible', name: 'Bíblia Sagrada', scrollIndex: 0, targetScroll: 0, cards: [] },
       { id: 'songs', name: 'Louvor & Slides', scrollIndex: 0, targetScroll: 0, cards: [] },
@@ -385,12 +388,26 @@ class SphericalSurfaceEngine {
         }
       }
     } else {
+      let linesHtml = '';
+      let lineCount = 0;
+      if (data.text) {
+        const rawLines = data.text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        lineCount = rawLines.length;
+        linesHtml = rawLines.map((line, idx) => `<div class="card-line" data-line-idx="${idx}">${line}</div>`).join('');
+      }
+
+      const densityClass = lineCount > 6 ? 'dense-lines' : (lineCount > 4 ? 'compact-lines' : '');
+
       el.innerHTML = `
         <div class="card-top-row">
-          <span class="card-tag">${data.tag}</span>
+          <div style="display:flex; align-items:center; gap:6px; min-width:0; overflow:hidden;">
+            <span class="card-tag">${data.tag}</span>
+            <span class="card-chunk-badge" style="display:none;"></span>
+          </div>
           <span class="card-status-badge">SLIDE</span>
         </div>
-        <div class="card-main-text">${data.text}</div>
+        <div class="card-main-text ${densityClass}">${linesHtml || data.text || ''}</div>
+        <div class="card-chunk-steps" style="display:none;"></div>
         <div class="card-footer">
           <span class="card-subtext">${data.title}</span>
           <button class="btn-project-card">
@@ -399,6 +416,32 @@ class SphericalSurfaceEngine {
           </button>
         </div>
       `;
+
+      // Linhas clicáveis para salto direto para a fatia correspondente
+      el.querySelectorAll('.card-line').forEach(lineEl => {
+        lineEl.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const lineIdx = parseInt(lineEl.dataset.lineIdx) || 0;
+          this.onLineClicked(rowIdx, cardIdx, lineIdx);
+        });
+      });
+
+      if (data.theme === 'song' && data.text) {
+        const lim = this.getLinesLimit(data.theme);
+        const initChunks = this.splitTextIntoChunks(data.text, lim);
+        if (initChunks.length > 1) {
+          const badge = el.querySelector('.card-chunk-badge');
+          if (badge) {
+            badge.textContent = `PARTE 1/${initChunks.length}`;
+            badge.style.display = 'inline-flex';
+          }
+          const steps = el.querySelector('.card-chunk-steps');
+          if (steps) {
+            steps.style.display = 'flex';
+            steps.innerHTML = initChunks.map((_, i) => `<span class="card-chunk-step-dot ${i === 0 ? 'active' : ''}"></span>`).join('');
+          }
+        }
+      }
     }
 
     // ── CLIQUE GLOBAL NO CARD: TRAZ O CARD E SEU ANEL PARA O CENTRO DO GLOBO ──
@@ -428,6 +471,71 @@ class SphericalSurfaceEngine {
     };
   }
 
+  // ── MÉTODOS DE CONTROLE E PROJEÇÃO DE LINHAS (CHUNKING) ──
+
+  getLinesLimit(theme) {
+    if (theme === 'bible') return 0;
+    if (window.electronAPI && typeof window.electronAPI.getPref === 'function') {
+      const saved = window.electronAPI.getPref('slideState_songs_linesLimit') || window.electronAPI.getPref('slideState_linesLimit');
+      if (saved !== null && saved !== undefined) {
+        return parseInt(saved) || 0;
+      }
+    }
+    return 0;
+  }
+
+  splitTextIntoChunks(text, limit) {
+    if (!text) return [];
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) return [{ text: '', lineIndices: [] }];
+    const lim = parseInt(limit) || 0;
+    if (lim <= 0 || lines.length <= lim) {
+      return [{
+        text: lines.join('\n'),
+        lineIndices: lines.map((_, i) => i)
+      }];
+    }
+    const chunks = [];
+    for (let i = 0; i < lines.length; i += lim) {
+      const slice = lines.slice(i, i + lim);
+      const indices = [];
+      for (let k = i; k < Math.min(i + lim, lines.length); k++) {
+        indices.push(k);
+      }
+      chunks.push({
+        text: slice.join('\n'),
+        lineIndices: indices
+      });
+    }
+    return chunks;
+  }
+
+  onLineClicked(rowIdx, cardIdx, lineIdx) {
+    if (rowIdx !== this.activeRow) {
+      this.setRow(rowIdx);
+    }
+    this.snapToCard(rowIdx, cardIdx);
+
+    const cardObj = this.rows[rowIdx]?.cards[cardIdx];
+    if (!cardObj || !cardObj.data || !cardObj.data.text) return;
+
+    const limit = this.getLinesLimit(cardObj.data.theme);
+    const chunks = this.splitTextIntoChunks(cardObj.data.text, limit);
+    let targetChunk = 0;
+    chunks.forEach((chunk, cIdx) => {
+      if (chunk.lineIndices && chunk.lineIndices.includes(lineIdx)) {
+        targetChunk = cIdx;
+      }
+    });
+
+    this.projectCardChunk(cardObj, targetChunk, true);
+  }
+
+  jumpToChunk(chunkIndex) {
+    if (!this.activeCardObj) return;
+    this.projectCardChunk(this.activeCardObj, chunkIndex, true);
+  }
+
   // AÇÃO AO CLICAR EM QUALQUER CARD VISÍVEL NO GLOBO
   onCardClicked(data, cardEl, rowIdx, cardIdx, force = false) {
     if (this.hasDragged && !force) return; // Ignora clique se o usuário estava arrastando a tela
@@ -441,49 +549,19 @@ class SphericalSurfaceEngine {
     // 2. Alinha horizontalmente o cartão clicado exatamente no centro da visão
     this.snapToCard(rowIdx, cardIdx);
 
-    // 3. Se for um slide de conteúdo (com texto), projeta imediatamente no telão
+    // 3. Se for um slide de conteúdo (com texto), projeta a fatia adequada
     if (data.text) {
-      document.querySelectorAll('.globe-card').forEach(c => {
-        c.classList.remove('on-air');
-        const oldBg = c.querySelector('.on-air-bg-layer');
-        if (oldBg) oldBg.remove();
-      });
-      cardEl.classList.add('on-air');
-      if (window.updateOnAirCardBg) window.updateOnAirCardBg();
-
-      const row = this.rows && this.rows[rowIdx];
-      let nextText = '';
-      if (row && row.cards && row.cards[cardIdx + 1] && row.cards[cardIdx + 1].data) {
-        nextText = row.cards[cardIdx + 1].data.text || '';
-      }
-
-      const isBible = data.theme === 'bible';
-      const ref = data.reference || (isBible ? `${data.bookName || ''} ${data.chapterNum || ''}:${data.verseNum || ''} — ${data.version || 'ACF'}`.trim() : '');
-
-      window.projectionSync.projectSlide({
-        header: isBible ? '' : data.tag,
-        text: data.text,
-        subtitle: isBible ? ref : data.title,
-        reference: ref,
-        caption: isBible ? ref : (data.title || data.tag),
-        theme: data.theme,
-        nextText: nextText
-      });
-
-      const pill = document.getElementById('on-air-pill-text');
-      if (pill) {
-        pill.textContent = (isBible && ref) ? ref : `${data.tag} — ${data.title}`;
-      }
-
-      // Se for Bíblia, atualiza o versículo e salva preferências
-      if (data.theme === 'bible' && window.bibleService) {
-        window.bibleService.selectedVerse = Number(data.verseNum) || 1;
-        window.bibleService.savePreferences();
-      }
-
-      if (window.slideTelemetry) {
-        window.slideTelemetry.updateInspector(data);
-        window.slideTelemetry.appendLog(data.tag, `Projetado no Telão: "${(isBible && ref) ? ref : data.title}"`, 'success');
+      const cardObj = this.rows[rowIdx]?.cards[cardIdx];
+      if (cardObj) {
+        let targetChunk = 0;
+        // Se já era o cartão atualmente no ar e tem múltiplas fatias, avançar para a próxima fatia
+        if (this.activeCardObj === cardObj && this.getLinesLimit(data.theme) > 0) {
+          const chunks = this.splitTextIntoChunks(data.text, this.getLinesLimit(data.theme));
+          if (this.activeChunkIndex < chunks.length - 1) {
+            targetChunk = this.activeChunkIndex + 1;
+          }
+        }
+        this.projectCardChunk(cardObj, targetChunk, force);
       }
     } else {
       if (window.slideTelemetry) {
@@ -491,6 +569,224 @@ class SphericalSurfaceEngine {
       }
     }
   }
+
+  projectCardChunk(cardObj, chunkIndex = 0, force = false) {
+    if (!cardObj || !cardObj.data) return;
+    const data = cardObj.data;
+    const isBible = data.theme === 'bible';
+    const limit = this.getLinesLimit(data.theme);
+    const chunks = this.splitTextIntoChunks(data.text, limit);
+    const totalChunks = chunks.length;
+
+    chunkIndex = Math.max(0, Math.min(totalChunks - 1, chunkIndex));
+    this.activeChunkIndex = chunkIndex;
+    this.activeCardObj = cardObj;
+
+    // Atualiza classe on-air
+    document.querySelectorAll('.globe-card').forEach(c => {
+      c.classList.remove('on-air');
+      const oldBg = c.querySelector('.on-air-bg-layer');
+      if (oldBg) oldBg.remove();
+    });
+    cardObj.element.classList.add('on-air');
+    if (window.updateOnAirCardBg) window.updateOnAirCardBg();
+
+    // Destaque visual das linhas ativas no cartão 3D
+    const activeIndices = chunks[chunkIndex] ? chunks[chunkIndex].lineIndices : [];
+    cardObj.element.querySelectorAll('.card-line').forEach(lEl => {
+      const lIdx = parseInt(lEl.dataset.lineIdx);
+      if (totalChunks > 1) {
+        if (activeIndices.includes(lIdx)) {
+          lEl.classList.add('active-chunk');
+          lEl.classList.remove('dimmed-chunk');
+        } else {
+          lEl.classList.remove('active-chunk');
+          lEl.classList.add('dimmed-chunk');
+        }
+      } else {
+        lEl.classList.remove('active-chunk', 'dimmed-chunk');
+      }
+    });
+
+    // Efeito Teleprompter: garante que as linhas ativas fiquem sempre 100% visíveis no centro do cartão
+    setTimeout(() => {
+      const activeLine = cardObj.element.querySelector('.card-line.active-chunk');
+      if (activeLine) {
+        activeLine.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      }
+    }, 40);
+
+    // Indicador de partes (badge) no cabeçalho do cartão
+    const badge = cardObj.element.querySelector('.card-chunk-badge');
+    if (badge) {
+      if (totalChunks > 1) {
+        badge.textContent = `PARTE ${chunkIndex + 1}/${totalChunks}`;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Indicador de passos/pontos no rodapé do cartão
+    const steps = cardObj.element.querySelector('.card-chunk-steps');
+    if (steps) {
+      if (totalChunks > 1) {
+        steps.style.display = 'flex';
+        steps.innerHTML = chunks.map((_, i) => `<span class="card-chunk-step-dot ${i === chunkIndex ? 'active' : ''}"></span>`).join('');
+      } else {
+        steps.style.display = 'none';
+      }
+    }
+
+    // Cálculo do texto do próximo slide para o Monitor de Retorno
+    let nextText = '';
+    if (chunkIndex < totalChunks - 1) {
+      // Próxima fatia da MESMA estrofe
+      nextText = chunks[chunkIndex + 1].text;
+    } else {
+      // Última fatia: busca a primeira fatia do PRÓXIMO cartão da mesma trilha
+      const row = this.rows && this.rows[cardObj.rowIdx];
+      if (row && row.cards && row.cards[cardObj.cardIdx + 1] && row.cards[cardObj.cardIdx + 1].data) {
+        const nextCard = row.cards[cardObj.cardIdx + 1];
+        if (nextCard.data.text) {
+          const nextChunks = this.splitTextIntoChunks(nextCard.data.text, this.getLinesLimit(nextCard.data.theme));
+          nextText = nextChunks.length > 0 ? nextChunks[0].text : (nextCard.data.text || '');
+        }
+      }
+    }
+
+    const ref = data.reference || (isBible ? `${data.bookName || ''} ${data.chapterNum || ''}:${data.verseNum || ''} — ${data.version || 'ACF'}`.trim() : '');
+    const currentChunkText = (chunks[chunkIndex] && chunks[chunkIndex].text) ? chunks[chunkIndex].text : data.text;
+
+    // Projeta no Telão e no Monitor de Retorno
+    window.projectionSync.projectSlide({
+      header: isBible ? '' : data.tag,
+      text: currentChunkText,
+      subtitle: isBible ? ref : data.title,
+      reference: ref,
+      caption: isBible ? ref : (data.title || data.tag),
+      theme: data.theme,
+      nextText: nextText,
+      linesChunked: totalChunks > 1,
+      chunkIndex: chunkIndex,
+      totalChunks: totalChunks,
+      rawText: data.text
+    });
+
+    // Atualiza a pílula de status no cabeçalho superior da UI
+    const pill = document.getElementById('on-air-pill-text');
+    if (pill) {
+      if (isBible && ref) {
+        pill.textContent = ref;
+      } else {
+        const partTag = totalChunks > 1 ? ` [${chunkIndex + 1}/${totalChunks}]` : '';
+        pill.textContent = `${data.tag}${partTag} — ${data.title}`;
+      }
+    }
+
+    // Se for Bíblia, atualiza o versículo e salva preferências
+    if (isBible && window.bibleService) {
+      window.bibleService.selectedVerse = Number(data.verseNum) || 1;
+      window.bibleService.savePreferences();
+    }
+
+    // Atualiza o painel Inspetor à direita e o log do console
+    if (window.slideTelemetry) {
+      window.slideTelemetry.updateInspector(data, chunkIndex, chunks, limit);
+      const logTag = `${data.tag}${totalChunks > 1 ? ` [${chunkIndex + 1}/${totalChunks}]` : ''}`;
+      window.slideTelemetry.appendLog(logTag, `Projetado no Telão: "${(isBible && ref) ? ref : data.title}"`, 'success');
+    }
+  }
+
+  // ── NAVEGAÇÃO HÍBRIDA POR TECLADO (CHUNKS INTRA-CARD E TRANSIÇÃO NA ÓRBITA) ──
+  stepSlide(direction = 1) {
+    // Trilha Norte (Bíblia) ou Trilha Sul (Controles)
+    if (this.activeRow !== 1) {
+      this.stepRowHorizontal(direction, this.activeRow === 0);
+      return;
+    }
+
+    const activeRowObj = this.rows[this.activeRow];
+    if (!activeRowObj || !activeRowObj.cards || !activeRowObj.cards.length) return;
+
+    // Se nenhum card está no ar ou o card ativo é de outra trilha, projeta o central
+    if (!this.activeCardObj || this.activeCardObj.rowIdx !== this.activeRow) {
+      const currentIdx = Math.max(0, Math.min(activeRowObj.cards.length - 1, Math.round(activeRowObj.scrollIndex)));
+      const card = activeRowObj.cards[currentIdx];
+      if (card && card.data && card.data.text) {
+        this.projectCardChunk(card, 0, true);
+      }
+      return;
+    }
+
+    const card = this.activeCardObj;
+    const limit = this.getLinesLimit(card.data.theme);
+    const chunks = this.splitTextIntoChunks(card.data.text, limit);
+    const totalChunks = chunks.length;
+
+    if (direction === 1) {
+      // Avançar (Seta Direita / Espaço)
+      if (this.activeChunkIndex < totalChunks - 1) {
+        // Avança dentro do mesmo cartão
+        this.projectCardChunk(card, this.activeChunkIndex + 1, true);
+      } else {
+        // Fim da estrofe: gira para o próximo cartão da órbita
+        const nextIdx = card.cardIdx + 1;
+        if (nextIdx < activeRowObj.cards.length) {
+          this.snapToCard(this.activeRow, nextIdx);
+          const nextCard = activeRowObj.cards[nextIdx];
+          if (nextCard && nextCard.data && nextCard.data.text) {
+            this.projectCardChunk(nextCard, 0, true);
+          }
+        }
+      }
+    } else if (direction === -1) {
+      // Retroceder (Seta Esquerda)
+      if (this.activeChunkIndex > 0) {
+        // Retrocede dentro do mesmo cartão
+        this.projectCardChunk(card, this.activeChunkIndex - 1, true);
+      } else {
+        // Início da estrofe: retrocede para o cartão anterior na sua última fatia
+        const prevIdx = card.cardIdx - 1;
+        if (prevIdx >= 0) {
+          this.snapToCard(this.activeRow, prevIdx);
+          const prevCard = activeRowObj.cards[prevIdx];
+          if (prevCard && prevCard.data && prevCard.data.text) {
+            const prevChunks = this.splitTextIntoChunks(prevCard.data.text, this.getLinesLimit(prevCard.data.theme));
+            const lastChunkIdx = Math.max(0, prevChunks.length - 1);
+            this.projectCardChunk(prevCard, lastChunkIdx, true);
+          }
+        }
+      }
+    }
+  }
+
+  // Notificação de alteração do limite de linhas nas preferências
+  onLinesLimitChanged() {
+    const songRow = this.rows[1];
+    if (songRow && songRow.cards) {
+      const limit = this.getLinesLimit('song');
+      songRow.cards.forEach(card => {
+        if (card.data && card.data.text) {
+          const chunks = this.splitTextIntoChunks(card.data.text, limit);
+          const badge = card.element.querySelector('.card-chunk-badge');
+          if (badge) {
+            if (chunks.length > 1) {
+              badge.textContent = `PARTE 1/${chunks.length}`;
+              badge.style.display = 'inline-flex';
+            } else {
+              badge.style.display = 'none';
+            }
+          }
+        }
+      });
+    }
+
+    if (this.activeCardObj && this.activeCardObj.rowIdx === 1) {
+      this.projectCardChunk(this.activeCardObj, 0, true);
+    }
+  }
+
 
   updateCardPositions() {
     // Passo angular de latitude entre os anéis na esfera (~24.5°)
@@ -619,6 +915,17 @@ class SphericalSurfaceEngine {
 
     // Roda do mouse (Wheel) com debounce suave
     window.addEventListener('wheel', e => {
+      // Permite a rolagem nativa suave se o cursor estiver sobre o texto do cartão ou painéis
+      if (e.target && e.target.closest && (
+        e.target.closest('.card-main-text') ||
+        e.target.closest('.hud-right-inspector') ||
+        e.target.closest('.lines-slices-list') ||
+        e.target.closest('.modal-card') ||
+        e.target.closest('.modal-content')
+      )) {
+        return;
+      }
+
       const now = performance.now();
 
       if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {

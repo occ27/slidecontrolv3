@@ -141,28 +141,83 @@ class SlideControlTelemetry {
     }
   }
 
-  updateInspector(data) {
+  updateInspector(data, activeChunkIdx = 0, chunks = null, linesLimit = 0) {
     const tagEl = document.getElementById('node-type-badge');
     const titleEl = document.getElementById('node-title-display');
     const descEl = document.getElementById('node-desc-display');
     const subEl = document.getElementById('preview-slide-sub');
     const previewTextEl = document.getElementById('preview-slide-text');
+    const chunkSection = document.getElementById('lines-chunk-section');
+    const chunkBadge = document.getElementById('inspector-lines-limit-badge');
+    const slicesList = document.getElementById('inspector-lines-slices');
 
     if (tagEl) {
       tagEl.textContent = data.tag || 'SLIDE';
     }
+
+    const isSong = data.theme === 'song';
+    const isBible = data.theme === 'bible';
+
     if (titleEl) {
-      titleEl.textContent = data.tag || data.title || 'Slide Ativo';
+      if (isSong && chunks && chunks.length > 1) {
+        titleEl.textContent = `${data.tag || 'LOUVOR'} [${activeChunkIdx + 1}/${chunks.length}]`;
+      } else {
+        titleEl.textContent = data.tag || data.title || 'Slide Ativo';
+      }
     }
+
     if (subEl) {
       subEl.textContent = data.title || '';
     }
+
     if (descEl) {
       const preview = data.text ? data.text.split('\n')[0] : 'Controles Mestres de Transmissão';
       descEl.textContent = preview;
     }
-    if (previewTextEl && data.text) {
-      previewTextEl.textContent = data.text;
+
+    // Atualiza a mini-prévia com o chunk atual projetado (ou texto completo)
+    if (previewTextEl) {
+      if (chunks && chunks[activeChunkIdx]) {
+        previewTextEl.textContent = chunks[activeChunkIdx].text;
+      } else if (data.text) {
+        previewTextEl.textContent = data.text;
+      }
+    }
+
+    // Fatiador de Linhas Interativo no Painel Inspetor
+    if (chunkSection && slicesList) {
+      if (isSong && chunks && chunks.length > 1) {
+        chunkSection.style.display = 'flex';
+        if (chunkBadge) {
+          const limit = parseInt(linesLimit) || 1;
+          chunkBadge.textContent = `${limit} ${limit === 1 ? 'LINHA' : 'LINHAS'}`;
+        }
+
+        slicesList.innerHTML = '';
+        chunks.forEach((chunk, idx) => {
+          const item = document.createElement('div');
+          item.className = `line-slice-item ${idx === activeChunkIdx ? 'active' : ''}`;
+          item.dataset.chunkIdx = idx;
+          item.title = `Projetar fatia ${idx + 1} de ${chunks.length}`;
+
+          const cleanText = chunk.text.replace(/\n+/g, ' • ');
+          item.innerHTML = `
+            <span class="slice-idx-badge">${idx + 1}</span>
+            <span class="slice-content-text">${cleanText}</span>
+          `;
+
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (window.orbitalEngine) {
+              window.orbitalEngine.jumpToChunk(idx);
+            }
+          });
+
+          slicesList.appendChild(item);
+        });
+      } else {
+        chunkSection.style.display = 'none';
+      }
     }
 
     // Sincroniza a camada de fundo na mini prévia
@@ -171,6 +226,28 @@ class SlideControlTelemetry {
     const inspector = document.getElementById('process-inspector');
     if (inspector) {
       inspector.classList.remove('hidden-panel');
+    }
+  }
+
+  updateActiveSlice(activeChunkIdx, chunkText, totalChunks = 1) {
+    const previewTextEl = document.getElementById('preview-slide-text');
+    if (previewTextEl && chunkText) {
+      previewTextEl.textContent = chunkText;
+    }
+
+    const titleEl = document.getElementById('node-title-display');
+    if (titleEl && totalChunks > 1) {
+      const currentTitle = titleEl.textContent || '';
+      const baseTag = currentTitle.split(' [')[0] || 'LOUVOR';
+      titleEl.textContent = `${baseTag} [${activeChunkIdx + 1}/${totalChunks}]`;
+    }
+
+    const slicesList = document.getElementById('inspector-lines-slices');
+    if (slicesList) {
+      const items = slicesList.querySelectorAll('.line-slice-item');
+      items.forEach((item, idx) => {
+        item.classList.toggle('active', idx === activeChunkIdx);
+      });
     }
   }
 

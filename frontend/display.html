@@ -286,7 +286,7 @@
 
       if (data.linesLimit !== undefined) {
         const limit = parseInt(data.linesLimit) || 0;
-        if (limit > 0) {
+        if (limit > 0 && !data.linesChunked) {
           textEl.style.display = '-webkit-box';
           textEl.style.webkitLineClamp = limit;
           textEl.style.webkitBoxOrient = 'vertical';
@@ -480,7 +480,8 @@
               fontWeight: msg.fontWeight,
               fontSize: msg.fontSize,
               captionFontSize: msg.captionFontSize,
-              linesLimit: effectiveLinesLimit
+              linesLimit: effectiveLinesLimit,
+              linesChunked: !!msg.linesChunked
             });
           } else {
             autoFitDisplayFontSize(msg.fontSize || lastEffectiveFontSize);

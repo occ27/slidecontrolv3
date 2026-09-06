@@ -373,13 +373,13 @@ class GlobeApp {
         this.engine.setRow(Math.min(2, this.engine.activeRow + 1));
       }
 
-      // Navegação horizontal na linha ativa (Passar slides daquela categoria)
+      // Navegação horizontal na linha ativa (Passar slides com micro-passos por linhas)
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        this.engine.stepRowHorizontal(-1, true);
+        this.engine.stepSlide(-1);
       } else if (e.key === 'ArrowRight' || e.code === 'Space') {
         e.preventDefault();
-        this.engine.stepRowHorizontal(1, true);
+        this.engine.stepSlide(1);
       }
 
       // Teclas de Emergência Globais

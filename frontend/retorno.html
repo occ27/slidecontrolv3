@@ -305,7 +305,7 @@
 
       if (data.linesLimit !== undefined && currentEl) {
         const limit = parseInt(data.linesLimit) || 0;
-        if (limit > 0) {
+        if (limit > 0 && !data.linesChunked) {
           currentEl.style.display = '-webkit-box';
           currentEl.style.webkitLineClamp = limit;
           currentEl.style.webkitBoxOrient = 'vertical';
@@ -460,7 +460,8 @@
               fontWeight: msg.fontWeightRetorno,
               fontSize: msg.fontSizeRetorno,
               captionFontSize: msg.captionFontSizeRetorno,
-              linesLimit: effectiveLinesLimitRetorno
+              linesLimit: effectiveLinesLimitRetorno,
+              linesChunked: !!msg.linesChunked
             });
           } else {
             updateRetornoFontSize(msg.fontSizeRetorno || msg.fontSize || lastEffectiveRetornoFontSize);
